@@ -9,55 +9,63 @@
       <link rel="apple-touch-icon" href="apple-touch-icon.png">
       <!-- Place favicon.ico in the root directory -->
 
-      <link rel="stylesheet" href="css/styles.processed.css">
+      <link rel="stylesheet" href="css/styles.css">
       <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700" rel="stylesheet">
     </head>
     <body>
       <div class="App Ox(hidden)" id="app">
-        
+
         <div class="Toucher js-toucher"></div>
-        <div class="Switcher" style="z-index: 2;">  
+        <div class="Switcher" style="z-index: 2;">
           <input type="checkbox" id="switcher" name="check" v-on:change="toggleEmoji" v-bind:checked="shouldShowEmoji" />
           <label for="switcher"></label>
         </div>
-        
+
         <div class="App-container W(200vw) Clearfix" v-bind:class="{'moveLeft': !shouldShowEmoji }">
 
           <div class="Screen F(left) W(100vw)">
-            <div class="Emotions">
-              <div v-for="emojion in emojions" class="Emotion BackgroundColor" v-bind:class="['BackgroundColor--' + emojion.color]" v-on:click="trackEntry(emojion)" style="font-size: 10vh;">
+            <div class="Emotions" v-bind:class="{ 'isResting': isResting }">
+
+              <div class="Emotions--resting">
+                <div class="Emotions--restingEmoji">😄</div>
+              </div>
+              <div v-if="emojions" v-for="emojion in emojions" class="Emotion BackgroundColor" v-bind:class="['BackgroundColor--' + emojion.color]" v-on:click="trackEntry(emojion)" style="font-size: 10vh;">
                 {{emojion.emoji}}
               </div>
             </div>
           </div>
-          
+
           <div class="Screen F(left) W(100vw)">
             <div class="Tracked" v-bind:class="{'Tracked--empty': !entries }">
-              
               <span v-if="!entries" class="Tracked--emptyEmoji">{{emptyTracking.emoji}}</span>
+
               <div v-if="entries" class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
-    <p class="Ff(lora) Fz(u2) Lh(12) C(black)" style="font-size: 5vh;">
-        I noticed the following taking place within my mind and body today.
+                <p class="Ff(lora) Fz(u2) Lh(12) C(black)" style="font-size: 5vh;">
+                  I noticed the following taking place within my mind and body today.
                 </p>
-    </div>
-    
-    <div v-if="entries" v-for="entry in entries" class="BackgroundColor Pstart(default) Pend(default) Ptop(default) Pbottom(default)" v-bind:class="['BackgroundColor--' + entry.color]">
+              </div>
 
-    <p class="Ff(lora) Fz(u1) Lh(14) C(white)" style="font-size: 4vh;">{{entry.emoji}} at <span class="Fw(bold)">{{ convertTime(entry.time) }}</span><span v-if="entry.address"> at <span class="Fs(italic)">{{entry.address}}</span></span></p>
+              <div v-if="entries" v-for="entry in entries" class="BackgroundColor Pstart(default) Pend(default) Ptop(default) Pbottom(default)" v-bind:class="['BackgroundColor--' + entry.color]">
+                <p class="Ff(lora) Fz(u1) Lh(14) C(white)" style="font-size: 4vh;">
+                  {{entry.emoji}} at <span class="Fw(bold)">{{ convertTime(entry.time) }}</span><span v-if="entry.address"> at <span class="Fs(italic)">{{entry.address}}</span></span>
+                </p>
+              </div>
 
+              <div v-if="isResting" class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
+                <p class="Ff(lora) Fz(u1) Lh(14) C(black)" style="font-size: 4vh;">Emotion tracked! Wait {{ elapsedTime }} seconds until tracking another.</p>
+              </div>
 
-  </div>
             </div>
           </div>
-          
+        </div>
       </div>
-      </div>
-      
+
       <script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
-      <script src="js/DB.js"></script>
-      <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
-      <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
       <script src="js/app.js"></script>
-      
+      <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
+      <script src="https://unpkg.com/moment@2.18.1/min/moment.min.js"></script>
+      <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
+      <script src="js/emojional-life.js"></script>
+
     </body>
 </html>
