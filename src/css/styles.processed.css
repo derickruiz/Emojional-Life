@@ -1,0 +1,462 @@
+@charset "UTF-8";
+
+/*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+
+
+/**
+ * 1. Set default font family to sans-serif.
+ * 2. Prevent iOS and IE text size adjust after device orientation change,
+ *    without disabling user zoom.
+ */
+
+html {
+  font-family: sans-serif;
+  /* 1 */
+  -ms-text-size-adjust: 100%;
+  /* 2 */
+  -webkit-text-size-adjust: 100%;
+  /* 2 */
+}
+
+
+/**
+ * Remove default margin and padding.
+ */
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+
+/* Embedded content
+   ========================================================================== */
+
+
+/**
+ * Remove border when inside `a` element in IE 8/9/10.
+ */
+
+img {
+  border: 0;
+}
+
+
+/* Forms
+   ========================================================================== */
+
+
+/**
+ * Known limitation: by default, Chrome and Safari on OS X allow very limited
+ * styling of `select`, unless a `border` property is set.
+ */
+
+
+/**
+ * 1. Correct color not being inherited.
+ *    Known issue: affects color of disabled elements.
+ * 2. Correct font properties not being inherited.
+ * 3. Address margins set differently in Firefox 4+, Safari, and Chrome.
+ */
+
+input {
+  color: inherit;
+  /* 1 */
+  font: inherit;
+  /* 2 */
+  margin: 0;
+  /* 3 */
+}
+
+
+/**
+ * Re-set default cursor for disabled elements.
+ */
+
+button[disabled],
+html input[disabled] {
+  cursor: default;
+}
+
+
+/**
+ * Remove inner padding and border in Firefox 4+.
+ */
+
+input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+
+/**
+ * Address Firefox 4+ setting `line-height` on `input` using `!important` in
+ * the UA stylesheet.
+ */
+
+input {
+  line-height: normal;
+}
+
+
+/**
+ * It's recommended that you don't attempt to style these elements.
+ * Firefox's implementation doesn't respect box-sizing, padding, or width.
+ *
+ * 1. Address box sizing set to `content-box` in IE 8/9/10.
+ * 2. Remove excess padding in IE 8/9/10.
+ */
+
+input[type="checkbox"] {
+  box-sizing: border-box;
+  /* 1 */
+  padding: 0;
+  /* 2 */
+}
+
+
+/*! HTML5 Boilerplate v5.3.0 | MIT License | https://html5boilerplate.com/ */
+
+
+/*
+ * What follows is the result of much research on cross-browser styling.
+ * Credit left inline and big thanks to Nicolas Gallagher, Jonathan Neal,
+ * Kroc Camen, and the H5BP dev community and team.
+ */
+
+
+/* ==========================================================================
+   Base styles: opinionated defaults
+   ========================================================================== */
+
+html {
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+
+/*
+ * Remove text-shadow in selection highlight:
+ * https://twitter.com/miketaylr/status/12228805301
+ *
+ * These selection rule sets have to be separate.
+ * Customize the background color to match your design.
+ */
+
+::-moz-selection {
+  background: #b3d4fc;
+  text-shadow: none;
+}
+
+::selection {
+  background: #b3d4fc;
+  text-shadow: none;
+}
+
+body,
+p {
+  margin: 0;
+  padding: 0;
+}
+
+.Pstart\(default\) {
+  padding-left: 1rem;
+}
+
+.Pend\(default\) {
+  padding-right: 1rem;
+}
+
+.Ptop\(default\) {
+  padding-top: 1rem;
+}
+
+.Pbottom\(default\) {
+  padding-bottom: 1rem;
+}
+
+.C\(white\) {
+  color: white;
+}
+
+.Ff\(lora\) {
+  font-family: "Lora", "Times New Roman", serif;
+}
+
+.Fz\(u1\) {
+  font-size: 1.618rem;
+}
+
+.Lh\(14\) {
+  line-height: 1.4;
+}
+
+.Fw\(bold\) {
+  font-weight: 700;
+}
+
+.Fs\(italic\) {
+  font-style: italic;
+}
+
+.F\(left\) {
+  float: left;
+}
+
+.W\(200vw\) {
+  width: 200vw;
+}
+
+.W\(100vw\) {
+  width: 100vw;
+}
+
+.O\(hidden\) {
+  overflow: hidden;
+}
+
+.Ox\(hidden\) {
+  overflow-x: hidden;
+}
+
+.Oy\(hidden\) {
+  overflow-y: hidden;
+}
+
+.C\(black\) {
+  color: black;
+}
+
+.Fz\(u2\) {
+  font-size: 2.617924rem;
+}
+
+.Lh\(12\) {
+  line-height: 1.2;
+}
+
+.App-container,
+.App-container.moveLeft {
+  transform: translate3d(0px, 0px, 0px);
+  transition: transform 350ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.App-container.moveLeft {
+  transform: translate3d(-50%, 0px, 0px);
+}
+
+.Emotion {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.Emotions {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (50vw)[2];
+  grid-template-columns: repeat(2, 50vw);
+  -ms-grid-rows: (25vh)[4];
+  grid-template-rows: repeat(4, 25vh);
+}
+
+.Emotions::before {
+  content: " ";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.Emotions::after {
+  content: "😀";
+  position: absolute;
+  top: 50vh;
+  left: 50vw;
+  transform: translate3d(-50%, -50%, 0);
+  font-size: 20vh;
+  z-index: 2;
+  animation: bounce 1.5s 0s infinite;
+}
+
+@keyframes bounce {
+  0% {
+    top: 50vh;
+  }
+  50% {
+    top: 40vh;
+  }
+  100% {
+    top: 50vh;
+  }
+}
+
+.BackgroundColor--oxford {
+  background-color: #090446;
+}
+
+.BackgroundColor--oxford:hover {
+  background-color: #070333;
+}
+
+.BackgroundColor--pastel {
+  background-color: #786F52;
+}
+
+.BackgroundColor--pastel:hover {
+  background-color: #6c644a;
+}
+
+.BackgroundColor--rajah {
+  background-color: #FEB95F;
+}
+
+.BackgroundColor--rajah:hover {
+  background-color: #feb04b;
+}
+
+.BackgroundColor--tractor {
+  background-color: #F71735;
+}
+
+.BackgroundColor--tractor:hover {
+  background-color: #f10828;
+}
+
+.BackgroundColor--pictoral {
+  background-color: #C2095A;
+}
+
+.BackgroundColor--pictoral:hover {
+  background-color: #af0851;
+}
+
+.BackgroundColor--spanish {
+  background-color: #E01A4F;
+}
+
+.BackgroundColor--spanish:hover {
+  background-color: #ce1849;
+}
+
+.BackgroundColor--smoky {
+  background-color: #0C090D;
+}
+
+.BackgroundColor--smoky:hover {
+  background-color: #010101;
+}
+
+.BackgroundColor--caribeen {
+  background-color: #03CEA4;
+}
+
+.BackgroundColor--caribeen:hover {
+  background-color: #03ba94;
+}
+
+.Switcher {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translate3d(-50%, 0px, 0px);
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+  width: 80px;
+  height: 26px;
+  background: #333;
+  margin: 20px auto;
+  border-radius: 50px;
+  box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.5), 0px 1px 0px rgba(255, 255, 255, 0.2);
+}
+
+.Switcher:after {
+  content: '🕗';
+  color: #000;
+  position: absolute;
+  right: 10px;
+  z-index: 0;
+  font: 12px/26px Arial, sans-serif;
+  font-weight: bold;
+  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.15);
+}
+
+.Switcher:before {
+  content: '🤓';
+  color: blue;
+  position: absolute;
+  left: 10px;
+  z-index: 0;
+  font: 12px/26px Arial, sans-serif;
+  font-weight: bold;
+}
+
+.Switcher label {
+  display: block;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  position: absolute;
+  top: 3px;
+  left: 6px;
+  z-index: 1;
+  background: #fcfff4;
+  background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+  border-radius: 50%;
+  transition: all 350ms cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.3);
+}
+
+.Switcher input[type=checkbox] {
+  visibility: hidden;
+}
+
+.Switcher input[type=checkbox]:checked+label {
+  left: 54px;
+}
+
+
+/* end .slideThree */
+
+.Clearfix:before,
+.Clearfix:after {
+  content: "";
+  display: table;
+}
+
+.Clearfix:after {
+  clear: both;
+}
+
+.Screen {
+  min-height: 100vh;
+}
+
+.Tracked--empty {
+  background-color: #000;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100vh;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.Tracked--emptyEmoji {
+  font-size: 4.23580103125rem;
+}
+
+.Toucher {
+  width: 100%;
+  height: 3rem;
+  opacity: 0;
+  position: fixed;
+  bottom: 0;
+  z-index: 5;
+}

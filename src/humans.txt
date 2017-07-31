@@ -1,0 +1,19 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+    Derick -- Maker -- @derickruizen
+
+# THANKS
+
+    JAPAN.
+
+# TECHNOLOGY COLOPHON
+
+    HTML
+    CSS
+    Javascript
+    Codepen
+    Firebase
+    Vue.js
