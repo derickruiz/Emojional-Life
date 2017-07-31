@@ -1,0 +1,7 @@
+functions/
+node_nodules/
+public/
+.DS_Store
+.firebaserc
+database.rules.json
+firebase.json
