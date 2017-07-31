@@ -1,0 +1,24 @@
+{
+  "name": "emojional-life",
+  "version": "1.0.0",
+  "description": "Track your emotions with emoji.",
+  "main": "Gruntfile.js",
+  "dependencies": {
+    "grunt": "^1.0.1",
+    "grunt-sass": "^2.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/derickruiz/Emojional-Life.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/derickruiz/Emojional-Life/issues"
+  },
+  "homepage": "https://github.com/derickruiz/Emojional-Life#readme"
+}
