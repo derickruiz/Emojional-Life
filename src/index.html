@@ -4,68 +4,61 @@
       <meta charset="utf-8">
       <meta http-equiv="x-ua-compatible" content="ie=edge">
       <title>Emojional Life</title>
-      <meta name="description" content="">
+      <meta name="description" content="Track your emotions with emoji.">
       <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
       <link rel="apple-touch-icon" href="apple-touch-icon.png">
       <!-- Place favicon.ico in the root directory -->
 
-      <link rel="stylesheet" href="css/styles.css">
-      <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700" rel="stylesheet">
+      <link rel="stylesheet" href="assets/css/styles.css">
     </head>
     <body>
-      <div class="App Ox(hidden)" id="app">
-
-        <div class="Toucher js-toucher"></div>
-        <div class="Switcher" style="z-index: 2;">
-          <input type="checkbox" id="switcher" name="check" v-on:change="toggleEmoji" v-bind:checked="shouldShowEmoji" />
-          <label for="switcher"></label>
+      <div class="FlexGrid">
+        <div class="FlexGrid-cell FlexGrid-cell--fullMinusNav">
+          <div class="Emotions">
+            <div class="Emotion BackgroundColor BackgroundColor--oxford"><span class="Fz(10vh)">😄</span></div>
+            <div class="Emotion BackgroundColor BackgroundColor--pastel"><span class="Fz(10vh)">🤣</span></div>
+            <div class="Emotion BackgroundColor BackgroundColor--rajah"><span class="Fz(10vh)">😌</span></div>
+            <div class="Emotion BackgroundColor BackgroundColor--tractor"><span class="Fz(10vh)">😎</span></div>
+            <div class="Emotion BackgroundColor BackgroundColor--pictoral"><span class="Fz(10vh)">😡</span></div>
+            <div class="Emotion BackgroundColor BackgroundColor--spanish"><span class="Fz(10vh)">💪</span></div>
+            <div class="Emotion BackgroundColor BackgroundColor--tractor"><span class="Fz(10vh)">😰</span></div>
+            <div class="Emotion BackgroundColor BackgroundColor--caribeen"><span class="Fz(10vh)">☹</span></div>
+          </div>
         </div>
-
-        <div class="App-container W(200vw) Clearfix" v-bind:class="{'moveLeft': !shouldShowEmoji }">
-
-          <div class="Screen F(left) W(100vw)">
-            <div class="Emotions" v-bind:class="{ 'isResting': isResting }">
-
-              <div class="Emotions--resting">
-                <div class="Emotions--restingEmoji">😄</div>
-              </div>
-              <div v-if="emojions" v-for="emojion in emojions" class="Emotion BackgroundColor" v-bind:class="['BackgroundColor--' + emojion.color]" v-on:click="trackEntry(emojion)" style="font-size: 10vh;">
-                {{emojion.emoji}}
+        <div class="FlexGrid-cell FlexGrid-cell--nav FlexGrid FlexGrid-cell--alignCenter"><!-- Navigation -->
+          <div class="FlexGrid FlexGrid--full FlexGrid--fullHeight">
+            <div class="BackgroundColor BackgroundColor--smoky FlexGrid-cell FlexGrid-cell--flex FlexGrid-cell--alignCenter Br(default) Bt(default)">
+              <div class="FlexGrid FlexGrid--guttersOneDown">
+                <div class="FlexGrid-cell FlexGrid-cell--autoSize">
+                  😄
+                </div>
+                <div class="FlexGrid-cell FlexGrid-cell--autoSize FlexGrid-cell--alignSelfCenter">
+                  <div class="Td(u) Fw(bold) Ff(default) C(white) Fz(default)">Emotions</div>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div class="Screen F(left) W(100vw)">
-            <div class="Tracked" v-bind:class="{'Tracked--empty': !entries }">
-              <span v-if="!entries" class="Tracked--emptyEmoji">{{emptyTracking.emoji}}</span>
-
-              <div v-if="entries" class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
-                <p class="Ff(lora) Fz(u2) Lh(12) C(black)" style="font-size: 5vh;">
-                  I noticed the following taking place within my mind and body today.
-                </p>
+            <div class="BackgroundColor BackgroundColor--smoky FlexGrid-cell FlexGrid-cell--flex FlexGrid-cell--alignCenter Bt(default)">
+              <div class="FlexGrid FlexGrid--guttersOneDown">
+                <div class="FlexGrid-cell FlexGrid-cell--autoSize">
+                  🕘
+                </div>
+                <div class="FlexGrid-cell FlexGrid-cell--autoSize FlexGrid-cell--alignSelfCenter">
+                  <div class="Ff(default) C(white) Fz(default)">Patterns</div>
+                </div>
               </div>
-
-              <div v-if="entries" v-for="entry in entries" class="BackgroundColor Pstart(default) Pend(default) Ptop(default) Pbottom(default)" v-bind:class="['BackgroundColor--' + entry.color]">
-                <p class="Ff(lora) Fz(u1) Lh(14) C(white)" style="font-size: 4vh;">
-                  {{entry.emoji}} at <span class="Fw(bold)">{{ convertTime(entry.time) }}</span><span v-if="entry.address"> at <span class="Fs(italic)">{{entry.address}}</span></span>
-                </p>
-              </div>
-
-              <div v-if="isResting" class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
-                <p class="Ff(lora) Fz(u1) Lh(14) C(black)" style="font-size: 4vh;">Emotion tracked! Wait {{ elapsedTime }} seconds until tracking another.</p>
-              </div>
-
             </div>
           </div>
         </div>
       </div>
 
+      <!-- Vendor -->
       <script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
-      <script src="js/app.js"></script>
       <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
       <script src="https://unpkg.com/moment@2.18.1/min/moment.min.js"></script>
       <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
-      <script src="js/emojional-life.js"></script>
+
+      <!-- My Scripts -->
+      <script src="assets/js/app.js"></script>
 
     </body>
 </html>
