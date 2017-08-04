@@ -1,0 +1,146 @@
+@import "foundation";
+@import "variables";
+
+@import "layout";
+@import "atomic";
+@import "animations";
+
+// Modules
+.Emotions {
+  display: grid;
+  grid-template-columns: repeat(2, 50vw);
+  grid-template-rows: repeat(4, #{$size});
+
+  position: relative;
+}
+
+.Emotion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  position: relative;
+
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+
+   /*
+     Introduced in IE 10.
+     See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+   */
+   -ms-user-select: none;
+   user-select: none;
+}
+
+.EmotionNote {
+  transition: all 1s linear;
+}
+
+.EmotionNote.EmotionNote--active {
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+
+  transition: all 1s linear;
+
+}
+
+// .Emotions::before {
+//   content: " ";
+//   position: absolute;
+//   top: 0;
+//   left: 0;
+//   width: 100%;
+//   height: 100%;
+
+//   background-color: rgba(0, 0, 0, 0.5);
+
+//   z-index: 1;
+// }
+
+// .Emotions::after {
+//   content: "🤔";
+//   position: absolute;
+//   top: 50%;
+//   left: 50%;
+
+//   transform: translate3d(-50%, -50%, 0);
+
+//   font-size: 20vh;
+
+//   z-index: 2;
+
+//   animation: bounce 1.5s 0s infinite;
+
+// }
+
+.BackgroundColor {
+    &--oxford {
+    background-color: $color-oxfordBlue;
+  }
+
+  &--pastel {
+    background-color: $color-pastelBrown;
+  }
+
+  &--rajah {
+    background-color: $color-rajah;
+  }
+
+  &--tractor {
+    background-color: $color-tractorRed;
+  }
+
+  &--pictoral {
+    background-color: $color-pictoralCarmine;
+  }
+
+  &--spanish {
+    background-color: $color-spanishCrimson;
+  }
+
+  &--smoky {
+    background-color: $color-smokyBlack;
+  }
+
+  &--caribeen {
+    background-color: $color-caribeenGreen;
+  }
+
+  &--white {
+    background-color: white;
+  }
+
+}
+
+.Screen {
+  min-height: 100vh;
+}
+
+.Tracked {
+
+  &--empty {
+    background-color: #000;
+    display: flex;
+    height: 100vh;
+
+    justify-content: center;
+    align-items: center;
+  }
+
+  &--emptyEmoji {
+    font-size: 4.23580103125rem;
+  }
+}
+
+.Day-details {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+}

@@ -1,0 +1,155 @@
+.W\(100\%\) {
+  width: 100%;
+}
+
+.H\(100\%\) {
+  height: 100%;
+}
+
+.W\(80\%\) {
+  width: 80%;
+}
+
+.Pstart\(default\) {
+  padding-left: 1rem;
+}
+
+.Pend\(default\) {
+  padding-right: 1rem;
+}
+
+.Ptop\(default\) {
+  padding-top: 1rem;
+}
+
+.Ptop\(u2\) {
+  padding-top: $scale-two-down;
+}
+
+.Pbottom\(u2\) {
+  padding-bottom: $scale-two-down;
+}
+
+.Pbottom\(default\) {
+  padding-bottom: 1rem;
+}
+
+.Mtop\(d1\) {
+  margin-top: $scale-one-down;
+}
+
+.Mtop\(d2\) {
+  margin-top: $scale-two-down;
+}
+
+.Mtop\(u1\) {
+  margin-top: $scale-one-up;
+}
+
+.Mtop\(u2\) {
+  margin-top: $scale-two-up;
+}
+
+.Mbottom\(d3\) {
+  margin-bottom: $scale-three-down;
+}
+
+.C\(white\) {
+  color: white;
+}
+
+.C\(chaliceSilver\) {
+  color: $color-chaliceSilver;
+}
+
+.Ff\(default\) {
+  font-family: $font-family-default;
+}
+
+.Fz\(d1\) {
+  font-size: $scale-one-down;
+}
+
+.Fz\(default\) {
+  font-size: 1rem;
+}
+
+.Fz\(u2\) {
+  font-size: calc(16px * 1.272 * 1.272 * 1.272);
+}
+
+.Fz\(u1\) {
+  font-size: $scale-one-up;
+}
+
+.Fz\(10vh\) {
+  font-size: 10vh;
+}
+
+.Lh\(14\) {
+  line-height: 1.4;
+}
+
+.Lh\(11\) {
+  line-height: 1.1;
+}
+
+.Fw\(bold\) {
+  font-weight: 700;
+}
+
+.Fs\(italic\) {
+  font-style: italic;
+}
+
+.Td\(u\) {
+  text-decoration: underline;
+}
+
+.F\(left\) {
+  float: left;
+}
+
+.W\(200vw\) {
+  width: 200vw;
+}
+
+.W\(100vw\) {
+  width: 100vw;
+}
+
+.Ox\(hidden\) {
+  overflow-x: hidden;
+}
+
+.Oy\(hidden\) {
+  overflow-y: hidden;
+}
+
+.Br\(default\) {
+  border-right: 1px solid #252525;
+}
+
+.Bstart\(default\) {
+  border-left: 1px solid #252525;
+}
+
+.Bt\(default\) {
+  border-top: 1px solid #252525;
+}
+
+.Br\(4px\) {
+  border-radius: 4px;
+}
+
+.Ta\(c\) {
+  text-align: center;
+}
+
+.Ta\(l\) {
+  text-align: left;
+}
+
+.Resize\(none\) {
+  resize: none;
+}
