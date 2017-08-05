@@ -21,7 +21,7 @@
       <div id="app" class="FlexGrid js-app hidden">
         <div class="FlexGrid-cell FlexGrid-cell--fullMinusNav">
           <div class="Emotions">
-            <emojion v-for="emojion in emojions" v-bind:color="emojion.color" v-bind:emoji="emojion.emoji"></emojion>
+            <emojion ref="emojions" v-for="(emojion, index) in emojions" v-bind:index="index" v-bind:color="emojion.color" v-bind:emoji="emojion.emoji" v-on:turn-on-carousel="turnOnCarousel" v-on:turn-off-carousel="turnOffCarousel"></emojion>
           </div>
 
 
@@ -53,14 +53,14 @@
       </div>
 
       <script type="text/x-template" id="emojion_template">
-        <div class="Emotion BackgroundColor" v-bind:class="['BackgroundColor--' + color]" v-on:click="switchEmoji">
-          <span class="Fz(10vh)">{{emoji}}</span>
-          <emojion-carousel v-if="isSelectingEmoji"></emojion-carousel>
+        <div class="Emotion BackgroundColor" v-bind:class="['BackgroundColor--' + color]">
+          <emojion-carousel v-if="isSelectingEmoji" v-on:select-emoji="setEmoji"></emojion-carousel>
+          <span v-else class="Fz(10vh)">{{selectedEmoji}}</span>
         </div>
       </script>
 
       <script type="text/x-template" id="emojion_carousel_template">
-        <div class="EmotionCarousel">
+        <div class="EmotionCarousel" ref="carousel">
           <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">😄</div>
           <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">🤣</div>
           <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">😌</div>
