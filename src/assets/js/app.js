@@ -50,6 +50,15 @@ const DOM = {
 
     document.body.classList.remove("O(hidden)");
 
+  },
+
+  showApp() {
+    let app = document.querySelector(".js-app"),
+        loading = document.querySelector(".js-loading");
+
+    app.classList.remove("hidden");
+    loading.classList.add("hidden");
+    
   }
 };
 const UTILS = {
@@ -286,6 +295,11 @@ const EmojionalLife = new Vue({
 
     // Get the initial emojions
     DB.getEmojions().then((emojions) => {
+      console.log("Got the emojions!");
+      console.log("emotions", emojions);
+
+      DOM.showApp();
+
       this.emojions = emojions;
     });
 
@@ -303,19 +317,19 @@ const EmojionalLife = new Vue({
 
   updated: function () {
 
-    if (this.$el.childNodes.length === 0) {
-      return;
-    } else {
-      const toucher = new Hammer(this.$el.querySelector(".js-toucher"));
-
-      toucher.on('swipeleft', (ev) => {
-        this.toggleEmoji(false);
-      });
-
-      toucher.on('swiperight', (ev) => {
-        this.toggleEmoji(true);
-      });
-    }
+    // if (this.$el.childNodes.length === 0) {
+    //   return;
+    // } else {
+    //   const toucher = new Hammer(this.$el.querySelector(".js-toucher"));
+    //
+    //   toucher.on('swipeleft', (ev) => {
+    //     this.toggleEmoji(false);
+    //   });
+    //
+    //   toucher.on('swiperight', (ev) => {
+    //     this.toggleEmoji(true);
+    //   });
+    // }
 
   },
 

@@ -9,21 +9,23 @@
       <link rel="apple-touch-icon" href="apple-touch-icon.png">
       <!-- Place favicon.ico in the root directory -->
 
-      <link rel="stylesheet" href="assets/css/styles.css">
+      <link rel="stylesheet" href="assets/styles/styles.css">
     </head>
     <body>
-      <div class="FlexGrid">
+
+      <div class="Loading js-loading">
+        <div class="Loading-emoji">🤔</div>
+      </div>
+
+      <div id="app" class="FlexGrid js-app hidden">
         <div class="FlexGrid-cell FlexGrid-cell--fullMinusNav">
           <div class="Emotions">
-            <div class="Emotion BackgroundColor BackgroundColor--oxford"><span class="Fz(10vh)">😄</span></div>
-            <div class="Emotion BackgroundColor BackgroundColor--pastel"><span class="Fz(10vh)">🤣</span></div>
-            <div class="Emotion BackgroundColor BackgroundColor--rajah"><span class="Fz(10vh)">😌</span></div>
-            <div class="Emotion BackgroundColor BackgroundColor--tractor"><span class="Fz(10vh)">😎</span></div>
-            <div class="Emotion BackgroundColor BackgroundColor--pictoral"><span class="Fz(10vh)">😡</span></div>
-            <div class="Emotion BackgroundColor BackgroundColor--spanish"><span class="Fz(10vh)">💪</span></div>
-            <div class="Emotion BackgroundColor BackgroundColor--tractor"><span class="Fz(10vh)">😰</span></div>
-            <div class="Emotion BackgroundColor BackgroundColor--caribeen"><span class="Fz(10vh)">☹</span></div>
+            <div v-for="emojion in emojions" class="Emotion BackgroundColor" v-bind:class="['BackgroundColor--' + emojion.color]">
+              <span class="Fz(10vh)">{{emojion.emoji}}</span>
+            </div>
           </div>
+
+
         </div>
         <div class="FlexGrid-cell FlexGrid-cell--nav FlexGrid FlexGrid-cell--alignCenter"><!-- Navigation -->
           <div class="FlexGrid FlexGrid--full FlexGrid--fullHeight">
