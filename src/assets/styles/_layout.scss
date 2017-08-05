@@ -64,3 +64,12 @@
   }
 
 }
+
+.Flex {
+  display: flex;
+
+  &.Flex--center {
+    justify-content: center;
+    align-items: center;
+  }
+}
