@@ -249,10 +249,17 @@ const Emojion = {
   template: "#emojion_template",
   data: function () {
     return {
-      isSelectingEmoji: false
+      isSelectingEmoji: false,
+      selectedEmoji: this.emoji
     };
   },
   props: {
+
+    index: {
+      type: Number,
+      required: true
+    },
+
     color: {
       type: String,
       required: true
@@ -264,9 +271,27 @@ const Emojion = {
     }
   },
 
+  mounted: function () {
+
+    let toucher = new Hammer(this.$el);
+
+    toucher.on('press', (ev) => {
+
+      this.isSelectingEmoji = !this.isSelectingEmoji;
+
+      if ( ! this.isSelectingEmoji) {
+        this.$emit('turn-off-carousel', this.index);
+      } else {
+        this.$emit('turn-on-carousel', this.index);
+      }
+
+    });
+  },
+
   methods: {
-    switchEmoji: function () {
-      this.isSelectingEmoji = true;
+    setEmoji: function(emoji) {
+      console.log("What's the emoji?", emoji);
+      this.selectedEmoji = emoji;
     }
   }
 };
@@ -275,13 +300,15 @@ const EmojionCarousel = {
   template: "#emojion_carousel_template",
 
   mounted: function () {
+    let flickity = new Flickity(this.$el);
+    document.querySelector(".flickity-viewport").style.height = "100%";
 
-    console.log("this.$el", this.$el);
+    this.$el.flickity = flickity; // Add it as a reference here for later.
 
-    if (typeof this.$el !== "undefined") {
-      let flickity = new Flickity(this.$el);
-      document.querySelector(".flickity-viewport").style.height = "100%";
-    }
+    // vanilla JS
+    flickity.on('select', () => {
+      this.$emit('select-emoji', flickity.selectedElement.innerHTML);
+    });
 
   }
 };
@@ -358,24 +385,6 @@ const EmojionalLife = new Vue({
 
   },
 
-  updated: function () {
-
-    // if (this.$el.childNodes.length === 0) {
-    //   return;
-    // } else {
-    //   const toucher = new Hammer(this.$el.querySelector(".js-toucher"));
-    //
-    //   toucher.on('swipeleft', (ev) => {
-    //     this.toggleEmoji(false);
-    //   });
-    //
-    //   toucher.on('swiperight', (ev) => {
-    //     this.toggleEmoji(true);
-    //   });
-    // }
-
-  },
-
   methods: {
 
     /*
@@ -404,6 +413,24 @@ const EmojionalLife = new Vue({
 
     convertTime: function (unixTime) {
       return UTILS.convertUnixTimeToPMAM(unixTime);
+    },
+
+    turnOnCarousel: function (index) {
+      console.log("this.$refs", this.$refs);
+      console.log("Turning on the carousel.");
+
+      for (let i = 0; i < this.$refs.emojions.length; i += 1) {
+
+        if (i !== index) {
+          // Probably not best practice, but turns off the carousel at least.
+          this.$refs.emojions[i].isSelectingEmoji = false;
+        }
+      }
+
+    },
+
+    turnOffCarousel: function () {
+      console.log("Turning off the carousel.");
     },
 
     /*
