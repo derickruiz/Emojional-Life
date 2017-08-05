@@ -9,6 +9,7 @@
       <link rel="apple-touch-icon" href="apple-touch-icon.png">
       <!-- Place favicon.ico in the root directory -->
 
+      <link rel="stylesheet" href="https://unpkg.com/flickity@2.0.9/dist/flickity.css">
       <link rel="stylesheet" href="assets/styles/styles.css">
     </head>
     <body>
@@ -20,9 +21,7 @@
       <div id="app" class="FlexGrid js-app hidden">
         <div class="FlexGrid-cell FlexGrid-cell--fullMinusNav">
           <div class="Emotions">
-            <div v-for="emojion in emojions" class="Emotion BackgroundColor" v-bind:class="['BackgroundColor--' + emojion.color]">
-              <span class="Fz(10vh)">{{emojion.emoji}}</span>
-            </div>
+            <emojion v-for="emojion in emojions" v-bind:color="emojion.color" v-bind:emoji="emojion.emoji"></emojion>
           </div>
 
 
@@ -53,14 +52,37 @@
         </div>
       </div>
 
+      <script type="text/x-template" id="emojion_template">
+        <div class="Emotion BackgroundColor" v-bind:class="['BackgroundColor--' + color]" v-on:click="switchEmoji">
+          <span class="Fz(10vh)">{{emoji}}</span>
+          <emojion-carousel v-if="isSelectingEmoji"></emojion-carousel>
+        </div>
+      </script>
+
+      <script type="text/x-template" id="emojion_carousel_template">
+        <div class="EmotionCarousel">
+          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">😄</div>
+          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">🤣</div>
+          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">😌</div>
+          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">😄</div>
+          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">🤣</div>
+          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">😌</div>
+          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">😄</div>
+          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">🤣</div>
+          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">😌</div>
+        </div>
+      </script>
+
       <!-- Vendor -->
       <script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
       <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
       <script src="https://unpkg.com/moment@2.18.1/min/moment.min.js"></script>
+      <script src="https://unpkg.com/flickity@2.0.9/dist/flickity.pkgd.min.js"></script>
       <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
 
       <!-- My Scripts -->
       <script src="assets/js/app.js"></script>
 
     </body>
+
 </html>

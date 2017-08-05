@@ -58,7 +58,6 @@ const DOM = {
 
     app.classList.remove("hidden");
     loading.classList.add("hidden");
-    
   }
 };
 const UTILS = {
@@ -245,6 +244,50 @@ const DB = {
 
   }
 };
+
+const Emojion = {
+  template: "#emojion_template",
+  data: function () {
+    return {
+      isSelectingEmoji: false
+    };
+  },
+  props: {
+    color: {
+      type: String,
+      required: true
+    },
+
+    emoji: {
+      type: String,
+      required: true
+    }
+  },
+
+  methods: {
+    switchEmoji: function () {
+      this.isSelectingEmoji = true;
+    }
+  }
+};
+
+const EmojionCarousel = {
+  template: "#emojion_carousel_template",
+
+  mounted: function () {
+
+    console.log("this.$el", this.$el);
+
+    if (typeof this.$el !== "undefined") {
+      let flickity = new Flickity(this.$el);
+      document.querySelector(".flickity-viewport").style.height = "100%";
+    }
+
+  }
+};
+
+Vue.component('emojion', Emojion);
+Vue.component('emojion-carousel', EmojionCarousel);
 
 // Modules
 const EmojionalLife = new Vue({
