@@ -60,6 +60,7 @@ const DOM = {
     loading.classList.add("hidden");
   }
 };
+
 const UTILS = {
 
   /*
@@ -120,18 +121,83 @@ const UTILS = {
     }
 
     return address;
+  },
+
+  comparer: function (otherArray, key) {
+    return function(current) {
+      return otherArray.filter(function (other) {
+        return other[key] === current[key]
+      }).length === 0;
+    }
   }
+
 };
 
 const DB = {
 
   // GETTERS
-  getEmojions: function () {
-    return firebase.database().ref('emojions').once('value').then(
-      function(snapshot) {
-        const emojions = snapshot.val();
-        return emojions;
+  getUserEmojions: function (callback) {
+    firebase.auth().signInAnonymously().then(function (user) {
+      firebase.database().ref('user_emojions/' + user.uid).once('value', function(snapshot) {
+
+          if (snapshot.exists()) {
+            callback(UTILS.toArray(snapshot.val().emojions));
+          } else {
+            DB.getAndSetDefaultEmojis(callback);
+          }
+
+        });
+    });
+  },
+
+  /*
+   * @description: Sets the default emojis to a user and passes them to the callback.
+   */
+  getAndSetDefaultEmojis: function (callback) {
+
+    firebase.auth().signInAnonymously().then(function (user) {
+      DB.getEmojions(8, function (emojions) {
+        let data = {
+          emojions: emojions,
+          time: firebase.database.ServerValue.TIMESTAMP
+        };
+
+        // Go ahead and save the data as is.
+        const entry = firebase.database().ref("user_emojions/" + user.uid).set(data);
+
+        callback(emojions);
+
       });
+    });
+  },
+
+  getAllEmojionsExceptUsers: function (callback) {
+
+    DB.getUserEmojions(function (userEmojions) {
+      DB.getEmojions(null, function (allEmojions) {
+        let allEmojionsNotUsers = allEmojions.filter(UTILS.comparer(userEmojions, "emoji"));
+        callback(allEmojionsNotUsers);
+      });
+
+    });
+
+  },
+
+  getEmojions: function (limit, callback) {
+
+    if (limit) {
+      firebase.database().ref('emojions').limitToFirst(limit).once('value').then(
+        function(snapshot) {
+          const emojions = snapshot.val();
+          callback(emojions);
+        });
+    } else {
+      firebase.database().ref('emojions').once('value').then(
+        function(snapshot) {
+          const emojions = snapshot.val();
+          callback(emojions);
+        });
+    }
   },
 
   getEntries: function (callback) {
@@ -268,6 +334,11 @@ const Emojion = {
     emoji: {
       type: String,
       required: true
+    },
+
+    notUserEmojions: {
+      type: Array,
+      required: true
     }
   },
 
@@ -279,11 +350,9 @@ const Emojion = {
 
       this.isSelectingEmoji = !this.isSelectingEmoji;
 
-      if ( ! this.isSelectingEmoji) {
-        this.$emit('turn-off-carousel', this.index);
-      } else {
-        this.$emit('turn-on-carousel', this.index);
-      }
+      console.log("this.isSelectingEmoji", this.isSelectingEmoji);
+
+      this.turnOnOffCarousel();
 
     });
   },
@@ -292,15 +361,35 @@ const Emojion = {
     setEmoji: function(emoji) {
       console.log("What's the emoji?", emoji);
       this.selectedEmoji = emoji;
+    },
+    emojionToSelect: function (emoji) {
+
+      this.emojiToSelect = emoji;
+
+    },
+
+    turnOnOffCarousel: function () {
+      if ( ! this.isSelectingEmoji) {
+        this.$emit('turn-off-carousel', this.index, this.emojiToSelect);
+      } else {
+        this.$emit('turn-on-carousel', this.index);
+      }
     }
   }
 };
 
 const EmojionCarousel = {
   template: "#emojion_carousel_template",
-
+  props: {
+    emojions: {
+      type: Array,
+      required: true
+    }
+  },
   mounted: function () {
-    let flickity = new Flickity(this.$el);
+    let flickity = new Flickity(this.$el, {
+      showDots: false
+    });
     document.querySelector(".flickity-viewport").style.height = "100%";
 
     this.$el.flickity = flickity; // Add it as a reference here for later.
@@ -316,15 +405,22 @@ const EmojionCarousel = {
 Vue.component('emojion', Emojion);
 Vue.component('emojion-carousel', EmojionCarousel);
 
-// Modules
-const EmojionalLife = new Vue({
+const App = new Vue({
   el: "#app",
+
   data: {
+
+    /* Booleans */
     shouldShowEmoji: true,
+    isResting: false,
+
+    /* Data from server to populate. */
     entries: undefined,
     emojions: undefined,
+    notUserEmojions: [],
     emptyTracking: undefined,
-    isResting: false,
+
+    /* UI-only variables. */
     elapsedTime: undefined
   },
 
@@ -361,16 +457,15 @@ const EmojionalLife = new Vue({
 
     }
 
-    getRestingState.call(this);
-
-    // Get the initial emojions
-    DB.getEmojions().then((emojions) => {
-      console.log("Got the emojions!");
-      console.log("emotions", emojions);
-
-      DOM.showApp();
-
+    // Get the user's emojions and show the app.
+    DB.getUserEmojions((emojions) => {
       this.emojions = emojions;
+      DOM.showApp();
+    });
+
+    // Get all the other emojions in case the user wants to switch.
+    DB.getAllEmojionsExceptUsers((emojions) => {
+      this.notUserEmojions = emojions;
     });
 
     // Get the empty tracking emoji
@@ -382,6 +477,8 @@ const EmojionalLife = new Vue({
     DB.getEntries((entries) => {
       this.entries = entries;
     });
+
+    getRestingState.call(this);
 
   },
 
@@ -424,15 +521,18 @@ const EmojionalLife = new Vue({
         if (i !== index) {
           // Probably not best practice, but turns off the carousel at least.
           this.$refs.emojions[i].isSelectingEmoji = false;
+
         }
       }
 
     },
 
-    turnOffCarousel: function () {
-      console.log("Turning off the carousel.");
+    turnOffCarousel: function (emojionSelectorIndex, emoji) {
+      this.emojions[emojionSelectorIndex].emoji = emoji.replace(/^\s+|\s+$/g, '');
+      this.$forceUpdate();
     },
 
+    /* Methods that make calls to the server. */
     /*
      * @description: Puts a new entry into tracking
      * @use - Called from click event.

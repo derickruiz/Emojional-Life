@@ -21,7 +21,7 @@
       <div id="app" class="FlexGrid js-app hidden">
         <div class="FlexGrid-cell FlexGrid-cell--fullMinusNav">
           <div class="Emotions">
-            <emojion ref="emojions" v-for="(emojion, index) in emojions" v-bind:index="index" v-bind:color="emojion.color" v-bind:emoji="emojion.emoji" v-on:turn-on-carousel="turnOnCarousel" v-on:turn-off-carousel="turnOffCarousel"></emojion>
+            <emojion ref="emojions" v-for="(emojion, index) in emojions" v-bind:not-user-emojions="notUserEmojions" v-bind:index="index" v-bind:color="emojion.color" v-bind:emoji="emojion.emoji" v-on:turn-on-carousel="turnOnCarousel" v-on:turn-off-carousel="turnOffCarousel"></emojion>
           </div>
 
 
@@ -54,22 +54,16 @@
 
       <script type="text/x-template" id="emojion_template">
         <div class="Emotion BackgroundColor" v-bind:class="['BackgroundColor--' + color]">
-          <emojion-carousel v-if="isSelectingEmoji" v-on:select-emoji="setEmoji"></emojion-carousel>
+          <emojion-carousel v-bind:emojions="notUserEmojions" v-if="isSelectingEmoji" v-on:select-emoji="emojionToSelect"></emojion-carousel>
           <span v-else class="Fz(10vh)">{{selectedEmoji}}</span>
         </div>
       </script>
 
       <script type="text/x-template" id="emojion_carousel_template">
-        <div class="EmotionCarousel" ref="carousel">
-          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">😄</div>
-          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">🤣</div>
-          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">😌</div>
-          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">😄</div>
-          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">🤣</div>
-          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">😌</div>
-          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">😄</div>
-          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">🤣</div>
-          <div class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">😌</div>
+        <div class="EmotionCarousel">
+          <div v-for="emojion in emojions" class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">
+            {{emojion.emoji}}
+          </div>
         </div>
       </script>
 
