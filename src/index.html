@@ -21,7 +21,7 @@
       <div id="app" class="FlexGrid js-app hidden">
         <div class="FlexGrid-cell FlexGrid-cell--fullMinusNav">
           <div class="Emotions">
-            <emojion ref="emojions" v-for="(emojion, index) in emojions" v-bind:not-user-emojions="notUserEmojions" v-bind:index="index" v-bind:color="emojion.color" v-bind:emoji="emojion.emoji" v-on:turn-on-carousel="turnOnCarousel" v-on:turn-off-carousel="turnOffCarousel"></emojion>
+            <emojion ref="emojions" v-for="(emojion, index) in emojions" v-bind:can-switch-emoji="canSwitchEmoji" v-bind:not-user-emojions="notUserEmojions" v-bind:index="index" v-bind:emojion="emojion" v-on:turn-on-carousel="turnOnCarousel" v-on:turn-off-carousel="turnOffCarousel" v-on:track-entry="trackEntry"></emojion>
           </div>
 
 
@@ -54,8 +54,8 @@
 
       <script type="text/x-template" id="emojion_template">
         <div class="Emotion BackgroundColor" v-bind:class="['BackgroundColor--' + color]">
-          <emojion-carousel v-bind:emojions="notUserEmojions" v-if="isSelectingEmoji" v-on:select-emoji="emojionToSelect"></emojion-carousel>
-          <span v-else class="Fz(10vh)">{{selectedEmoji}}</span>
+          <emojion-carousel v-if="canSwitchEmoji && isChangingEmoji" v-bind:emojions="notUserEmojions" v-on:select-emoji-to-change-to="selectEmojionToChangeTo"></emojion-carousel>
+          <span v-else class="Fz(10vh)">{{emojion.emoji}}</span>
         </div>
       </script>
 
@@ -71,12 +71,19 @@
       <script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
       <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
       <script src="https://unpkg.com/moment@2.18.1/min/moment.min.js"></script>
+      <script src="https://unpkg.com/lodash@4.17.4"></script>
       <script src="https://unpkg.com/flickity@2.0.9/dist/flickity.pkgd.min.js"></script>
       <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
 
       <!-- My Scripts -->
+      <script src="assets/js/init.js"></script>
+      <script src="assets/js/utils.js"></script>
+      <script src="assets/js/dom.js"></script>
+      <script src="assets/js/consts-state.js"></script>
+      <script src="assets/js/db.js"></script>
+      <script src="assets/js/components/emojion.js"></script>
+      <script src="assets/js/components/emojion-carousel.js"></script>
       <script src="assets/js/app.js"></script>
-
     </body>
 
 </html>
