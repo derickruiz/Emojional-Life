@@ -1,6 +1,5 @@
 
 .FlexGrid {
-
   display: flex;
   flex-wrap: wrap;
 
@@ -30,12 +29,12 @@
 
   flex: 1;
 
-  &.FlexGrid-cell--full {
-    flex: 0 0 100%;
+  &.FlexGrid-cell--autoSize {
+    flex: none;
   }
 
-  &.FlexGrid-cell--1of2 {
-    flex: 0 0 50%;  
+  &.FlexGrid-cell--full {
+    flex: 0 0 100%;
   }
 
   &.FlexGrid-cell--flex {

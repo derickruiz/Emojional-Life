@@ -8,9 +8,16 @@ const App = new Vue({
     canSwitchEmoji: false, /* Whether the user can go ahead and start switching emoji by pressing and changing with caorusel */
     isResting: false, /* Whether should be waiting before inputting another emoji or not. */
 
+    isShowingAllEntries: false,
+
+    hasEntries: false, /* Nope no entries. Used for showing the empty state in the entries screen. */
+
     /* Data from server to populate. */
     entries: undefined, /* The notes */
+    entriesToShow: undefined, /* Shows the last two inputted notes for the day. */
     emojions: undefined, /* The emojis. */
+    currentDay: undefined, /* For saving notes into the right place in the database. */
+
     notUserEmojions: [], /* The list of emojis that are currently not in the user's 8. */
     emptyTracking: undefined, /* Not sure? */
 
@@ -51,25 +58,143 @@ const App = new Vue({
 
     }
 
+    this.emojions = [ {
+      "color" : "oxford",
+      "emoji" : "😄",
+      "emotion" : "happy",
+      "index" : 0
+    }, {
+      "color" : "rajah",
+      "emoji" : "😌",
+      "emotion" : "grateful",
+      "index" : 1
+    }, {
+      "color" : "tractor",
+      "emoji" : "😎",
+      "emotion" : "Arrogantly confident",
+      "index" : 2
+    }, {
+      "color" : "pastel",
+      "emoji" : "🤣",
+      "emotion" : "Everything's funny",
+      "index" : 3
+    }, {
+      "color" : "pictoral",
+      "emoji" : "😡",
+      "emotion" : "Frustrated and Angry",
+      "index" : 4
+    }, {
+      "color" : "spanish",
+      "emoji" : "💪",
+      "emotion" : "Confidently confident",
+      "index" : 5
+    }, {
+      "color" : "smoky",
+      "emoji" : "😰",
+      "emotion" : "Anxious",
+      "index" : 6
+    }, {
+      "color" : "caribeen",
+      "emoji" : "☹",
+      "emotion" : "Powerlessly Sad",
+      "index" : 7
+    } ];
+
+    this.notUserEmojions = [ {
+      "color" : "oxford",
+      "emoji" : "🤡",
+      "index" : 8
+    }, {
+      "color" : "rajah'",
+      "emoji" : "🤓",
+      "index" : 9
+    }, {
+      "color" : "caribeen",
+      "emoji" : "🤑",
+      "index" : 10
+    }, {
+      "color" : "tractor'",
+      "emoji" : "😍",
+      "index" : 11
+    }, {
+      "color" : "oxford",
+      "emoji" : "😱",
+      "index" : 12
+    }, {
+      "color" : "oxford",
+      "emoji" : "😰",
+      "index" : 13
+    }, {
+      "color" : "spanish",
+      "emoji" : "😭",
+      "index" : 14
+    }, {
+      "color" : "smoky",
+      "emoji" : "👿",
+      "index" : 15
+    }, {
+      "color" : "pastel",
+      "emoji" : "👻",
+      "index" : 16
+    }, {
+      "color" : "smoky",
+      "emoji" : "👽",
+      "index" : 17
+    }, {
+      "color" : "rajah",
+      "emoji" : "🤖",
+      "index" : 18
+    }, {
+      "color" : "pictoral",
+      "emoji" : "🤥",
+      "index" : 19
+    }, {
+      "color" : "caribeen",
+      "emoji" : "😝",
+      "index" : 20
+    }, {
+      "color" : "oxford",
+      "emoji" : "😇",
+      "index" : 21
+    }, {
+      "color" : "tractor",
+      "emoji" : "👅",
+      "index" : 22
+    }, {
+      "color" : "caribeen",
+      "emoji" : "💅🏻",
+      "index" : 23
+    } ];
+
+    DOM.showApp();
+
     // What is data that I need immeditely to get the app working right away?
     // The emotions and the tap.
 
     // Get the user's emojions and show the app.
-    DB.getUserEmojions((emojions) => {
-      this.emojions = emojions;
-      DOM.showApp();
-    });
-
-    DB.getAllEmojionsExceptUsers((emojions) => {
-      console.log("DB.getAllEmojionsExceptUsers", emojions);
-      this.canSwitchEmoji = true;
-      this.notUserEmojions = emojions;
-    });
-
+    // DB.getUserEmojions((emojions) => {
+    //   console.log("getUserEmojions");
     //
+    //   this.emojions = emojions;
+    //   DOM.showApp();
+    //
+    //   DB.getAllEmojionsExceptUsers((notUserEmojions) => {
+    //     this.canSwitchEmoji = true;
+    //     this.notUserEmojions = notUserEmojions
+    //   });
+    //
+    // });
+
     // // Get entries if any exist.
-    // DB.getEntries((entries) => {
+    // DB.getTodaysEntries((entries) => {
+    //   console.log("Getting the entries for today.");
     //   this.entries = entries;
+    //   let entriesCopy = this.entries.slice();
+    //   this.entriesToShow = entriesCopy.splice(entriesCopy.length - 2, entriesCopy.length);
+    //
+    //   if (this.entries.length >= 1) {
+    //     this.hasEntries = true;
+    //   }
     // });
 
     // getRestingState.call(this);
@@ -162,6 +287,21 @@ const App = new Vue({
       });
 
       this.$forceUpdate();
+
+    },
+
+    toggleEntriesForDay: function () {
+
+      this.isShowingAllEntries = !this.isShowingAllEntries;
+
+
+      if (this.isShowingAllEntries) {
+          this.entriesToShow = this.entries;
+      } else {
+
+        let entriesCopy = this.entries.slice();
+        this.entriesToShow = entriesCopy.splice(entriesCopy.length - 2, entriesCopy.length);
+      }
     },
 
     /* Methods that make calls to the server. */
@@ -173,17 +313,33 @@ const App = new Vue({
 
       console.log("Tracking the entry.");
 
+      let self = this;
+
+      console.log("entries", this.entries);
+
       DB.trackEntry(emojion, function (entry) {
 
         console.log("What's entry?", entry);
 
         entry.then(function () {
-          console.log("SUCCESS1");
-          // DB.limitEntry();
-        }).catch(function () {
+
+          if (self.entries && self.entries.length < 1 && GLOBAL_STATE.isNewUser) {
+            self.patternsMessage = CONSTS.NEW_USER.patternsMessage;
+          } else {
+            self.patternsMessage = CONSTS.RETURNING_USER.patternsMessage;
+          }
+
+        }).catch(function (e) {
+          console.log("e", e);
           console.log("Couldn't successfully write.");
         });
 
+      });
+    },
+
+    saveNote: function (entryKey, note) {
+      DB.saveNote(this.currentDay, entryKey, note, function () {
+        console.log("Saved the note!");
       });
     }
   }

@@ -28,5 +28,15 @@ const DOM = {
 
     app.classList.remove("hidden");
     loading.classList.add("hidden");
+  },
+
+  showError() {
+    let error = document.querySelector(".js-error");
+    error.classList.remove("hidden");
+  },
+
+  hideError() {
+    let error = document.querySelector(".js-error");
+    error.classList.add("hidden");
   }
 };

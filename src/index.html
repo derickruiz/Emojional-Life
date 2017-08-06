@@ -8,14 +8,15 @@
       <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
       <link rel="apple-touch-icon" href="apple-touch-icon.png">
       <!-- Place favicon.ico in the root directory -->
-
-      <link rel="stylesheet" href="https://unpkg.com/flickity@2.0.9/dist/flickity.css">
       <link rel="stylesheet" href="assets/styles/styles.css">
     </head>
     <body>
 
+      <link rel="stylesheet" href="https://unpkg.com/flickity@2.0.9/dist/flickity.css">
+
       <div class="Loading js-loading">
         <div class="Loading-emoji">🤔</div>
+        <div>Loading...</div>
       </div>
 
       <div id="app" class="App FlexGrid js-app hidden">
@@ -28,8 +29,29 @@
               </div>
             </div>
 
-            <div class="Screen FlexGrid-cell FlexGrid-cell--1of2">
-              <div>The patterns screen!</div>
+            <div class="Screen Tracked FlexGrid-cell FlexGrid-cell--1of2">
+
+              <div v-if="hasEntries">
+                <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
+                  <p class="Ff(default) Fz(u2) Lh(11) C(black)">
+                    {{ patternsMessage }}
+                  </p>
+                </div>
+
+                <div v-on:click="toggleEntriesForDay" class="Ff(default) Pstart(default) Pend(default) Pbottom(default) Ta(l) Td(u) Ta(l) C(chaliceSilver) Fz(default)">
+                  See my entire day.
+                </div>
+
+                <entry ref="entries" v-for="(entry, index) in entriesToShow" v-bind:total-entries="entriesToShow.length" v-bind:entry="entry" v-bind:index="index" v-on:save-note="saveNote">
+              </div>
+
+              <div v-else>
+                <div class="Loading js-loading">
+                  <div class="Loading-emoji">🤔</div>
+                  <div>Nothing yet..</div>
+                </div>
+              </div>
+
             </div>
           </div>
 
@@ -60,6 +82,21 @@
         </div>
       </div>
 
+      <div class="js-error Z(2) P(f) T(0) L(0) Bs(default) FlexGrid BackgroundColor BackgroundColor--tractor hidden">
+        <div class="FlexGrid-cell FlexGrid FlexGrid-cell--autoSize FlexGrid--alignItemsCenter Br(tractorDark)">
+            <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
+              <p class="Ff(default) Fz(u1) Lh(14) C(white)" style="font-size: 4vh;">
+                      😰
+                    </p>
+                  </div>
+        </div>
+
+        <div class="FlexGrid-cell">
+          <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
+            <p class="Ff(default) Fz(u1) Lh(14) C(white)" style="font-size: 4vh;">We're very sorry. Things are taking a bit longer than usual to load. <span class="Fw(bold)">Please refresh</span>.</p></div>
+        </div>
+      </div>
+
       <script type="text/x-template" id="emojion_template">
         <div class="Emotion BackgroundColor" v-bind:class="['BackgroundColor--' + color]">
           <emojion-carousel v-if="canSwitchEmoji && isChangingEmoji" v-bind:emojions="notUserEmojions" v-on:select-emoji-to-change-to="selectEmojionToChangeTo"></emojion-carousel>
@@ -75,23 +112,45 @@
         </div>
       </script>
 
+      <script type="text/x-template" id="entry_template">
+        <div class="EmotionNote BackgroundColor Pstart(default) Pend(default) Ptop(default) Pbottom(default)" v-bind:class="['BackgroundColor--' + entry.color, shouldResizeTextArea ? 'EmotionNote--active' : '']">
+          <p class="Ff(default) Fz(u1) Lh(14) C(white)" style="font-size: 4vh;">
+            {{entry.emoji}} at <span class="Fw(bold)">{{entry.time}}</span> at <span class="Fs(italic)">{{entry.location}}.</span></span>
+          </p>
+
+          <textarea v-if="canInputNote" v-on:input="resizeTextArea" rows="1" class="Mtop(d2) Ptop(d2) Pbottom(d2) Ff(default) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Resize(none) js-note-input" placeholder="I feel this way because.."></textarea>
+
+          <button v-if="shouldResizeTextArea" v-on:click="saveNote" class="D(b) W(100%)" style="min-height: 44px;">Save Note</button>
+
+        </div>
+      </script>
+
+      <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
+      <script src="assets/js/vendor/store2.js"></script>
+      <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
+
+      <script src="assets/js/utils.js"></script>
+      <script src="assets/js/dom.js"></script>
+
+      <script src="assets/js/components/emojion.js"></script>
+      <script src="assets/js/components/emojion-carousel.js"></script>
+      <script src="assets/js/components/entry.js"></script>
+
+      <script src="assets/js/app.js"></script>
+
+      <!-- My Scripts -->
+
+      <script src="assets/js/consts-state.js"></script>
+      <script src="assets/js/db.js"></script>
+
       <!-- Vendor -->
       <script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
-      <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
       <script src="https://unpkg.com/moment@2.18.1/min/moment.min.js"></script>
       <script src="https://unpkg.com/lodash@4.17.4"></script>
       <script src="https://unpkg.com/flickity@2.0.9/dist/flickity.pkgd.min.js"></script>
-      <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
 
-      <!-- My Scripts -->
       <script src="assets/js/init.js"></script>
-      <script src="assets/js/utils.js"></script>
-      <script src="assets/js/dom.js"></script>
-      <script src="assets/js/consts-state.js"></script>
-      <script src="assets/js/db.js"></script>
-      <script src="assets/js/components/emojion.js"></script>
-      <script src="assets/js/components/emojion-carousel.js"></script>
-      <script src="assets/js/app.js"></script>
+
     </body>
 
 </html>

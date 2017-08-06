@@ -8,9 +8,6 @@ firebase.initializeApp({
   messagingSenderId: "888518070529"
 });
 
-// Go ahead and sign the user in anonymously as quickly as possible.
-firebase.auth().signInAnonymously();
-
 // Ask for position right away.
 if (typeof window.navigator.geolocation !== "undefined" && window.navigator.geolocation) {
   window.navigator.geolocation.getCurrentPosition(function (position) {

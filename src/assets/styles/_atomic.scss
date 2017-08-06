@@ -3,6 +3,10 @@
   display: block;
 }
 
+.Mtop\(d2\) {
+  margin-top: $scale-two-down;
+}
+
 .Pstart\(default\) {
   padding-left: 1rem;
 }
@@ -19,6 +23,15 @@
   padding-bottom: 1rem;
 }
 
+.Ptop\(d2\) {
+  padding-top: $scale-two-down;
+
+}
+
+.Pbottom\(d2\) {
+  padding-bottom: $scale-two-down;
+}
+
 .C\(white\) {
   color: white;
 }
@@ -29,6 +42,10 @@
 
 .Fz\(u1\) {
   font-size: 1.618rem;
+}
+
+.Fz\(u2\) {
+  font-size: $scale-two-up;
 }
 
 .Fz\(10vh\) {
@@ -91,6 +108,42 @@
   border-top: 1px solid #252525;
 }
 
+.Br\(4px\) {
+  border-radius: 4px;
+}
+
 .C\(p\) {
   cursor: pointer;
+}
+
+.Resize\(none\) {
+  resize: none;
+}
+
+.P\(f\) {
+  position: fixed;
+}
+
+.T\(0\) {
+  top: 0;
+}
+
+.L\(0\) {
+  left: 0;
+}
+
+.Lh\(12\) {
+  line-height: 1.2;
+}
+
+.Bs\(default\) {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.Br\(tractorDark\) {
+  border-right: 1px solid #d61c35;
+}
+
+.Z\(2\) {
+  z-index: 2;
 }
