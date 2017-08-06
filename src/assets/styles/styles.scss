@@ -123,8 +123,25 @@
 
 }
 
+.App {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+.App-container {
+  width: 200vw;
+
+  transition: transform 350ms ease;
+
+  &.moveLeft {
+    transform: translate3d(-50%, 0, 0);
+    transition: transform 350ms ease;
+  }
+}
+
 .Screen {
-  min-height: 100vh;
+  width: 100vw;
+  min-height: 100%;
 }
 
 .Tracked {

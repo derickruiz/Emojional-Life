@@ -18,33 +18,41 @@
         <div class="Loading-emoji">🤔</div>
       </div>
 
-      <div id="app" class="FlexGrid js-app hidden">
+      <div id="app" class="App FlexGrid js-app hidden">
         <div class="FlexGrid-cell FlexGrid-cell--fullMinusNav">
-          <div class="Emotions">
-            <emojion ref="emojions" v-for="(emojion, index) in emojions" v-bind:can-switch-emoji="canSwitchEmoji" v-bind:not-user-emojions="notUserEmojions" v-bind:index="index" v-bind:emojion="emojion" v-on:turn-on-carousel="turnOnCarousel" v-on:turn-off-carousel="turnOffCarousel" v-on:track-entry="trackEntry"></emojion>
-          </div>
 
+          <div class="App-container FlexGrid" v-bind:class="{ 'moveLeft': !shouldShowEmoji }">
+            <div class="Screen FlexGrid-cell FlexGrid-cell--1of2">
+              <div class="Emotions">
+                <emojion ref="emojions" v-for="(emojion, index) in emojions" v-bind:can-switch-emoji="canSwitchEmoji" v-bind:not-user-emojions="notUserEmojions" v-bind:index="index" v-bind:emojion="emojion" v-on:turn-on-carousel="turnOnCarousel" v-on:turn-off-carousel="turnOffCarousel" v-on:track-entry="trackEntry"></emojion>
+              </div>
+            </div>
+
+            <div class="Screen FlexGrid-cell FlexGrid-cell--1of2">
+              <div>The patterns screen!</div>
+            </div>
+          </div>
 
         </div>
         <div class="FlexGrid-cell FlexGrid-cell--nav FlexGrid FlexGrid-cell--alignCenter"><!-- Navigation -->
           <div class="FlexGrid FlexGrid--full FlexGrid--fullHeight">
-            <div class="BackgroundColor BackgroundColor--smoky FlexGrid-cell FlexGrid-cell--flex FlexGrid-cell--alignCenter Br(default) Bt(default)">
+            <div v-on:click="toggleEmoji(true)" class="C(p) BackgroundColor BackgroundColor--smoky FlexGrid-cell FlexGrid-cell--flex FlexGrid-cell--alignCenter Br(default) Bt(default)">
               <div class="FlexGrid FlexGrid--guttersOneDown">
                 <div class="FlexGrid-cell FlexGrid-cell--autoSize">
                   😄
                 </div>
                 <div class="FlexGrid-cell FlexGrid-cell--autoSize FlexGrid-cell--alignSelfCenter">
-                  <div class="Td(u) Fw(bold) Ff(default) C(white) Fz(default)">Emotions</div>
+                  <div v-bind:class=" { 'Td(u) Fw(bold)': shouldShowEmoji }" class="Ff(default) C(white) Fz(default)">Emotions</div>
                 </div>
               </div>
             </div>
-            <div class="BackgroundColor BackgroundColor--smoky FlexGrid-cell FlexGrid-cell--flex FlexGrid-cell--alignCenter Bt(default)">
+            <div v-on:click="toggleEmoji(false)" class="C(p) BackgroundColor BackgroundColor--smoky FlexGrid-cell FlexGrid-cell--flex FlexGrid-cell--alignCenter Bt(default)">
               <div class="FlexGrid FlexGrid--guttersOneDown">
                 <div class="FlexGrid-cell FlexGrid-cell--autoSize">
                   🕘
                 </div>
                 <div class="FlexGrid-cell FlexGrid-cell--autoSize FlexGrid-cell--alignSelfCenter">
-                  <div class="Ff(default) C(white) Fz(default)">Patterns</div>
+                  <div v-bind:class=" { 'Td(u) Fw(bold)': !shouldShowEmoji }" class="Ff(default) C(white) Fz(default)">Patterns</div>
                 </div>
               </div>
             </div>
