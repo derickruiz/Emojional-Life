@@ -85,6 +85,8 @@ const App = new Vue({
      * @use - Being used with click event */
     toggleEmoji: function (bool) {
 
+      console.log("toggling Emoji.");
+
       if (typeof bool !== "undefined") {
         this.shouldShowEmoji = bool;
       } else {
