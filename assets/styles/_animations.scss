@@ -1,0 +1,37 @@
+.A\(tap\) {
+  animation: tap 1.5s 0s infinite;
+}
+
+.A\(write\) {
+  animation: write 1.5s 0s infinite;
+}
+
+.A\(press\) {
+  animation: press 2.5s 0s infinite;
+}
+
+@keyframes bounce {
+  0% { top: 50%; }
+  50% { top: 40%; }
+  100% { top: 50%; }
+}
+
+@keyframes tap {
+  0% { top: 0; transform: scale(1) rotate(-12deg); }
+  50% { top: 0.618rem; transform: scale(1.4) rotate(0deg); }
+  100% { top: 0; transform: scale(1) rotate(-12deg); }
+}
+
+@keyframes press {
+  0% { top: 0; transform: scale(1.4); }
+  50% { top: 0.618rem; transform: scale(1); }
+  85% { top: 0.618rem; transform: scale(1); }
+  100% { top: 0; transform: scale(1.4); }
+}
+
+
+@keyframes write {
+  0% { top: 0; transform: scale(1) rotate(-12deg); }
+  50% { top: 0.618rem; transform: scale(1.4) rotate(0deg); }
+  100% { top: 0; transform: scale(1) rotate(-12deg); }
+}

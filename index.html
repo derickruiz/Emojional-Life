@@ -1,0 +1,161 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+      <meta charset="utf-8">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      <title>Emojional Life</title>
+      <meta name="description" content="Track your emotions with emoji.">
+      <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+      <link rel="apple-touch-icon" href="apple-touch-icon.png">
+      <!-- Place favicon.ico in the root directory -->
+      <link rel="stylesheet" href="assets/styles/styles.css">
+
+    </head>
+    <body>
+
+      <link rel="stylesheet" href="https://unpkg.com/flickity@2.0.9/dist/flickity.css">
+
+      <div class="Loading js-loading">
+        <div class="Loading-emoji">🤔</div>
+        <div>Loading...</div>
+      </div>
+
+      <div id="app" class="App FlexGrid js-app hidden">
+        <div class="FlexGrid-cell FlexGrid-cell--fullMinusNav">
+
+          <div class="App-container FlexGrid" v-bind:class="{ 'moveLeft': !shouldShowEmoji }">
+            <div class="Screen FlexGrid-cell FlexGrid-cell--1of2">
+              <div class="Emotions js-emotions">
+                <emojion ref="emojions" v-for="(emojion, index) in emojions" v-bind:can-switch-emoji="canSwitchEmoji" v-bind:not-user-emojions="notUserEmojions" v-bind:index="index" v-bind:emojion="emojion" v-on:turn-on-carousel="turnOnCarousel" v-on:turn-off-carousel="turnOffCarousel" v-on:track-entry="trackEntry"></emojion>
+              </div>
+            </div>
+
+            <div class="Screen Tracked FlexGrid-cell FlexGrid-cell--1of2 BackgroundColor BackgroundColor--white">
+
+              <!-- v-if="hasEntries" -->
+
+                <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
+                  <p class="Ff(default) Fz(u2) Lh(11) C(black)">
+                    Tracked an emotion!
+                  </p>
+                </div>
+
+                <!--
+                <div v-on:click="toggleEntriesForDay" class="Ff(default) Pstart(default) Pend(default) Pbottom(default) Ta(l) Td(u) Ta(l) C(chaliceSilver) Fz(default)">
+                  See my entire day.
+                </div> -->
+
+              <div class="Entries" style="margin-bottom: 44px;">
+                <!-- v-bind:total-entries="entriesToShow.length" -->
+                <entry ref="entries" v-for="(entry, index) in entries" v-bind:total-entries="entries.length" v-bind:entry="entry" v-bind:index="index" v-on:save-note="saveNote">
+              </div>
+
+              <!-- <div v-else>
+                <div class="Loading js-loading">
+                  <div class="Loading-emoji">🤔</div>
+                  <div>Nothing yet..</div>
+                </div>
+              </div> -->
+
+            </div>
+          </div>
+
+        </div>
+        <div style="    z-index: 5;
+    position: fixed;
+    width: 100%;
+    bottom: 0;" class="FlexGrid-cell FlexGrid-cell--nav FlexGrid FlexGrid-cell--alignCenter"><!-- Navigation -->
+          <div class="FlexGrid FlexGrid--full FlexGrid--fullHeight">
+
+            <div v-on:click="toggleEmoji(true)" class="C(p) BackgroundColor BackgroundColor--smoky FlexGrid-cell FlexGrid-cell--flex FlexGrid-cell--alignCenter Br(default) Bt(default) Pos(r)">
+              <div v-if="isResting" class="Progress BackgroundColor js-progress" v-bind:class="['BackgroundColor--' + resting.color]"></div>
+              <div class="Pos(r) FlexGrid FlexGrid--guttersOneDown">
+                <div class="FlexGrid-cell FlexGrid-cell--autoSize">
+                  <span v-if="isResting">
+                    💦
+                  </span>
+                  <span v-else>
+                    😄
+                  </span>
+                </div>
+                <div class="FlexGrid-cell FlexGrid-cell--autoSize FlexGrid-cell--alignSelfCenter">
+                  <div class="Td(u) Fw(bold) Ff(default) C(white) Fz(default)">
+                    <span v-if="isResting">
+                      Resting...
+                    </span>
+                    <span v-else>
+                      Emotions
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-on:click="toggleEmoji(false)" class="C(p) BackgroundColor BackgroundColor--smoky FlexGrid-cell FlexGrid-cell--flex FlexGrid-cell--alignCenter Bt(default)">
+              <div class="FlexGrid FlexGrid--guttersOneDown">
+                <div class="FlexGrid-cell FlexGrid-cell--autoSize">
+                  🕘
+                </div>
+                <div class="FlexGrid-cell FlexGrid-cell--autoSize FlexGrid-cell--alignSelfCenter">
+                  <div v-bind:class=" { 'Td(u) Fw(bold)': !shouldShowEmoji }" class="Ff(default) C(white) Fz(default)">Patterns</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script type="text/x-template" id="emojion_template">
+        <div class="Emotion BackgroundColor js-emotion" v-bind:class="['BackgroundColor--' + color]">
+          <emojion-carousel v-if="canSwitchEmoji && isChangingEmoji" v-bind:emojions="notUserEmojions" v-on:select-emoji-to-change-to="selectEmojionToChangeTo"></emojion-carousel>
+          <span v-else class="Fz(10vh)">{{emojion.emoji}}</span>
+        </div>
+      </script>
+
+      <script type="text/x-template" id="emojion_carousel_template">
+        <div class="EmotionCarousel">
+          <div v-for="emojion in emojions" class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">
+            {{emojion.emoji}}
+          </div>
+        </div>
+      </script>
+
+      <script type="text/x-template" id="entry_template">
+        <div class="EmotionNote BackgroundColor Pstart(default) Pend(default) Ptop(default) Pbottom(default)" v-bind:class="['BackgroundColor--' + entry.color, shouldResizeTextArea ? 'EmotionNote--active' : '']">
+          <p class="Ff(default) Fz(u1) Lh(14) C(white)" style="font-size: 4vh;">
+            {{entry.emoji}} at <span class="Fw(bold)">{{ formatTime(entry.time) }}</span> <span v-if="entry.location">at <span class="Fs(italic)">{{entry.location}}.</span></span>
+          </p>
+
+
+          <textarea v-if="canInputNote" v-on:input="resizeTextArea" rows="1" class="Mtop(d2) Ptop(d2) Pbottom(d2) Ff(default) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Resize(none) js-note-input" placeholder="I feel this way because.."></textarea>
+
+          <button v-if="shouldResizeTextArea" v-on:click="saveNote" class="D(b) W(100%)" style="min-height: 44px;">Save Note</button>
+
+        </div>
+      </script>
+
+      <script type="text/template" id="tooltip_template"></script>
+
+      <script src="https://unpkg.com/moment@2.18.1/min/moment.min.js"></script>
+      <script src="https://unpkg.com/lodash@4.17.4"></script>
+      <script src="https://unpkg.com/flickity@2.0.9/dist/flickity.pkgd.min.js"></script>
+      <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
+      <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
+
+      <script src="assets/js/consts-state.js"></script>
+
+      <script src="assets/js/utils.js"></script>
+      <script src="assets/js/dom.js"></script>
+
+      <script src="assets/js/db.js"></script>
+
+      <script src="assets/js/components/emojion.js"></script>
+      <script src="assets/js/components/emojion-carousel.js"></script>
+      <script src="assets/js/components/entry.js"></script>
+
+      <script src="assets/js/app.js"></script>
+
+      <!-- <script src="assets/js/init.js"></script> -->
+
+    </body>
+
+</html>

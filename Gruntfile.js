@@ -9,7 +9,7 @@ module.exports = function(grunt) {
   		},
   		dist: {
   			files: {
-  				'src/assets/styles/styles.css': 'src/assets/styles/styles.scss'
+  				'assets/styles/styles.css': 'assets/styles/styles.scss'
   			}
   		}
     },
@@ -20,7 +20,7 @@ module.exports = function(grunt) {
       },
     }
   });
-  
+
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-sass');
 
