@@ -5,6 +5,9 @@
 @import "atomic";
 @import "animations";
 
+body {
+  background-color: $color-smokyBlack;
+}
 // Modules
 .Emotions {
   display: grid;
@@ -33,6 +36,18 @@
    user-select: none;
 
    cursor: pointer;
+   transition: transform 180ms ease;
+
+   transform: scale(1);
+
+}
+
+.Emotion:hover {
+  transform: scale(0.9);
+}
+
+.Emotion:active {
+  transform: scale(0.8);
 }
 
 .EmotionNote {
@@ -125,7 +140,6 @@
 
 .App {
   max-width: 100vw;
-  overflow-x: hidden;
 }
 
 .App-container {
@@ -145,7 +159,7 @@
 
   width: 100vw;
   min-height: 100%;
-  
+
 }
 
 .Tracked {
@@ -187,3 +201,36 @@
   transition: all 1s linear;
 
 }
+
+.Tooltip {
+  position: relative;
+}
+
+.Tooltip::before {
+  position: absolute;
+    top: -0.618rem;
+    left: 1rem;
+    content: " ";
+    display: block;
+    width: 0;
+    height: 0;
+    border-left: 0.618rem solid transparent;
+    border-right: 0.618rem solid transparent;
+    border-bottom: 0.618rem solid black;
+}
+
+.Progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+
+  transition: transform 180ms ease;
+  transform: translate3d(-100%, 0px, 0px);
+}
+
+// For the carousel
+// style="transform: scale(1.3) translate3d(10%, 10%, 0); box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.5); z-index: 1;"
+// and to make sure it renders on mobile add scale(0.7) to each individual emoji text.

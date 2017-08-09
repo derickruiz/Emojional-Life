@@ -35,7 +35,7 @@ const Entry = {
   updated: function () {
 
     console.log("Updating entry.");
-    
+
     if (this.index === this.totalEntries - 1) {
       this.canInputNote = true;
     } else {
@@ -61,11 +61,15 @@ const Entry = {
     saveNote: function (event) {
 
       if (this.note && this.note.length >= 1) {
-        this.$emit('save-note', this.entry[".key"], this.note);
+        this.$emit('save-note', this.entry, this.index, this.note);
         this.shouldresizeTextArea = false;
         this.canInputNote = false;
       }
 
+    },
+
+    formatTime: function (unformattedTime) {
+      return moment(unformattedTime).format('LT');
     }
   }
 };

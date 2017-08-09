@@ -13,11 +13,13 @@ const App = new Vue({
     hasEntries: false, /* Nope no entries. Used for showing the empty state in the entries screen. */
 
     /* Data from server to populate. */
-    entries: undefined, /* The notes */
+    entries: [], /* The notes */
     entriesToShow: undefined, /* Shows the last two inputted notes for the day. */
     emojions: undefined, /* The emojis. */
     currentDay: undefined, /* For saving notes into the right place in the database. */
-
+    resting: { /* Used for rendering the progress bar in the navigation when user clicks on emotion. */
+      color: 'tractor'
+    },
     notUserEmojions: [], /* The list of emojis that are currently not in the user's 8. */
     emptyTracking: undefined, /* Not sure? */
 
@@ -26,37 +28,6 @@ const App = new Vue({
   },
 
   created: function () {
-
-    function getRestingState() {
-      DB.getResting((restingInterval) => {
-
-        this.isResting = restingInterval.isResting
-
-        if (restingInterval.isResting) {
-
-          this.toggleEmoji(false);
-          window.scrollTo(0, document.body.scrollHeight);
-
-          const intervalId = setInterval(() => {
-
-            const a = moment(new Date(Date.now())),
-                  b = moment(new Date(restingInterval.lastEntry)),
-                  diff = a.diff(b, 'seconds'); // 86400000
-
-            this.elapsedTime = 60 - diff;
-
-            console.log("diff", diff);
-
-            if (diff >= 60) {
-              clearInterval(intervalId);
-              getRestingState.call(this);
-            }
-
-          }, 1000);
-        }
-      });
-
-    }
 
     this.emojions = [ {
       "color" : "oxford",
@@ -168,6 +139,35 @@ const App = new Vue({
 
     DOM.showApp();
 
+    this.shouldShowEmoji = true;
+    DOM.freezeScreen();
+
+    console.log("Calling DB.getResting in created.");
+
+    DB.getResting((restingObj) => {
+      if (restingObj != null) {
+
+        console.log("restingObj", restingObj);
+
+        this.resting = restingObj;
+
+        let now = moment(moment.now());
+        let savedRestingTime = moment(restingObj.time);
+
+        console.log('savedRestingTime', savedRestingTime.format('LLL'));
+        console.log('now', now.format('LLL'));
+        console.log('diff', savedRestingTime.diff(now, 'seconds'));
+
+        if (savedRestingTime.diff(now, 'seconds') >= 1) {
+          this.startResting(restingObj.time, false, restingObj.color);
+        }
+
+      }
+
+    });
+
+    this.canSwitchEmoji = true;
+
     // What is data that I need immeditely to get the app working right away?
     // The emotions and the tap.
 
@@ -199,6 +199,12 @@ const App = new Vue({
 
     // getRestingState.call(this);
 
+    DB.getTodaysEntries((entries) => {
+      console.log("Get today's entries");
+      console.log("entries", entries);
+      this.entries = entries;
+    });
+
   },
 
   methods: {
@@ -210,7 +216,12 @@ const App = new Vue({
      * @use - Being used with click event */
     toggleEmoji: function (bool) {
 
-      console.log("toggling Emoji.");
+      console.log("toggleEmoji");
+
+      if (typeof bool !== "undefined" && this.shouldShowEmoji === bool) {
+        console.log("Gonna return");
+        return;
+      }
 
       if (typeof bool !== "undefined") {
         this.shouldShowEmoji = bool;
@@ -223,6 +234,7 @@ const App = new Vue({
       } else {
         DOM.unfreezeScreen();
       }
+
     },
 
     /*
@@ -243,8 +255,10 @@ const App = new Vue({
      */
     turnOnCarousel: function (index) {
       console.log("App.turnOnCaorusel");
-      for (let i = 0; i < this.$refs.emojions.length; i += 1) {
+      console.log("index", index);
+      console.log("this.$refs.emojions", this.$refs.emojions);
 
+      for (let i = 0; i < this.$refs.emojions.length; i += 1) {
         if (i !== index) {
           // Probably not best practice, but turns off the carousel at least.
 
@@ -271,20 +285,20 @@ const App = new Vue({
       console.log("turnOffCarousel");
       console.log("emojion", emojion);
 
-      // Update the UI
-      let previousEmojion = this.emojions[emojionSelectorIndex];
-      this.emojions[emojionSelectorIndex] = emojion;
-
-      // Remove the old emoji from the list and put the old one in there instead.
-      UTILS.replaceAtIndex(this.notUserEmojions, UTILS.getIndex(this.notUserEmojions, emojion), previousEmojion);
-
-      // Make Ajax call to update user preferences
-      // If pass keep it that way,
-      // else revert the UI.
-
-      DB.saveUserEmojions(this.emojions, function () {
-        console.log("Saved the user's preferences.");
-      });
+      // // Update the UI
+      // let previousEmojion = this.emojions[emojionSelectorIndex];
+      // this.emojions[emojionSelectorIndex] = emojion;
+      //
+      // // Remove the old emoji from the list and put the old one in there instead.
+      // UTILS.replaceAtIndex(this.notUserEmojions, UTILS.getIndex(this.notUserEmojions, emojion), previousEmojion);
+      //
+      // // Make Ajax call to update user preferences
+      // // If pass keep it that way,
+      // // else revert the UI.
+      //
+      // DB.saveUserEmojions(this.emojions, function () {
+      //   console.log("Saved the user's preferences.");
+      // });
 
       this.$forceUpdate();
 
@@ -310,35 +324,90 @@ const App = new Vue({
      * @use - Called from click event.
      */
     trackEntry: function (emojion) {
-
       console.log("Tracking the entry.");
 
-      let self = this;
+      emojion["time"] = new Date().getTime();
 
-      console.log("entries", this.entries);
-
-      DB.trackEntry(emojion, function (entry) {
-
-        console.log("What's entry?", entry);
-
-        entry.then(function () {
-
-          if (self.entries && self.entries.length < 1 && GLOBAL_STATE.isNewUser) {
-            self.patternsMessage = CONSTS.NEW_USER.patternsMessage;
-          } else {
-            self.patternsMessage = CONSTS.RETURNING_USER.patternsMessage;
-          }
-
-        }).catch(function (e) {
-          console.log("e", e);
-          console.log("Couldn't successfully write.");
+      if (!this.isResting) {
+        DB.trackEntry(emojion, (newEntries) => {
+          this.entries = newEntries;
+          this.startResting(undefined, true, emojion.color);
         });
+      }
 
-      });
+
     },
 
-    saveNote: function (entryKey, note) {
-      DB.saveNote(this.currentDay, entryKey, note, function () {
+    /*
+     * @description - Progresses the progress bar in the navigation and stops the user from toggling emoji.
+     */
+    startResting: function (timeToWait, shouldSave, color) {
+
+      const self = this;
+
+      this.isResting = true;
+
+      let timeInFuture;
+
+      // Start it at a specific time if it exists (Passed in when rendering on load)
+      if (typeof timeToWait !== "undefined") {
+        timeInFuture = moment(timeToWait);
+      } else {
+        timeInFuture = moment(moment.now());
+        timeInFuture.add(2, 'minutes');
+      }
+
+      this.resting = {
+        time: timeInFuture,
+        color: color
+      };
+
+      // Should we save it to to the DB, or are we just rendering the resting process after refresh for example?
+      if (shouldSave) {
+        DB.saveResting(this.resting);
+      }
+
+      Array.from(document.querySelectorAll(".js-emotion")).forEach(function (emojionEl) {
+        emojionEl.style.filter = "grayscale(100%)"
+      });
+
+      GLOBAL_STATE.restingIntervalId = setInterval(function () {
+
+        // $total = 160000;
+        // $current = 12345;
+        // $percentage = $current/$total * 100;
+
+        const secondsDifferenceCurrent = timeInFuture.diff(moment(moment.now()), 'seconds');
+        const percentage = Math.round(secondsDifferenceCurrent / 120 * 100);
+
+        console.log('percentage', percentage);
+
+        if (percentage <= 0) {
+          clearInterval(GLOBAL_STATE.restingIntervalId);
+
+          Array.from(document.querySelectorAll(".js-emotion")).forEach(function (emojionEl) {
+            emojionEl.style = "";
+          });
+
+          document.querySelector(".js-progress").style = "";
+
+          self.isResting = false;
+
+        } else {
+
+          Array.from(document.querySelectorAll(".js-emotion")).forEach(function (emojionEl) {
+            emojionEl.style.filter = "grayscale(" + percentage + "%)";
+          });
+
+          document.querySelector(".js-progress").style.transform = "translate3d(-" + percentage + "%, 0px, 0px)";
+        }
+      }, 1000);
+
+    },
+
+    // entry, entryIndex, note, callback)
+    saveNote: function (entry, entryIndex, note) {
+      DB.saveNote(entry, entryIndex, note, function () {
         console.log("Saved the note!");
       });
     }

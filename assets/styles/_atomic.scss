@@ -32,6 +32,14 @@
   padding-bottom: $scale-two-down;
 }
 
+.P\(d2\) {
+  padding: 0.61804697157rem;
+}
+
+.P\(default\) {
+  padding: 1rem;
+}
+
 .C\(white\) {
   color: white;
 }
@@ -92,6 +100,10 @@
   width: 100%;
 }
 
+.O\(hidden\) {
+  overflow: hidden;
+}
+
 .Ox\(hidden\) {
   overflow-x: hidden;
 }
@@ -124,14 +136,6 @@
   position: fixed;
 }
 
-.T\(0\) {
-  top: 0;
-}
-
-.L\(0\) {
-  left: 0;
-}
-
 .Lh\(12\) {
   line-height: 1.2;
 }
@@ -146,4 +150,24 @@
 
 .Z\(2\) {
   z-index: 2;
+}
+
+.Pos\(a\) {
+  position: absolute;
+}
+
+.Pos\(r\) {
+  position: relative;
+}
+
+.L\(0\) {
+  left: 0;
+}
+
+.L\(d2\) {
+  left: 0.618rem;
+}
+
+.T\(0\)  {
+  top: 0;
 }

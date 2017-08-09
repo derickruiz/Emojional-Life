@@ -99,6 +99,17 @@ const UTILS = {
         return other[key] === current[key]
       }).length === 0;
     }
+  },
+
+  showError: function () {
+
   }
-  
 };
+
+/*
+
+{
+  "2017-08-08": []
+}
+
+*/

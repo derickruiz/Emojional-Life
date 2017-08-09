@@ -9,7 +9,13 @@ const EmojionCarousel = {
     }
   },
 
+  created: function () {
+    console.log("Created the emojion carousel.");  
+  },
+
   mounted: function () {
+
+    console.log("Mounted the emojion carousel.");
 
     let flickity = new Flickity(this.$el, {
       showDots: false
