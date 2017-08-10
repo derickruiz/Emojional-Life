@@ -46,6 +46,14 @@ const Entry = {
     }
   },
 
+  mounted: function () {
+
+    if (this.canInputNote) {
+      autosize(this.$el.querySelector(".js-note-input"));
+    }
+
+  },
+
   updated: function () {
 
     console.log("Updating entry.");
