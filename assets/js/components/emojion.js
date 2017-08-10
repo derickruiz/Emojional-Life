@@ -24,7 +24,7 @@ const Emojion = {
       required: true
     }
   },
-
+  
   data: function () {
     return {
 

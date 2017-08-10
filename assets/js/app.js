@@ -12,6 +12,13 @@ const App = new Vue({
 
     hasEntries: false, /* Nope no entries. Used for showing the empty state in the entries screen. */
 
+    /* Whether or not to show tooltips related to each action. */
+    tooltips: {
+      tap: false,
+      write: false,
+      press: false
+    },
+
     /* Data from server to populate. */
     entries: [], /* The notes */
     entriesToShow: undefined, /* Shows the last two inputted notes for the day. */
@@ -205,9 +212,35 @@ const App = new Vue({
       this.entries = entries;
     });
 
+    /*
+     * @description - Shows the right tooltips to new users based on the state of the app.
+     */
+
+    DB.getTooltips((tooltips) => {
+      console.log("DB.getTooltips");
+      console.log("tooltips", tooltips);
+      this.tooltips = tooltips;
+    });
+
   },
 
   methods: {
+
+    /*
+     * @description - Shows the correct message in the patterns view depending on the state of the app.
+     * @return String - The message */
+    getPatternsMessage: function () {
+
+      if (this.entries == null) {
+        return CONSTS.NEW_USER.empty;
+      }
+
+      if (this.entries.length === 1) {
+        return CONSTS.NEW_USER.first;
+      }
+
+      return CONSTS.RETURNING_USER.patternsMessage;
+    },
 
     /*
      * @description: Whether to show the Emoji page or the Tracking page
@@ -235,14 +268,6 @@ const App = new Vue({
         DOM.unfreezeScreen();
       }
 
-    },
-
-    /*
-     * @converts the entries time into a more readable format.
-     */
-
-    convertTime: function (unixTime) {
-      return UTILS.convertUnixTimeToPMAM(unixTime);
     },
 
     /* Event Callbacks */
@@ -284,6 +309,10 @@ const App = new Vue({
 
       console.log("turnOffCarousel");
       console.log("emojion", emojion);
+
+      DB.recordTooltip('press', (tooltips) => {
+        this.tooltips = tooltips;
+      });
 
       // // Update the UI
       // let previousEmojion = this.emojions[emojionSelectorIndex];
@@ -331,10 +360,14 @@ const App = new Vue({
       if (!this.isResting) {
         DB.trackEntry(emojion, (newEntries) => {
           this.entries = newEntries;
+          this.toggleEmoji(false); // Move user to patterns page after tapping an emotion.
           this.startResting(undefined, true, emojion.color);
         });
       }
 
+      DB.recordTooltip('tap', (tooltips) => {
+        this.tooltips = tooltips;
+      });
 
     },
 
@@ -380,7 +413,9 @@ const App = new Vue({
         const secondsDifferenceCurrent = timeInFuture.diff(moment(moment.now()), 'seconds');
         const percentage = Math.round(secondsDifferenceCurrent / 120 * 100);
 
-        console.log('percentage', percentage);
+        Array.from(document.querySelectorAll(".js-emotion")).forEach(function (emojionEl) {
+          emojionEl.style.filter = "grayscale(100%)";
+        });
 
         if (percentage <= 0) {
           clearInterval(GLOBAL_STATE.restingIntervalId);
@@ -394,11 +429,6 @@ const App = new Vue({
           self.isResting = false;
 
         } else {
-
-          Array.from(document.querySelectorAll(".js-emotion")).forEach(function (emojionEl) {
-            emojionEl.style.filter = "grayscale(" + percentage + "%)";
-          });
-
           document.querySelector(".js-progress").style.transform = "translate3d(-" + percentage + "%, 0px, 0px)";
         }
       }, 1000);
@@ -410,6 +440,13 @@ const App = new Vue({
       DB.saveNote(entry, entryIndex, note, function () {
         console.log("Saved the note!");
       });
+
+      DB.recordTooltip('write', (tooltips) => {
+        console.log("After recording write");
+        console.log("tooltips", tooltips);
+        this.tooltips = tooltips;
+      });
+
     }
   }
 });
