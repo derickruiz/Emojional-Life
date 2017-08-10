@@ -80,7 +80,7 @@
                   </span>
                 </div>
                 <div class="FlexGrid-cell FlexGrid-cell--autoSize FlexGrid-cell--alignSelfCenter">
-                  <div class="Td(u) Fw(bold) Ff(default) C(white) Fz(default)">
+                  <div v-bind:class=" { 'Td(u) Fw(bold)': shouldShowEmoji }" class="Ff(default) C(white) Fz(default)">
                     <span v-if="isResting">
                       Resting...
                     </span>
