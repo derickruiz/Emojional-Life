@@ -413,7 +413,13 @@ const App = new Vue({
         const secondsDifferenceCurrent = timeInFuture.diff(moment(moment.now()), 'seconds');
         const percentage = Math.round(secondsDifferenceCurrent / 120 * 100);
 
-        Array.from(document.querySelectorAll(".js-emotion")).forEach(function (emojionEl) {
+        let emotionCarousel = document.querySelector(".js-emotion-switching");
+
+        if (emotionCarousel) {
+          emotionCarousel.style.filter = "";
+        }
+
+        Array.from(document.querySelectorAll(".js-emotion:not(.js-emotion-switching)")).forEach(function (emojionEl) {
           emojionEl.style.filter = "grayscale(100%)";
         });
 
@@ -421,7 +427,7 @@ const App = new Vue({
           clearInterval(GLOBAL_STATE.restingIntervalId);
 
           Array.from(document.querySelectorAll(".js-emotion")).forEach(function (emojionEl) {
-            emojionEl.style = "";
+            emojionEl.style.filter = "";
           });
 
           document.querySelector(".js-progress").style = "";
