@@ -29,6 +29,8 @@ const Entry = {
       canInputNote: false,
       shouldResizeTextArea: false,
       note: "",
+      alreadyHasNote: false,
+      isViewingNote: false
     };
   },
 
@@ -39,7 +41,12 @@ const Entry = {
     console.log("this.totalEntries", this.totalEntries);
     console.log("this.showTooltip", this.showTooltip);
 
-    if (this.index === this.totalEntries - 1) {
+    // The entry already has a note.
+    if (typeof this.entry.note !== "undefined") {
+      this.alreadyHasNote = true; // Gonna use this for showing the icon and expanding it and stuff.
+    }
+
+    if (this.index === this.totalEntries - 1 && !this.alreadyHasNote) {
       this.canInputNote = true;
     } else {
       this.canInputNote = false;
@@ -52,6 +59,10 @@ const Entry = {
       autosize(this.$el.querySelector(".js-note-input"));
     }
 
+    if (this.alreadyHasNote) {
+      // do some stuff in here related to the note.
+    }
+
   },
 
   updated: function () {
@@ -61,7 +72,7 @@ const Entry = {
     console.log("this.index", this.index);
     console.log("this.totalEntries", this.totalEntries);
 
-    if (this.index === this.totalEntries - 1) {
+    if (this.index === this.totalEntries - 1 && !this.alreadyHasNote) {
       this.canInputNote = true;
     } else {
       this.canInputNote = false;
@@ -89,13 +100,20 @@ const Entry = {
       if (this.note && this.note.length >= 1) {
         this.shouldResizeTextArea = false;
         this.canInputNote = false;
+        this.alreadyHasNote = true;
+        this.isViewingNote = true;
         this.$emit('save-note', this.entry, this.index, this.note);
+        this.$forceUpdate();
       }
-
     },
 
     formatTime: function (unformattedTime) {
       return moment(unformattedTime).format('LT');
+    },
+
+    // Just shows the note so the user can read what they've previously written down.
+    showNote: function () {
+      this.isViewingNote = !this.isViewingNote;
     }
   }
 };

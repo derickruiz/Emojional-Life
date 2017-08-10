@@ -7,6 +7,9 @@
     width: 100%;
   }
 
+  &.FlexGrid--spaceBetween {
+    justify-content: space-between;
+  }
 
   &.FlexGrid--fullHeight {
     height: 100%;
@@ -74,6 +77,13 @@
     align-items: center;
   }
 
+  &.FlexGrid-cell--9of10 {
+    flex: 0 0 90%;
+  }
+
+  &.FlexGrid-cell--1of10 {
+    flex: 0 0 10%;
+  }
 }
 
 .Flex {
