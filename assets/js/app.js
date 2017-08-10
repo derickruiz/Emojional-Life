@@ -447,6 +447,11 @@ const App = new Vue({
         this.tooltips = tooltips;
       });
 
+      console.log("entries.length");
+      if (this.entries.length === 1) {
+        this.toggleEmoji(true);
+      }
+
     }
   }
 });
