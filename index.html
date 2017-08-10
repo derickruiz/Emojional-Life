@@ -121,7 +121,7 @@
       </script>
 
       <script type="text/x-template" id="entry_template">
-        <div class="EmotionNote BackgroundColor Pstart(default) Pend(default) Ptop(default) Pbottom(default)" v-bind:class="['BackgroundColor--' + entry.color, shouldResizeTextArea ? 'EmotionNote--active' : '']">
+        <div class="EmotionNote BackgroundColor Pstart(default) Pend(default) Ptop(default) Pbottom(default)" v-bind:class="['BackgroundColor--' + entry.color, shouldResizeTextArea && canInputNote ? 'EmotionNote--active' : '']">
 
           <div class="FlexGrid FlexGrid--guttersOneDown FlexGrid--spaceBetween M">
             <div class="FlexGrid-cell FlexGrid-cell--9of10">
@@ -138,7 +138,7 @@
           <textarea v-if="canInputNote" v-on:input="resizeTextArea" rows="1" class="Mtop(d2) Ptop(d2) Pbottom(d2) Ff(default) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Resize(none) js-note-input" placeholder="I feel this way because.."></textarea>
           <div class="Mtop(d2) Ff(default) C(white) Fz(default) Lh(14)" v-if="!canInputNote && alreadyHasNote && isViewingNote">{{entry.note}}</div>
           <tooltip v-if="showTooltip && (index === totalEntries - 1) && !shouldResizeTextArea" emoji="✍" action="Write" message="a note." tooltip-type="write"></tooltip>
-          <button v-if="shouldResizeTextArea" v-on:click="saveNote" class="D(b) W(100%)" style="min-height: 44px;">Save Note</button>
+          <button v-if="shouldResizeTextArea && canInputNote" v-on:click="saveNote" class="D(b) W(100%)" style="min-height: 44px;">Save Note</button>
         </div>
       </script>
 

@@ -86,8 +86,10 @@ const Entry = {
       const val = event.target.value;
 
       if (val && val.length >= 1) {
+        window.scrollTo(0, 0);
         this.shouldResizeTextArea = true;
       } else {
+        window.scrollTo(0, GLOBAL_STATE.previousScrollY);
         this.shouldResizeTextArea = false;
       }
 
