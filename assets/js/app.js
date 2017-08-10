@@ -437,6 +437,11 @@ const App = new Vue({
 
     // entry, entryIndex, note, callback)
     saveNote: function (entry, entryIndex, note) {
+      console.log("App.saveNote");
+      console.log("entry", entry);
+      console.log("entryIndex", entryIndex);
+      console.log("note", note);
+
       DB.saveNote(entry, entryIndex, note, function () {
         console.log("Saved the note!");
       });

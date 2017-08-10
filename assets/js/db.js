@@ -142,6 +142,9 @@ const DB = {
   saveLocalEntries: function (date, item, index) {
 
     console.log("UTILS.save");
+    console.log("date", date);
+    console.log("item", item);
+    console.log("index", index);
 
     let items;
 
@@ -168,13 +171,16 @@ const DB = {
 
       items = JSON.parse(items);
 
-      if ( ! index) {
+      if (typeof index === "undefined") {
+        console.log("No index.");
         if (typeof items[date] === "undefined") {
           items[date] = [item];
         } else {
           items[date].push(item);
         }
       } else {
+        console.log("There's an index");
+        console.log("index", index);
         items[date][index] = item;
       }
 
@@ -185,6 +191,10 @@ const DB = {
       }
 
     }
+
+    console.log("DONE SETTING");
+    console.log("window.localStorage.getItem", window.localStorage.getItem('entries', JSON.stringify(items)));
+
   },
 
   getTodaysEntries: function (callback) {
@@ -201,6 +211,10 @@ const DB = {
   // SETTERS
   saveNote: function (entry, entryIndex, note, callback) {
 
+    console.log("DB.saveNote");
+    console.log('entry', entry);
+    console.log('entryIndex', entryIndex);
+    console.log('note', note);
 
     if (GLOBAL_STATE.notLoggedIn) {
       let entryDate = moment(entry.time).format('YYYY-MM-DD');
