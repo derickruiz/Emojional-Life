@@ -10,10 +10,11 @@ const CONSTS = {
   },
 
   RETURNING_USER: {
-    patternsMessage: "What am I noticing in my mind and body"
+    patternsMessage: "What am I noticing in my mind and body today?"
   },
 
   NEW_USER: {
-    patternsMessage: "Awesome, first one tracked. Add a note."
+    empty: "Nothing yet! 👻 Tap an emotion to it.",
+    first: "Awesome, first one tracked. 👊 Add a note."
   }
 };

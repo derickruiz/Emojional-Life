@@ -15,7 +15,7 @@
 
       <link rel="stylesheet" href="https://unpkg.com/flickity@2.0.9/dist/flickity.css">
 
-      <div class="Loading js-loading">
+      <div class="Loading BackgroundColor BackgroundColor--smoky js-loading">
         <div class="Loading-emoji">🤔</div>
         <div>Loading...</div>
       </div>
@@ -28,6 +28,8 @@
               <div class="Emotions js-emotions">
                 <emojion ref="emojions" v-for="(emojion, index) in emojions" v-bind:can-switch-emoji="canSwitchEmoji" v-bind:not-user-emojions="notUserEmojions" v-bind:index="index" v-bind:emojion="emojion" v-on:turn-on-carousel="turnOnCarousel" v-on:turn-off-carousel="turnOffCarousel" v-on:track-entry="trackEntry"></emojion>
               </div>
+              <tooltip v-if="tooltips.tap" emoji="👆" action="Tap" message="to track an emotion." reverse arrow-position="right" tooltip-type="tap"></tooltip>
+              <tooltip v-if="tooltips.press && !tooltips.tap" emoji="👆" action="Press and hold" message="to change emotions." tooltip-type="press"></tooltip>
             </div>
 
             <div class="Screen Tracked FlexGrid-cell FlexGrid-cell--1of2 BackgroundColor BackgroundColor--white">
@@ -36,7 +38,7 @@
 
                 <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
                   <p class="Ff(default) Fz(u2) Lh(11) C(black)">
-                    Tracked an emotion!
+                    {{ getPatternsMessage() }}
                   </p>
                 </div>
 
@@ -45,17 +47,16 @@
                   See my entire day.
                 </div> -->
 
-              <div class="Entries" style="margin-bottom: 44px;">
+              <div v-if="entries" class="Entries" style="margin-bottom: 88px;">
                 <!-- v-bind:total-entries="entriesToShow.length" -->
-                <entry ref="entries" v-for="(entry, index) in entries" v-bind:total-entries="entries.length" v-bind:entry="entry" v-bind:index="index" v-on:save-note="saveNote">
+                <entry ref="entries" v-for="(entry, index) in entries" v-bind:total-entries="entries.length" v-bind:entry="entry" v-bind:index="index" v-on:save-note="saveNote" v-bind:show-tooltip="tooltips.write">
               </div>
 
-              <!-- <div v-else>
-                <div class="Loading js-loading">
+              <div v-else>
+                <div class="Loading">
                   <div class="Loading-emoji">🤔</div>
-                  <div>Nothing yet..</div>
                 </div>
-              </div> -->
+              </div>
 
             </div>
           </div>
@@ -124,16 +125,26 @@
           <p class="Ff(default) Fz(u1) Lh(14) C(white)" style="font-size: 4vh;">
             {{entry.emoji}} at <span class="Fw(bold)">{{ formatTime(entry.time) }}</span> <span v-if="entry.location">at <span class="Fs(italic)">{{entry.location}}.</span></span>
           </p>
-
-
           <textarea v-if="canInputNote" v-on:input="resizeTextArea" rows="1" class="Mtop(d2) Ptop(d2) Pbottom(d2) Ff(default) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Resize(none) js-note-input" placeholder="I feel this way because.."></textarea>
-
+          <tooltip v-if="showTooltip && (index === totalEntries - 1) && !shouldResizeTextArea" emoji="✍" action="Write" message="a note." tooltip-type="write"></tooltip>
           <button v-if="shouldResizeTextArea" v-on:click="saveNote" class="D(b) W(100%)" style="min-height: 44px;">Save Note</button>
-
         </div>
       </script>
 
-      <script type="text/template" id="tooltip_template"></script>
+      <script type="text/template" id="tooltip_template">
+        <div v-bind:class="[ reverse ? 'FlexGrid--reverse' : '', arrowPosition ? 'Tooltip--' + arrowPosition : '', tooltipType ? 'Tooltip--' + tooltipType : '']" class="FlexGrid FlexGrid--inline BackgroundColor BackgroundColor--smoky Tooltip">
+          <div class="FlexGrid-cell FlexGrid FlexGrid-cell--autoSize FlexGrid--alignItemsCenter">
+            <div class="P(default) Pos(r)">
+              <p v-bind:class="['A(' + tooltipType + ')']" class="Ff(default) Fz(default) Lh(14) C(white) Pos(a) T(0) L(d2)">{{emoji}}</p>
+            </div>
+          </div>
+
+          <div class="FlexGrid-cell">
+            <div class="P(d2)">
+              <p class="Ff(default) Fz(default) Lh(14) C(white)"><span class="Fw(bold)">{{action}}</span> {{message}}</p></div>
+            </div>
+          </div>
+      </script>
 
       <script src="https://unpkg.com/moment@2.18.1/min/moment.min.js"></script>
       <script src="https://unpkg.com/lodash@4.17.4"></script>
@@ -151,6 +162,7 @@
       <script src="assets/js/components/emojion.js"></script>
       <script src="assets/js/components/emojion-carousel.js"></script>
       <script src="assets/js/components/entry.js"></script>
+      <script src="assets/js/components/tooltip.js"></script>
 
       <script src="assets/js/app.js"></script>
 

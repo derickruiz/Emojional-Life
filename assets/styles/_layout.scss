@@ -23,6 +23,14 @@
   &.FlexGrid--alignItemsCenter {
     align-items: center;
   }
+
+  &.FlexGrid--reverse {
+    flex-direction: row-reverse;
+  }
+
+  &.FlexGrid--inline {
+    display: inline-flex;
+  }
 }
 
 .FlexGrid-cell {

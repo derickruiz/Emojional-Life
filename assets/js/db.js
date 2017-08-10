@@ -78,6 +78,63 @@ const DB = {
     }
   },
 
+  recordTooltip: function (tooltipName, callback) {
+    console.log('recordTooltip');
+    let tooltips;
+
+    // {
+    //   "press": true,
+    //   "tap": true
+    // }
+
+    try {
+      tooltips = window.localStorage.getItem('tooltips');
+    } catch (e) {
+      console.log("e", e);
+    }
+
+    if (tooltips != null) {
+      tooltips = JSON.parse(tooltips);
+      tooltips[tooltipName] = false;
+      console.log('tooltips', tooltips);
+      window.localStorage.setItem('tooltips', JSON.stringify(tooltips));
+      callback(tooltips);
+    } else {
+      let obj = {};
+      obj.press = true;
+      obj.write = true;
+      obj.tap = true;
+      obj[tooltipName] = false;
+      console.log('obj', obj);
+      window.localStorage.setItem('tooltips', JSON.stringify(obj));
+      callback(obj);
+    }
+  },
+
+  getTooltips: function (callback) {
+    console.log("getTooltips");
+    let tooltips;
+
+    try {
+      tooltips = window.localStorage.getItem('tooltips');
+    } catch (e) {
+      console.log("e", e);
+    }
+
+    console.log('tooltips', tooltips);
+
+    if (tooltips != null) {
+      tooltips = JSON.parse(tooltips);
+      callback(tooltips);
+    } else {
+      callback({
+        press: true,
+        write: true,
+        tap: true
+      });
+    }
+  },
+
   /*
    * @description: Small API over localStorage that saves an array of objects into a key.
    * @
@@ -175,7 +232,7 @@ const DB = {
       DB.saveLocalResting(restingObj);
 
       if (typeof callback !== "undefined") {
-        callback(DB.getLocalResting());  
+        callback(DB.getLocalResting());
       }
 
     } else {
