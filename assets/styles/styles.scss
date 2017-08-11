@@ -129,7 +129,7 @@ body {
 }
 
 .BackgroundColor {
-    &--oxford {
+  &--oxford {
     background-color: $color-oxfordBlue;
   }
 
@@ -190,6 +190,9 @@ body {
   width: 100vw;
   min-height: 100%;
 
+  &.Tracked {
+    padding-bottom: calc(#{$navbar-height} * 2);
+  }
 }
 
 .Tracked {
@@ -264,6 +267,10 @@ body {
 
   transition: transform 180ms ease;
   transform: translate3d(-100%, 0px, 0px);
+}
+
+.Notifications > .Notification + .Notification {
+  margin-top: $scale-one-down;
 }
 
 // For the carousel

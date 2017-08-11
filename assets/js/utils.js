@@ -103,6 +103,21 @@ const UTILS = {
 
   showError: function () {
 
+  },
+
+  removeAllLocalStorage: function () {
+    window.localStorage.removeItem('resting');
+
+window.localStorage.removeItem('tooltips');
+
+window.localStorage.removeItem('entries');
+
+window.localStorage.removeItem('userEmojions');
+
+window.localStorage.removeItem('notUserEmojions');
+
+window.localStorage.removeItem('userLocation');
+
   }
 };
 

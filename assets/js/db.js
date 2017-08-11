@@ -308,6 +308,37 @@ const DB = {
       callback(CONSTS.DEFAULT_NOT_USER_EMOJIONS);
     }
 
-  }
+  },
 
+  saveUserLocationPermissions: function (permission) {
+
+    window.localStorage.setItem('userLocationPermissions', JSON.stringify({
+      permission: permission
+    }));
+
+  },
+
+  getUserLocationPermissions: function (callback) {
+
+    let permissions;
+
+    try {
+      permissions = window.localStorage.getItem('userLocationPermissions');
+    } catch (e) {
+      console.log("e", e);
+    }
+
+    if (permissions != null) {
+      callback(JSON.parse(permissions));
+    } else {
+      window.localStorage.setItem('userLocationPermissions', JSON.stringify({
+        permission: "pending"
+      }));
+
+      callback({
+        permission: "pending"
+      });
+
+    }
+  }
 };
