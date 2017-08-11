@@ -7,6 +7,14 @@
   margin-top: $scale-two-down;
 }
 
+.Mstart\(default\) {
+  margin-left: $scale-default;
+}
+
+.Mend\(default\) {
+  margin-right: $scale-default;
+}
+
 .Pstart\(default\) {
   padding-left: 1rem;
 }
@@ -30,6 +38,10 @@
 
 .Pbottom\(d2\) {
   padding-bottom: $scale-two-down;
+}
+
+.Mbottom\(default\) {
+  margin-bottom: $scale-default;
 }
 
 .P\(d2\) {
@@ -58,6 +70,10 @@
 
 .Fz\(10vh\) {
   font-size: 10vh;
+}
+
+.Lh\(11\) {
+  line-height: 1.1;
 }
 
 .Lh\(14\) {
@@ -122,6 +138,10 @@
 
 .Br\(4px\) {
   border-radius: 4px;
+}
+
+.Border\(default\) {
+  border: 1px solid grey;
 }
 
 .C\(p\) {

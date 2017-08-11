@@ -12,6 +12,17 @@ const App = new Vue({
 
     hasEntries: false, /* Nope no entries. Used for showing the empty state in the entries screen. */
 
+    /*
+     * @description: Whether to try and get the geolocation directly when tracking an entry
+     * without first providing the user with an notification to give permission. */
+    getLocationDirectly: false,
+
+    /*
+     * @description: Whether or not to show the notification that asks the user for permissions
+     * to give their location
+     */
+    showLocationNotification: false,
+
     /* Whether or not to show tooltips related to each action. */
     tooltips: {
       tap: false,
@@ -29,6 +40,11 @@ const App = new Vue({
     },
     notUserEmojions: [], /* The list of emojis that are currently not in the user's 8. */
     emptyTracking: undefined, /* Not sure? */
+
+    /*
+     * @description - What will eventually be populated with the user's location if they give permission.
+     */
+    userPosition: undefined,
 
     /* UI-only variables. */
     elapsedTime: undefined
@@ -121,6 +137,28 @@ const App = new Vue({
       console.log("DB.getTooltips");
       console.log("tooltips", tooltips);
       this.tooltips = tooltips;
+    });
+
+    DB.getUserLocationPermissions( (permissionObj) => {
+      console.log("Getting the user location permissions.");
+      console.log("permissionObj", permissionObj);
+
+      /* possible values are { permission: 'granted', 'pending', or 'denied' } */
+
+      if (permissionObj.permission === "granted") {
+        this.getLocationDirectly = true;
+      }
+
+      if (permissionObj.permission === "pending") {
+        this.showLocationNotification = true;
+        // Show the notification to get the user to accept or decline permissions.
+      }
+
+      if (permissionObj.permission === "denied") {
+        // The user explicitly denied after clicking "Add location." on the notification.
+        // Not sure about what to do here yet, but don't do anything for now.
+      }
+
     });
 
   },
@@ -289,7 +327,7 @@ const App = new Vue({
       DB.recordTooltip('tap', (tooltips) => {
         this.tooltips = tooltips;
       });
-
+            
     },
 
     /*

@@ -47,7 +47,7 @@
                   See my entire day.
                 </div> -->
 
-              <div v-if="entries" class="Entries" style="margin-bottom: 88px;">
+              <div v-if="entries" class="Entries Mbottom(default)">
                 <!-- v-bind:total-entries="entriesToShow.length" -->
                 <entry ref="entries" v-for="(entry, index) in entries" v-bind:total-entries="entries.length" v-bind:entry="entry" v-bind:index="index" v-on:save-note="saveNote" v-bind:show-tooltip="tooltips.write">
               </div>
@@ -58,14 +58,15 @@
                 </div>
               </div>
 
+              <div class="Notifications Mstart(default) Mend(default)">
+                <notification v-if="showLocationNotification" emoji="🌏" message="Add location to each notification to see how where you're at effects how you feel." call-to-action-message="Add location" method="askUserForLocation"></notification>
+              </div>
+
             </div>
           </div>
 
         </div>
-        <div style="    z-index: 5;
-    position: fixed;
-    width: 100%;
-    bottom: 0;" class="FlexGrid-cell FlexGrid-cell--nav FlexGrid FlexGrid-cell--alignCenter"><!-- Navigation -->
+        <div style="z-index: 5; position: fixed; width: 100%; bottom: 0;" class="FlexGrid-cell FlexGrid-cell--nav FlexGrid FlexGrid-cell--alignCenter"><!-- Navigation -->
           <div class="FlexGrid FlexGrid--full FlexGrid--fullHeight">
 
             <div v-on:click="toggleEmoji(true)" class="C(p) BackgroundColor BackgroundColor--smoky FlexGrid-cell FlexGrid-cell--flex FlexGrid-cell--alignCenter Br(default) Bt(default) Pos(r)">
@@ -157,6 +158,32 @@
           </div>
       </script>
 
+      <script type="text/template" id="notification_template">
+        <div v-if="shouldShow" class="Notification FlexGrid BackgroundColor Border(default) Br(4px) BackgroundColor BackgroundColor--smoky">
+          <div class="FlexGrid-cell FlexGrid FlexGrid-cell--autoSize FlexGrid--alignItemsCenter">
+              <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
+                <p class="Ff(default) Fz(u1) Lh(11)" style="font-size: 4vh;">
+                  {{emoji}}
+                </p>
+              </div>
+          </div>
+
+          <div class="FlexGrid-cell">
+            <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
+              <p class="Ff(default) Fz(u1) Lh(11) C(white)" style="font-size: 4vh;">{{message}}</p>
+            </div>
+
+          </div>
+
+          <div v-if="callToActionMessage && method" v-on="methods" class="FlexGrid-cell FlexGrid-cell--full">
+              <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)" style="background-color: green;">
+                <div class="C(white) Ff(default) Fz(default) Fw(bold) Td(u) Ta(c)">{{callToActionMessage}}</div>
+              </div>
+          </div>
+
+        </div>
+      </script>
+
       <script src="https://unpkg.com/moment@2.18.1/min/moment.min.js"></script>
       <script src="https://unpkg.com/lodash@4.17.4"></script>
       <script src="https://unpkg.com/flickity@2.0.9/dist/flickity.pkgd.min.js"></script>
@@ -175,6 +202,7 @@
       <script src="assets/js/components/emojion-carousel.js"></script>
       <script src="assets/js/components/entry.js"></script>
       <script src="assets/js/components/tooltip.js"></script>
+      <script src="assets/js/components/notification.js"></script>
 
       <script src="assets/js/app.js"></script>
 
