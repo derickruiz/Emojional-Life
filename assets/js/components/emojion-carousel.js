@@ -23,10 +23,10 @@ const EmojionCarousel = {
 
     document.querySelector(".flickity-viewport").style.height = "100%";
 
-    this.$emit('select-emoji-to-change-to', this.emojions[0]);
+    this.$emit('select-emoji-to-change-to', this.emojions[0], 0);
 
     flickity.on('select', () => {
-      this.$emit('select-emoji-to-change-to', this.emojions[flickity.selectedIndex]);
+      this.$emit('select-emoji-to-change-to', this.emojions[flickity.selectedIndex], flickity.selectedIndex);
     });
 
   }

@@ -263,5 +263,51 @@ const DB = {
       // Ajax request
     }
 
+  },
+
+  /*
+   * @description - Saves the user's emojions array into local storage.
+   */
+  saveUserEmojions: function (emojionsArray) {
+    window.localStorage.setItem('userEmojions', JSON.stringify(emojionsArray));
+  },
+
+  saveNotUserEmojions: function (emojionsArray) {
+    window.localStorage.setItem('notUserEmojions', JSON.stringify(emojionsArray));
+  },
+
+  getUserEmojions: function (callback) {
+    let emojions;
+
+    try {
+      emojions = window.localStorage.getItem('userEmojions');
+    } catch (e) {
+      console.log("e", e);
+    }
+
+    if (emojions != null) {
+      callback(JSON.parse(emojions));
+    } else {
+      callback(CONSTS.DEFAULT_USER_EMOJIONS);
+    }
+
+  },
+
+  getNotUserEmojions: function (callback) {
+    let emojions;
+
+    try {
+      emojions = window.localStorage.getItem('notUserEmojions');
+    } catch (e) {
+      console.log("e", e);
+    }
+
+    if (emojions != null) {
+      callback(JSON.parse(emojions));
+    } else {
+      callback(CONSTS.DEFAULT_NOT_USER_EMOJIONS);
+    }
+
   }
+
 };
