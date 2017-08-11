@@ -224,6 +224,13 @@ const App = new Vue({
       DB.saveUserEmojions(this.emojions);
       DB.saveNotUserEmojions(this.notUserEmojions);
 
+      // Can probably be sure that this is the first time the user is doing this.
+      console.log("this.tooltips", this.tooltips);
+
+      if (this.tooltips.press === true) {
+        this.toggleEmoji(false); // Go ahead and send them back to the patterns page to see more messages.
+      }
+
       DB.recordTooltip('press', (tooltips) => {
         this.tooltips = tooltips;
       });
@@ -365,6 +372,11 @@ const App = new Vue({
       DB.saveNote(entry, entryIndex, note, function () {
         console.log("Saved the note!");
       });
+
+      // Still false so that means it's the first time for a user to be writing a note.
+      if (this.tooltips.write === true) {
+        this.toggleEmoji(true); // Go ahead and switch the user over so they can experiment with the carousel switching functionality.
+      }
 
       DB.recordTooltip('write', (tooltips) => {
         console.log("After recording write");
