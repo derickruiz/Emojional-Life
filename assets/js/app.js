@@ -67,7 +67,7 @@ const App = new Vue({
       "emotion" : "Confidently confident",
       "index" : 5
     }, {
-      "color" : "smoky",
+      "color" : "tractor",
       "emoji" : "😰",
       "emotion" : "Anxious",
       "index" : 6
@@ -83,7 +83,7 @@ const App = new Vue({
       "emoji" : "🤡",
       "index" : 8
     }, {
-      "color" : "rajah'",
+      "color" : "rajah",
       "emoji" : "🤓",
       "index" : 9
     }, {
@@ -91,7 +91,7 @@ const App = new Vue({
       "emoji" : "🤑",
       "index" : 10
     }, {
-      "color" : "tractor'",
+      "color" : "tractor",
       "emoji" : "😍",
       "index" : 11
     }, {
@@ -107,7 +107,7 @@ const App = new Vue({
       "emoji" : "😭",
       "index" : 14
     }, {
-      "color" : "smoky",
+      "color" : "tractor",
       "emoji" : "👿",
       "index" : 15
     }, {
@@ -115,7 +115,7 @@ const App = new Vue({
       "emoji" : "👻",
       "index" : 16
     }, {
-      "color" : "smoky",
+      "color" : "caribeen",
       "emoji" : "👽",
       "index" : 17
     }, {
