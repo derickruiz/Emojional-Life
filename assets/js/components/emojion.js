@@ -24,7 +24,7 @@ const Emojion = {
       required: true
     }
   },
-  
+
   data: function () {
     return {
 
@@ -39,6 +39,12 @@ const Emojion = {
        * @type String
        */
        color: this.emojion.color,
+
+       /*
+        * @description - The color of the emotion when switching using the carouselColor
+        * @type String
+        */
+       carouselColor: undefined,
 
       /*
        * @description - The emojion that this block will change to after selecting a new one via the carousel.
@@ -81,6 +87,9 @@ const Emojion = {
   methods: {
 
     selectEmojionToChangeTo: function (emojion) {
+      console.log("Selecting an emojion to change to.");
+      console.log("emojion", emojion);
+      this.carouselColor = emojion.color;
       this.emojionToChangeTo = emojion;
     },
 
