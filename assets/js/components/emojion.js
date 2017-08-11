@@ -53,6 +53,12 @@ const Emojion = {
       emojionToChangeTo: undefined,
 
       /*
+       * @description - The emojion index (in the not user emojions array) to change to
+       * @type Number
+       */
+      emojionToChangeToIndex: undefined,
+
+      /*
        * @description: - Whether the user is currently changing the emoji on this block with the carousel
        * @type Boolean
        */
@@ -86,16 +92,28 @@ const Emojion = {
 
   methods: {
 
-    selectEmojionToChangeTo: function (emojion) {
+    /*
+     * @description - Call back function from the carousel. */
+    selectEmojionToChangeTo: function (emojion, emojionIndex) {
       console.log("Selecting an emojion to change to.");
       console.log("emojion", emojion);
+      console.log("emojionIndex", emojionIndex);
       this.carouselColor = emojion.color;
       this.emojionToChangeTo = emojion;
+      this.emojionToChangeToIndex = emojionIndex;
     },
 
     turnOnOffCarousel: function () {
       if ( ! this.isChangingEmoji) {
-        this.$emit('turn-off-carousel', this.index, this.emojionToChangeTo);
+
+        this.carouselColor = undefined; // Go back to the original color until actually changing the color.
+
+        this.emoji = this.emojionToChangeTo.emoji;
+        this.color = this.emojionToChangeTo.color;
+
+        console.log('this.emojionToChangeToIndex', this.emojionToChangeToIndex);
+
+        this.$emit('turn-off-carousel', this.index, this.emojionToChangeTo, this.emojionToChangeToIndex);
       } else {
         this.$emit('turn-on-carousel', this.index);
       }
