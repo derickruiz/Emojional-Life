@@ -314,20 +314,45 @@ const App = new Vue({
     trackEntry: function (emojion) {
       console.log("Tracking the entry.");
 
+      let self = this;
+
       emojion["time"] = new Date().getTime();
+
+      let entryIndex = undefined;
 
       if (!this.isResting) {
         DB.trackEntry(emojion, (newEntries) => {
           this.entries = newEntries;
           this.toggleEmoji(false); // Move user to patterns page after tapping an emotion.
           this.startResting(undefined, true, emojion.color);
+
+          let entryIndex = this.entries.length - 1;
+          let entry = this.entries[entryIndex];
+
+          console.log('Gonna get user location permissions.');
+
+          DB.getUserLocationPermissions( (permissionObj) => {
+            if (permissionObj.permission === "granted") {
+
+              console.log('gonna get the geolocation.');
+
+              window.navigator.geolocation.getCurrentPosition(function (position) {
+                console.log('position', position);
+                DB.saveLocationToEntry(entryIndex, entry, position, function (entries) {
+                  self.entries = entries;
+                  self.$forceUpdate();
+                });
+              });
+            }
+          });
+
         });
       }
 
       DB.recordTooltip('tap', (tooltips) => {
         this.tooltips = tooltips;
       });
-            
+
     },
 
     /*

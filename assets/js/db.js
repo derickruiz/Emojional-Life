@@ -340,5 +340,24 @@ const DB = {
       });
 
     }
+  },
+
+  saveLocationToEntry: function (entryIndex, entry, positionObj) {
+    console.log('savelocation to entry');
+    console.log("entryIndex", entryIndex);
+    console.log('entry', entry);
+    console.log('positionObj', positionObj);
+    let entryDate = moment(entry.time).format('YYYY-MM-DD');
+    entry.location = {
+      latitude: positionObj.coords.latitude,
+      longitude: positionObj.coords.longitude
+    };
+
+    if (typeof callback !== "undefined") {
+      callback(DB.saveLocalEntries(entryDate, entry, entryIndex));
+    } else {
+      DB.saveLocalEntries(entryDate, entry, entryIndex)
+    }
+
   }
 };
