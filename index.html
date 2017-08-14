@@ -11,7 +11,7 @@
       <link rel="stylesheet" href="assets/styles/styles.css">
 
       <link rel="manifest" href="/manifest.json">
-      
+
     </head>
     <body>
 
@@ -52,16 +52,23 @@
               <div v-if="entries" class="Entries Mbottom(default)">
                 <!-- v-bind:total-entries="entriesToShow.length" -->
                 <entry ref="entries" v-for="(entry, index) in entries" v-bind:total-entries="entries.length" v-bind:entry="entry" v-bind:index="index" v-on:save-note="saveNote" v-bind:show-tooltip="tooltips.write">
+
+                  <div class="Notifications Mstart(default) Mend(default)">
+                    <notification v-if="showLocationNotification" emoji="🌏" message="Add location to each notification to see how where you're at effects how you feel." call-to-action-message="Add location" method="askUserForLocation"></notification>
+                  </div>
+
               </div>
 
-              <div v-else>
-                <div class="Loading">
-                  <div class="Loading-emoji">🤔</div>
-                </div>
+              <div style="margin-top: 3rem;" class="Mtop(u1) Pstart(default) Pend(default)">
+                <p class="Ff(default) Fz(u2) Lh(11) C(black)">
+                  What <span class="Fw(bold)">patterns</span> do I see?
+                </p>
               </div>
 
-              <div class="Notifications Mstart(default) Mend(default)">
-                <notification v-if="showLocationNotification" emoji="🌏" message="Add location to each notification to see how where you're at effects how you feel." call-to-action-message="Add location" method="askUserForLocation"></notification>
+              <div style="filter: blur(3px) grayscale(100%);" class="Mtop(d1) Pstart(default) Pend(default)Pbottom(default)">
+                <p class="Ff(default) Fz(default) Lh(14) C(black) Mbottom(d3)">When I feel 😀, I say great, big, and awesome a lot.</p>
+                <p class="Ff(default) Fz(default) Lh(14) C(black) Mbottom(d3)">When I'm in <span class="Fw(bold)">Chiang Mai</span>, I tend to feel 😇, 😮, and 😎.</p>
+                <p class="Ff(default) Fz(default) Lh(14) C(black) Mbottom(d3)">When it's <span class="Fw(bold)">raining</span>, I write more than usual.</p>
               </div>
 
             </div>
@@ -72,24 +79,13 @@
           <div class="FlexGrid FlexGrid--full FlexGrid--fullHeight">
 
             <div v-on:click="toggleEmoji(true)" class="C(p) BackgroundColor BackgroundColor--smoky FlexGrid-cell FlexGrid-cell--flex FlexGrid-cell--alignCenter Br(default) Bt(default) Pos(r)">
-              <div v-if="isResting" class="Progress BackgroundColor js-progress" v-bind:class="['BackgroundColor--' + resting.color]"></div>
               <div class="Pos(r) FlexGrid FlexGrid--guttersOneDown">
                 <div class="FlexGrid-cell FlexGrid-cell--autoSize">
-                  <span v-if="isResting">
-                    💦
-                  </span>
-                  <span v-else>
-                    😄
-                  </span>
+                  😄
                 </div>
                 <div class="FlexGrid-cell FlexGrid-cell--autoSize FlexGrid-cell--alignSelfCenter">
                   <div v-bind:class=" { 'Td(u) Fw(bold)': shouldShowEmoji }" class="Ff(default) C(white) Fz(default)">
-                    <span v-if="isResting">
-                      Resting...
-                    </span>
-                    <span v-else>
-                      Emotions
-                    </span>
+                    Emotions
                   </div>
                 </div>
               </div>
@@ -129,7 +125,7 @@
           <div class="FlexGrid FlexGrid--guttersOneDown FlexGrid--spaceBetween M">
             <div class="FlexGrid-cell FlexGrid-cell--9of10">
               <p class="Ff(default) Fz(u1) Lh(14) C(white)" style="font-size: 4vh;">
-                {{entry.emoji}} at <span class="Fw(bold)">{{ formatTime(entry.time) }}</span> <span v-if="entry.location">at <span class="Fs(italic)">{{entry.location}}.</span></span>
+                {{entry.emoji}} at <span class="Fw(bold)">{{ formatTime(entry.time) }}</span> <span v-if="entry.ll">at <span class="Fs(italic)">{{entry.location}}.</span></span>
               </p>
             </div>
             <div v-on:click="showNote" class="FlexGrid-cell FlexGrid-cell--1of10 FlexGrid-cell--alignSelfCenter">
