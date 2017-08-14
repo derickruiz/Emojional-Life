@@ -7,6 +7,14 @@
   margin-top: $scale-two-down;
 }
 
+.Mtop\(d3\) {
+  margin-top: $scale-three-down;
+}
+
+.Mtop\(u4\) {
+  margin-top: $scale-four-up;
+}
+
 .Mtop\(u5\) {
   margin-top: $scale-five-up;
 }
@@ -31,8 +39,16 @@
   padding-top: $scale-default;
 }
 
+.Ptop\(u4\) {
+  padding-top: $scale-four-up;
+}
+
 .Pbottom\(default\) {
   padding-bottom: $scale-default;
+}
+
+.Pbottom\(u4\) {
+  padding-bottom: $scale-four-up;
 }
 
 .Ptop\(d2\) {
@@ -94,8 +110,16 @@
   font-size: $scale-two-up;
 }
 
+.Fz\(u3\) {
+  font-size: $scale-three-up;
+}
+
 .Fz\(10vh\) {
   font-size: 10vh;
+}
+
+.Fz\(default\) {
+  font-size: $scale-default;
 }
 
 .Lh\(11\) {
