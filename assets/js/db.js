@@ -114,7 +114,7 @@ const DB = {
    * @description: Small API over localStorage that saves an array of objects into a key.
    * @
    */
-  saveLocalEntries: function (date, item, index) {
+  saveLocalEntries: function (date, item, index, color) {
 
     console.log("UTILS.save");
     console.log("date", date);
@@ -122,6 +122,10 @@ const DB = {
     console.log("index", index);
 
     let items;
+
+    if (typeof color !== "undefined") {
+      item.color = color;
+    }
 
     try {
       items = window.localStorage.getItem('entries');
@@ -201,20 +205,20 @@ const DB = {
 
   },
 
-  trackEntry: function (emojion, callback) {
+  trackEntry: function (emojion, color, callback) {
 
     let currentDay = moment(moment.now()).format('YYYY-MM-DD');
 
     if (GLOBAL_STATE.notLoggedIn) {
       // Save to local storage
-      DB.saveLocalEntries(currentDay, emojion);
+      DB.saveLocalEntries(currentDay, emojion, undefined, color);
       callback(DB.getLocalEntries(currentDay));
 
     } else {
       // Ajax request
     }
   },
-  
+
   /*
    * @description - Saves the user's emojions array into local storage.
    */
