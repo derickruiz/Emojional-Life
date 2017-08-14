@@ -6,6 +6,10 @@ const EmojionCarousel = {
     emojions: {
       type: Array,
       required: true
+    },
+    color: {
+      type: String,
+      required: true
     }
   },
 
