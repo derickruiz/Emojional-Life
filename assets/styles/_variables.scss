@@ -9,15 +9,21 @@ $color-caribeenGreen: #03CEA4;
 
 $color-chaliceSilver: #a0a0a0;
 
-$font-family-default: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+// Fonts
+$font-family-serifRegular: "Plantin", "Times New Roman", Times, serif;
+$font-family-serifItalic: "Plantin-Italic", "Times New Roman", Times, serif;
+$font-family-serifBold: "Plantin-Bold", "Times New Roman", Times, serif;
+$font-family-sansSerifRegular: 'Slate-Book', "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-family-sansSerifBold: 'Slate-Medium', "Helvetica Neue", Helvetica, Arial, sans-serif;
 
 // Scale 1.272
-$scale-two-up: 2.617924rem;
-$scale-one-up: 1.618rem;
+$scale-two-up: 2.058075648rem;
+$scale-two-up: 1.618rem;
+$scale-one-up: 1.272rem;
 $scale-default: 1rem;
-$scale-one-down: 0.618rem;
-$scale-two-down: 0.618rem;
-$scale-three-down: 0.48588598375rem;
+$scale-one-down: 0.78616352201rem;
+$scale-two-down: 0.61805308334rem;
 
 // Misceleanosu Sizes
 $size: calc(25vh - 11px);

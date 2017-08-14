@@ -16,19 +16,19 @@
 }
 
 .Pstart\(default\) {
-  padding-left: 1rem;
+  padding-left: $scale-default;
 }
 
 .Pend\(default\) {
-  padding-right: 1rem;
+  padding-right: $scale-default;
 }
 
 .Ptop\(default\) {
-  padding-top: 1rem;
+  padding-top: $scale-default;
 }
 
 .Pbottom\(default\) {
-  padding-bottom: 1rem;
+  padding-bottom: $scale-default;
 }
 
 .Ptop\(d2\) {
@@ -45,23 +45,39 @@
 }
 
 .P\(d2\) {
-  padding: 0.61804697157rem;
+  padding: $scale-two-down;
 }
 
 .P\(default\) {
-  padding: 1rem;
+  padding: $scale-default;
 }
 
 .C\(white\) {
   color: white;
 }
 
-.Ff\(default\) {
-  font-family: $font-family-default;
+.Ff\(sansSerifRegular\) {
+  font-family: $font-family-sansSerifRegular;
+  font-weight: normal;
+}
+
+.Ff\(sansSerifBold\) {
+  font-family: $font-family-sansSerifBold;
+  font-weight: 400;
+}
+
+.Ff\(serifRegular\) {
+  font-family: $font-family-serifRegular;
+  font-weight: normal;
+}
+
+.Ff\(serifBold\) {
+  font-family: $font-family-serifBold;
+  font-weight: 400;
 }
 
 .Fz\(u1\) {
-  font-size: 1.618rem;
+  font-size: $scale-one-up;
 }
 
 .Fz\(u2\) {
@@ -164,10 +180,6 @@
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
 }
 
-.Br\(tractorDark\) {
-  border-right: 1px solid #d61c35;
-}
-
 .Z\(2\) {
   z-index: 2;
 }
@@ -185,7 +197,7 @@
 }
 
 .L\(d2\) {
-  left: 0.618rem;
+  left: $scale-two-down;
 }
 
 .T\(0\)  {
