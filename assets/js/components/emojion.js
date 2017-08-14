@@ -88,7 +88,7 @@ const Emojion = {
 
       // Don't wanna send anything to the server if switching with the carousel.
       if ( ! this.isChangingEmoji) {
-        this.$emit('track-entry', this.emojion);
+        this.$emit('track-entry', this.emojion, this.colors[this.index]);
       }
 
     });
