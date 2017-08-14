@@ -99,6 +99,13 @@ const App = new Vue({
       console.log("Get today's entries");
       console.log("entries", entries);
       this.entries = entries;
+
+      if (this.entries && this.entries.length >= 1) {
+        this.hasEntries = true;
+      }
+
+      console.log("this.hasEntries", this.hasEntries);
+
     });
 
     /*
@@ -299,6 +306,10 @@ const App = new Vue({
         this.entries = newEntries;
         this.toggleEmoji(false); // Move user to patterns page after tapping an emotion.
 
+        if (this.entries && this.entries.length >= 1) {
+          this.hasEntries = true;
+        }
+        
         let entryIndex = this.entries.length - 1;
         let entry = this.entries[entryIndex];
 
