@@ -106,7 +106,7 @@
 
       <script type="text/x-template" id="emojion_template">
         <div class="Emotion BackgroundColor js-emotion" v-bind:class="['BackgroundColor--' + colors[index], canSwitchEmoji && isChangingEmoji ? 'Emotion--isSwitching js-emotion-switching' : '']">
-          <emojion-carousel v-if="canSwitchEmoji && isChangingEmoji" v-bind:emojions="notUserEmojions" v-on:select-emoji-to-change-to="selectEmojionToChangeTo"></emojion-carousel>
+          <emojion-carousel v-if="canSwitchEmoji && isChangingEmoji" v-bind:emojions="notUserEmojions" v-bind:color="colors[index]" v-on:select-emoji-to-change-to="selectEmojionToChangeTo"></emojion-carousel>
           <div v-else class="Fz(10vh)">
             <div class="Ta(c)">{{emojion.emoji}}</div>
             <div v-bind:class="[colors[index] === 'black' ? 'C(white)' : 'C(black)']" class="Ff(serifItalic) Fz(u2) Ta(c)">{{emojion.emotion}}</div>
@@ -118,7 +118,10 @@
       <script type="text/x-template" id="emojion_carousel_template">
         <div class="EmotionCarousel">
           <div v-for="emojion in emojions" class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">
-            {{emojion.emoji}}
+            <div>
+              <div class="Ta(c)">{{emojion.emoji}}</div>
+              <div v-bind:class="[color === 'black' ? 'C(white)' : 'C(black)']" class="Ff(serifItalic) Fz(u2) Ta(c)">{{emojion.emotion}}</div>
+            </div>
           </div>
         </div>
       </script>
