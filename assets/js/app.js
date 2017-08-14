@@ -138,6 +138,11 @@ const App = new Vue({
         // Not sure about what to do here yet, but don't do anything for now.
       }
 
+      console.log("this.showLocationNotification", this.showLocationNotification);
+
+      this.$forceUpdate();
+      
+
     });
 
   },
@@ -309,7 +314,7 @@ const App = new Vue({
         if (this.entries && this.entries.length >= 1) {
           this.hasEntries = true;
         }
-        
+
         let entryIndex = this.entries.length - 1;
         let entry = this.entries[entryIndex];
 

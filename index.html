@@ -61,18 +61,18 @@
               </div>
 
               <div class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(80%)">
-  <div class="FlexGrid-cell FlexGrid-cell--full Bt(default)">
-    <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
-      <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" type="text">
-      <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Password" type="password">
-      <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Confirm Password" type="password">
-    </div>
-  </div>
+                <div class="FlexGrid-cell FlexGrid-cell--full Bt(default)">
+                  <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
+                    <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" type="text">
+                    <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Password" type="password">
+                    <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Confirm Password" type="password">
+                  </div>
+                </div>
 
-  <div class="FlexGrid-cell FlexGrid-cell--full">
-    <button class="Ptop(default) Pbottom(default) Bt(default) Ta(c) Fz(u1) C(darkerGrey) D(b) W(100%) Bgc(grey) Ff(sansSerifBold)">Sign Up</button>
-  </div>
-</div>
+                <div class="FlexGrid-cell FlexGrid-cell--full">
+                  <button class="Ptop(default) Pbottom(default) Bt(default) Ta(c) Fz(u1) C(darkerGrey) D(b) W(100%) Bgc(grey) Ff(sansSerifBold)">Sign Up</button>
+                </div>
+              </div>
 
               </div>
 
@@ -92,11 +92,10 @@
               <div class="Entries">
                 <!-- v-bind:total-entries="entriesToShow.length" -->
                 <entry ref="entries" v-for="(entry, index) in entries" v-bind:total-entries="entries.length" v-bind:entry="entry" v-bind:index="index" v-on:save-note="saveNote" v-bind:show-tooltip="tooltips.write">
+              </div>
 
-                  <div class="Notifications Mstart(default) Mend(default)">
-                    <notification v-if="showLocationNotification" emoji="🌏" message="Add location to each notification to see how where you're at effects how you feel." call-to-action-message="Add location" method="askUserForLocation"></notification>
-                  </div>
-
+              <div v-if="showLocationNotification" class="Notifications Ptop(u4) Pstart(default) Pend(default)">
+                <notification emoji="🌏" message="Add location to each notification to see how where you're at effects how you feel." call-to-action-message="Add location" method="askUserForLocation"></notification>
               </div>
 
               <div class="Pstart(default) Pend(default) PreviousDayEmotions PreviousDayEmotions--empty Ptop(u4) Pbottom(u4) Mtop(u4)">
@@ -250,10 +249,10 @@
       </script>
 
       <script type="text/template" id="notification_template">
-        <div v-if="shouldShow" class="Notification FlexGrid BackgroundColor Border(default) Br(4px) BackgroundColor BackgroundColor--smoky">
-          <div class="FlexGrid-cell FlexGrid FlexGrid-cell--autoSize FlexGrid--alignItemsCenter">
+        <div v-if="shouldShow" class="Notification FlexGrid BackgroundColor Border(default) Br(4px) Bgc(grey)">
+          <div class="FlexGrid-cell FlexGrid FlexGrid-cell--autoSize FlexGrid-cell--alignCenter">
               <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
-                <p class="Ff(default) Fz(u1) Lh(11)" style="font-size: 4vh;">
+                <p class="Ff(default) Fz(u1) Lh(11)">
                   {{emoji}}
                 </p>
               </div>
@@ -261,15 +260,13 @@
 
           <div class="FlexGrid-cell">
             <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
-              <p class="Ff(default) Fz(u1) Lh(11) C(white)" style="font-size: 4vh;">{{message}}</p>
+              <p class="Ff(sansSerifRegular) Fz(u1) Lh(11) C(darkerGrey)">{{message}}</p>
             </div>
 
           </div>
 
-          <div v-if="callToActionMessage && method" v-on="methods" class="FlexGrid-cell FlexGrid-cell--full">
-              <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)" style="background-color: green;">
-                <div class="C(white) Ff(default) Fz(default) Fw(bold) Td(u) Ta(c)">{{callToActionMessage}}</div>
-              </div>
+          <div v-if="callToActionMessage && method" v-on="methods" class="FlexGrid-cell FlexGrid-cell--full Bt(default)">
+            <button class="W(100%) Bgc(grey) Pstart(default) Pend(default) Ptop(default) Pbottom(default) C(darkerGrey) Ff(sansSerifBold) Fz(default) Fw(bold) Td(u) Ta(c)">{{callToActionMessage}}</button>
           </div>
 
         </div>
