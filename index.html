@@ -28,7 +28,7 @@
           <div class="App-container FlexGrid" v-bind:class="{ 'moveLeft': !shouldShowEmoji }">
             <div class="Screen FlexGrid-cell FlexGrid-cell--1of2">
               <div class="Emotions js-emotions">
-                <emojion ref="emojions" v-for="(emojion, index) in emojions" v-bind:can-switch-emoji="canSwitchEmoji" v-bind:not-user-emojions="notUserEmojions" v-bind:index="index" v-bind:emojion="emojion" v-on:turn-on-carousel="turnOnCarousel" v-on:turn-off-carousel="turnOffCarousel" v-on:track-entry="trackEntry"></emojion>
+                <emojion ref="emojions" v-for="(emojion, index) in emojions" v-bind:can-switch-emoji="canSwitchEmoji" v-bind:not-user-emojions="notUserEmojions" v-bind:colors="emojionBlockColors" v-bind:index="index" v-bind:emojion="emojion" v-on:turn-on-carousel="turnOnCarousel" v-on:turn-off-carousel="turnOffCarousel" v-on:track-entry="trackEntry"></emojion>
               </div>
               <tooltip v-if="tooltips.tap" emoji="👆" action="Tap" message="to track an emotion." reverse arrow-position="right" tooltip-type="tap"></tooltip>
               <tooltip v-if="tooltips.press && !tooltips.tap" emoji="👆" action="Press and hold" message="to change emotions." tooltip-type="press"></tooltip>
@@ -105,12 +105,11 @@
       </div>
 
       <script type="text/x-template" id="emojion_template">
-        <div class="Emotion BackgroundColor js-emotion" v-bind:class="[carouselColor ? 'BackgroundColor--' + carouselColor : 'BackgroundColor--' + color, canSwitchEmoji && isChangingEmoji ? 'Emotion--isSwitching js-emotion-switching' : '']">
+        <div class="Emotion BackgroundColor js-emotion" v-bind:class="['BackgroundColor--' + colors[index], canSwitchEmoji && isChangingEmoji ? 'Emotion--isSwitching js-emotion-switching' : '']">
           <emojion-carousel v-if="canSwitchEmoji && isChangingEmoji" v-bind:emojions="notUserEmojions" v-on:select-emoji-to-change-to="selectEmojionToChangeTo"></emojion-carousel>
           <div v-else class="Fz(10vh)">
-
             <div class="Ta(c)">{{emojion.emoji}}</div>
-            <div class="Ff(serifItalic) Fz(u2) Ta(c)">{{emojion.emotion}}</div>
+            <div v-bind:class="[colors[index] === 'black' ? 'C(white)' : 'C(black)']" class="Ff(serifItalic) Fz(u2) Ta(c)">{{emojion.emotion}}</div>
           </div>
 
         </div>
