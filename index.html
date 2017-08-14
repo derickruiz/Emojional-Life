@@ -107,7 +107,12 @@
       <script type="text/x-template" id="emojion_template">
         <div class="Emotion BackgroundColor js-emotion" v-bind:class="[carouselColor ? 'BackgroundColor--' + carouselColor : 'BackgroundColor--' + color, canSwitchEmoji && isChangingEmoji ? 'Emotion--isSwitching js-emotion-switching' : '']">
           <emojion-carousel v-if="canSwitchEmoji && isChangingEmoji" v-bind:emojions="notUserEmojions" v-on:select-emoji-to-change-to="selectEmojionToChangeTo"></emojion-carousel>
-          <span v-else class="Fz(10vh)">{{emojion.emoji}}</span>
+          <div v-else class="Fz(10vh)">
+
+            <div class="Ta(c)">{{emojion.emoji}}</div>
+            <div class="Ff(serifItalic) Fz(u2) Ta(c)">{{emojion.emotion}}</div>
+          </div>
+
         </div>
       </script>
 
