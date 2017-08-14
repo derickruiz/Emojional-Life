@@ -36,7 +36,7 @@
 
             <div class="Screen Tracked FlexGrid-cell FlexGrid-cell--1of2 BackgroundColor BackgroundColor--white">
 
-              <!-- v-if="hasEntries" -->
+              <div v-if="hasEntries">
 
                 <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
                   <p class="Ff(default) Fz(u2) Lh(11) C(black)">
@@ -59,6 +59,21 @@
 
               </div>
 
+
+              </div>
+              <div v-else>
+
+                <div class="Loading Flex Flex--center Pstart(default) Pend(default)">
+                  <div>
+                    <div class="Loading-emoji">👻</div>
+                    <div class="Ff(sansSerifBold) Fz(u2) Mtop(u5) Ta(c)">No entries yet. Tap an emotion to track one.</div>
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!--
               <div style="margin-top: 3rem;" class="Mtop(u1) Pstart(default) Pend(default)">
                 <p class="Ff(default) Fz(u2) Lh(11) C(black)">
                   What <span class="Fw(bold)">patterns</span> do I see?
@@ -70,6 +85,7 @@
                 <p class="Ff(default) Fz(default) Lh(14) C(black) Mbottom(d3)">When I'm in <span class="Fw(bold)">Chiang Mai</span>, I tend to feel 😇, 😮, and 😎.</p>
                 <p class="Ff(default) Fz(default) Lh(14) C(black) Mbottom(d3)">When it's <span class="Fw(bold)">raining</span>, I write more than usual.</p>
               </div>
+              -->
 
             </div>
           </div>
