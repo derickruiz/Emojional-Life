@@ -37,9 +37,48 @@
 
             <div class="Screen Tracked FlexGrid-cell FlexGrid-cell--1of2 BackgroundColor BackgroundColor--white">
 
+              <div class="Mtop(default) Mstart(default) Mend(default)">
+              <div class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(100%)">
+
+               <div class="FlexGrid-cell FlexGrid FlexGrid--alignItemsCenter">
+                 <div class="Fz(default) C(darkerGrey) Ff(sansSerifRegular) Pstart(default)">Don't lose your data! 🔥</div>
+               </div>
+
+               <div class="FlexGrid-cell">
+                 <!-- Login / Sign up Tab -->
+
+                 <div class="FlexGrid">
+                   <div class="FlexGrid-cell FlexGrid-cell--1of2 Bstart(default) Br(default)">
+                     <div class="Fz(default) Ff(sansSerifRegular) C(darkerGrey) Ptop(default) Pbottom(default) Ta(c)">Login</div>
+                   </div>
+                   <div class="FlexGrid-cell FlexGrid-cell--1of2">
+                     <div class="Fz(default) Ff(sansSerifBold) C(darkerGrey) Ptop(default) Pbottom(default) Ta(c) Fw(bold) Td(u)">Sign Up</div>
+                   </div>
+                 </div>
+
+               </div>
+
+              </div>
+
+              <div class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(80%)">
+  <div class="FlexGrid-cell FlexGrid-cell--full Bt(default)">
+    <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
+      <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" type="text">
+      <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Password" type="password">
+      <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Confirm Password" type="password">
+    </div>
+  </div>
+
+  <div class="FlexGrid-cell FlexGrid-cell--full">
+    <button class="Ptop(default) Pbottom(default) Bt(default) Ta(c) Fz(u1) C(darkerGrey) D(b) W(100%) Bgc(grey) Ff(sansSerifBold)">Sign Up</button>
+  </div>
+</div>
+
+              </div>
+
               <div v-if="hasEntries">
 
-                <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
+                <div class="Pstart(default) Pend(default) Ptop(u1) Pbottom(default)">
                   <p class="Ff(sansSerifBold) Fz(u3) Lh(11) C(black)">
                     {{ getPatternsMessage() }}
                   </p>

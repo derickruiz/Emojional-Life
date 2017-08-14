@@ -3,6 +3,10 @@
   display: block;
 }
 
+.Mtop\(default\) {
+  margin-top: $scale-default;
+}
+
 .Mtop\(d2\) {
   margin-top: $scale-two-down;
 }
@@ -39,12 +43,20 @@
   padding-top: $scale-default;
 }
 
+.Ptop\(u1\) {
+  padding-top: $scale-one-up;
+}
+
 .Ptop\(u4\) {
   padding-top: $scale-four-up;
 }
 
 .Pbottom\(default\) {
   padding-bottom: $scale-default;
+}
+
+.Pbottom\(u1\) {
+  padding-bottom: $scale-one-up;
 }
 
 .Pbottom\(u4\) {
@@ -74,6 +86,14 @@
 
 .C\(white\) {
   color: white;
+}
+
+.C\(darkerGrey\) {
+  color: $color-darkerGrey;
+}
+
+.Bgc\(grey\) {
+  background-color: $color-grey;
 }
 
 .Ff\(sansSerifRegular\) {
@@ -179,11 +199,11 @@
 }
 
 .Br\(default\) {
-  border-right: 1px solid #252525;
+  border-right: 1px solid $color-darkerGrey;
 }
 
 .Bt\(default\) {
-  border-top: 1px solid #252525;
+  border-top: 1px solid $color-darkerGrey;
 }
 
 .Br\(4px\) {
