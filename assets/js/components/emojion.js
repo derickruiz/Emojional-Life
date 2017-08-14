@@ -22,6 +22,11 @@ const Emojion = {
     notUserEmojions: {
       type: Array,
       required: true
+    },
+
+    colors: {
+      type: Array,
+      required: true
     }
   },
 

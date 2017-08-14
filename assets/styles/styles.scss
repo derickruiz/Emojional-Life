@@ -130,6 +130,48 @@ body {
 }
 
 .BackgroundColor {
+
+  $color-blue: #7F96FF;
+  $color-red: #FF331F;
+  $color-purple: #6F58C9;
+  $color-orange: #F7B267;
+  $color-green: #8ACB88;
+  $color-black: #0B0A07;
+  $color-brown: #54494B;
+  $color-pink: #FF4F79;
+
+  &--blue {
+    background-color: $color-blue;
+  }
+
+  &--red {
+    background-color: $color-red;
+  }
+
+  &--purple {
+    background-color: $color-purple;
+  }
+
+  &--orange {
+    background-color: $color-orange;
+  }
+
+  &--green {
+    background-color: $color-green;
+  }
+
+  &--black {
+    background-color: $color-black;
+  }
+
+  &--brown {
+    background-color: $color-brown;
+  }
+
+  &--pink {
+    background-color: $color-pink;
+  }
+
   &--oxford {
     background-color: $color-oxfordBlue;
   }

@@ -44,7 +44,8 @@ const App = new Vue({
     userPosition: undefined,
 
     /* UI-only variables. */
-    elapsedTime: undefined
+    elapsedTime: undefined,
+    emojionBlockColors: ['blue', 'red', 'purple', 'orange', 'green', 'black', 'brown', 'pink']
   },
 
   created: function () {
@@ -294,7 +295,7 @@ const App = new Vue({
       DB.trackEntry(emojion, (newEntries) => {
         this.entries = newEntries;
         this.toggleEmoji(false); // Move user to patterns page after tapping an emotion.
-        
+
         let entryIndex = this.entries.length - 1;
         let entry = this.entries[entryIndex];
 
