@@ -6,7 +6,6 @@ const App = new Vue({
     /* Booleans */
     shouldShowEmoji: true, /* Whether to show the Emoji page or the Tracking page. */
     canSwitchEmoji: false, /* Whether the user can go ahead and start switching emoji by pressing and changing with caorusel */
-    isResting: false, /* Whether should be waiting before inputting another emoji or not. */
 
     isShowingAllEntries: false,
 
@@ -35,9 +34,7 @@ const App = new Vue({
     entriesToShow: undefined, /* Shows the last two inputted notes for the day. */
     emojions: undefined, /* The emojis. */
     currentDay: undefined, /* For saving notes into the right place in the database. */
-    resting: { /* Used for rendering the progress bar in the navigation when user clicks on emotion. */
-      color: 'tractor'
-    },
+
     notUserEmojions: [], /* The list of emojis that are currently not in the user's 8. */
     emptyTracking: undefined, /* Not sure? */
 
@@ -65,30 +62,6 @@ const App = new Vue({
     this.shouldShowEmoji = true;
 
     DOM.freezeScreen();
-
-    console.log("Calling DB.getResting in created.");
-
-    DB.getResting((restingObj) => {
-      if (restingObj != null) {
-
-        console.log("restingObj", restingObj);
-
-        this.resting = restingObj;
-
-        let now = moment(moment.now());
-        let savedRestingTime = moment(restingObj.time);
-
-        console.log('savedRestingTime', savedRestingTime.format('LLL'));
-        console.log('now', now.format('LLL'));
-        console.log('diff', savedRestingTime.diff(now, 'seconds'));
-
-        if (savedRestingTime.diff(now, 'seconds') >= 1) {
-          this.startResting(restingObj.time, false, restingObj.color);
-        }
-
-      }
-
-    });
 
     this.canSwitchEmoji = true;
 
@@ -120,8 +93,6 @@ const App = new Vue({
     //     this.hasEntries = true;
     //   }
     // });
-
-    // getRestingState.call(this);
 
     DB.getTodaysEntries((entries) => {
       console.log("Get today's entries");
@@ -320,108 +291,35 @@ const App = new Vue({
 
       let entryIndex = undefined;
 
-      if (!this.isResting) {
-        DB.trackEntry(emojion, (newEntries) => {
-          this.entries = newEntries;
-          this.toggleEmoji(false); // Move user to patterns page after tapping an emotion.
-          this.startResting(undefined, true, emojion.color);
+      DB.trackEntry(emojion, (newEntries) => {
+        this.entries = newEntries;
+        this.toggleEmoji(false); // Move user to patterns page after tapping an emotion.
+        
+        let entryIndex = this.entries.length - 1;
+        let entry = this.entries[entryIndex];
 
-          let entryIndex = this.entries.length - 1;
-          let entry = this.entries[entryIndex];
+        console.log('Gonna get user location permissions.');
 
-          console.log('Gonna get user location permissions.');
+        DB.getUserLocationPermissions( (permissionObj) => {
+          if (permissionObj.permission === "granted") {
 
-          DB.getUserLocationPermissions( (permissionObj) => {
-            if (permissionObj.permission === "granted") {
+            console.log('gonna get the geolocation.');
 
-              console.log('gonna get the geolocation.');
-
-              window.navigator.geolocation.getCurrentPosition(function (position) {
-                console.log('position', position);
-                DB.saveLocationToEntry(entryIndex, entry, position, function (entries) {
-                  self.entries = entries;
-                  self.$forceUpdate();
-                });
+            window.navigator.geolocation.getCurrentPosition(function (position) {
+              console.log('position', position);
+              DB.saveLocationToEntry(entryIndex, entry, position, function (entries) {
+                self.entries = entries;
+                self.$forceUpdate();
               });
-            }
-          });
-
+            });
+          }
         });
-      }
+
+      });
 
       DB.recordTooltip('tap', (tooltips) => {
         this.tooltips = tooltips;
       });
-
-    },
-
-    /*
-     * @description - Progresses the progress bar in the navigation and stops the user from toggling emoji.
-     */
-    startResting: function (timeToWait, shouldSave, color) {
-
-      const self = this;
-
-      this.isResting = true;
-
-      let timeInFuture;
-
-      // Start it at a specific time if it exists (Passed in when rendering on load)
-      if (typeof timeToWait !== "undefined") {
-        timeInFuture = moment(timeToWait);
-      } else {
-        timeInFuture = moment(moment.now());
-        timeInFuture.add(2, 'minutes');
-      }
-
-      this.resting = {
-        time: timeInFuture,
-        color: color
-      };
-
-      // Should we save it to to the DB, or are we just rendering the resting process after refresh for example?
-      if (shouldSave) {
-        DB.saveResting(this.resting);
-      }
-
-      Array.from(document.querySelectorAll(".js-emotion")).forEach(function (emojionEl) {
-        emojionEl.style.filter = "grayscale(100%)"
-      });
-
-      GLOBAL_STATE.restingIntervalId = setInterval(function () {
-
-        // $total = 160000;
-        // $current = 12345;
-        // $percentage = $current/$total * 100;
-
-        const secondsDifferenceCurrent = timeInFuture.diff(moment(moment.now()), 'seconds');
-        const percentage = Math.round(secondsDifferenceCurrent / 120 * 100);
-
-        let emotionCarousel = document.querySelector(".js-emotion-switching");
-
-        if (emotionCarousel) {
-          emotionCarousel.style.filter = "";
-        }
-
-        Array.from(document.querySelectorAll(".js-emotion:not(.js-emotion-switching)")).forEach(function (emojionEl) {
-          emojionEl.style.filter = "grayscale(100%)";
-        });
-
-        if (percentage <= 0) {
-          clearInterval(GLOBAL_STATE.restingIntervalId);
-
-          Array.from(document.querySelectorAll(".js-emotion")).forEach(function (emojionEl) {
-            emojionEl.style.filter = "";
-          });
-
-          document.querySelector(".js-progress").style = "";
-
-          self.isResting = false;
-
-        } else {
-          document.querySelector(".js-progress").style.transform = "translate3d(-" + percentage + "%, 0px, 0px)";
-        }
-      }, 1000);
 
     },
 
