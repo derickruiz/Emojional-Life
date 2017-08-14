@@ -39,7 +39,7 @@
               <div v-if="hasEntries">
 
                 <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
-                  <p class="Ff(default) Fz(u2) Lh(11) C(black)">
+                  <p class="Ff(sansSerifBold) Fz(u3) Lh(11) C(black)">
                     {{ getPatternsMessage() }}
                   </p>
                 </div>
@@ -49,7 +49,7 @@
                   See my entire day.
                 </div> -->
 
-              <div v-if="entries" class="Entries Mbottom(default)">
+              <div v-if="entries" class="Entries">
                 <!-- v-bind:total-entries="entriesToShow.length" -->
                 <entry ref="entries" v-for="(entry, index) in entries" v-bind:total-entries="entries.length" v-bind:entry="entry" v-bind:index="index" v-on:save-note="saveNote" v-bind:show-tooltip="tooltips.write">
 
@@ -73,19 +73,29 @@
 
               </div>
 
-              <!--
-              <div style="margin-top: 3rem;" class="Mtop(u1) Pstart(default) Pend(default)">
-                <p class="Ff(default) Fz(u2) Lh(11) C(black)">
-                  What <span class="Fw(bold)">patterns</span> do I see?
-                </p>
-              </div>
+              <div class="Patterns Patterns--empty Ptop(u4) Pbottom(u4) Mtop(u4)">
 
-              <div style="filter: blur(3px) grayscale(100%);" class="Mtop(d1) Pstart(default) Pend(default)Pbottom(default)">
-                <p class="Ff(default) Fz(default) Lh(14) C(black) Mbottom(d3)">When I feel 😀, I say great, big, and awesome a lot.</p>
-                <p class="Ff(default) Fz(default) Lh(14) C(black) Mbottom(d3)">When I'm in <span class="Fw(bold)">Chiang Mai</span>, I tend to feel 😇, 😮, and 😎.</p>
-                <p class="Ff(default) Fz(default) Lh(14) C(black) Mbottom(d3)">When it's <span class="Fw(bold)">raining</span>, I write more than usual.</p>
+                <div class="Loading Flex Flex--center Pstart(default) Pend(default)">
+                  <div>
+                    <div class="Loading-emoji Loading-emoji--noAnimation">💸</div>
+                    <div class="Ff(serifItalic) Fz(u2) Mtop(u5) Ta(c)"><span class="Td(u)">Upgrade</span> to get more insights into your emotional patterns.</div>
+                  </div>
+
+                </div>
+
+                <div class="Pstart(default) Pend(default)">
+                  <p class="Ff(sansSerifBold) Fz(u3) Lh(11) C(black)">
+                    What patterns do I see?
+                  </p>
+                </div>
+
+                <div class="Pstart(default) Pend(default)Pbottom(default)">
+                  <p class="Ff(serifRegular) Fz(default) Lh(14) C(black) Mbottom(d3) Mtop(d2)">When I’m in <span class="Ff(serifBold)">Chiang Mai</span>, I tend to feel 😄 <span class="Ff(serifItalic)">Happy</span>, 😌 <span class="Ff(serifItalic)">Grateful</span>, and 😎 <span class="Ff(serifItalic)">Cool.</span></p>
+                  <p class="Ff(serifRegular) Fz(default) Lh(14) C(black) Mbottom(d3) Mtop(d3)">When it’s <span class="Ff(serifBold)">raining</span> I write <span class="Ff(serifItalic)">more</span> than usual.</p>
+                  <p class="Ff(serifRegular) Fz(default) Lh(14) C(black) Mbottom(d3) Mtop(d3)">I feel positive emotions <span class="Ff(serifBold)">74%</span> of the time.</p>
+                </div>
+
               </div>
-              -->
 
             </div>
           </div>
