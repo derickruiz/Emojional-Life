@@ -326,18 +326,25 @@ body {
 // style="transform: scale(1.3) translate3d(10%, 10%, 0); box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.5); z-index: 1;"
 // and to make sure it renders on mobile add scale(0.7) to each individual emoji text.
 
-.Patterns.Patterns--empty {
+.Patterns.Patterns--empty,
+.PreviousDayEmotions.PreviousDayEmotions--empty {
   position: relative;
 
   border-top: 1px solid grey;
   border-bottom: 1px solid grey;
 }
 
-.Patterns > .Loading {
+.PreviousDayEmotions.PreviousDayEmotions--empty + .Patterns.Patterns--empty {
+  border-top: none;
+}
+
+.Patterns > .Loading,
+.PreviousDayEmotions > .Loading {
   display: none;
 }
 
-.Patterns.Patterns--empty::before {
+.Patterns.Patterns--empty::before,
+.PreviousDayEmotions.PreviousDayEmotions--empty::before {
   content: " ";
   display: block;
 
@@ -353,6 +360,7 @@ body {
   opacity: 0.8;
 }
 
-.Patterns.Patterns--empty > .Loading {
+.Patterns.Patterns--empty > .Loading,
+.PreviousDayEmotions.PreviousDayEmotions--empty > .Loading {
   display: flex;
 }
