@@ -180,7 +180,7 @@ const DB = {
 
     const currentDay = moment(moment.now()).format("YYYY-MM-DD");
 
-    if (GLOBAL_STATE.notLoggedIn) {
+    if ( ! GLOBAL_STATE.isLoggedIn) {
       callback(DB.getLocalEntries(currentDay));
     } else {
       // AJAX
@@ -195,7 +195,7 @@ const DB = {
     console.log('entryIndex', entryIndex);
     console.log('note', note);
 
-    if (GLOBAL_STATE.notLoggedIn) {
+    if ( ! GLOBAL_STATE.isLoggedIn) {
       let entryDate = moment(entry.time).format('YYYY-MM-DD');
       entry.note = note;
       callback(DB.saveLocalEntries(entryDate, entry, entryIndex));
@@ -209,7 +209,7 @@ const DB = {
 
     let currentDay = moment(moment.now()).format('YYYY-MM-DD');
 
-    if (GLOBAL_STATE.notLoggedIn) {
+    if ( ! GLOBAL_STATE.isLoggedIn) {
       // Save to local storage
       DB.saveLocalEntries(currentDay, emojion, undefined, color);
       callback(DB.getLocalEntries(currentDay));
@@ -231,35 +231,68 @@ const DB = {
   },
 
   getUserEmojions: function (callback) {
+
+    console.log("getUSerEmojions");
+
     let emojions;
 
-    try {
-      emojions = window.localStorage.getItem('userEmojions');
-    } catch (e) {
-      console.log("e", e);
-    }
 
-    if (emojions != null) {
-      callback(JSON.parse(emojions));
+    if (GLOBAL_STATE.isLoggedIn) {
+
+      console.log(" The user is already logged in.");
+
+      try {
+        emojions = INITIAL_STATE["user_emojions"];
+      } catch (e) {
+        console.log("e", e);
+      }
+
+      if (emojions != null) {
+        callback(emojions);
+      }
+
     } else {
-      callback(CONSTS.DEFAULT_USER_EMOJIONS);
-    }
 
+      try {
+        emojions = window.localStorage.getItem('userEmojions');
+      } catch (e) {
+        console.log("e", e);
+      }
+
+      if (emojions != null) {
+        callback(JSON.parse(emojions));
+      } else {
+        callback(CONSTS.DEFAULT_USER_EMOJIONS);
+      }
+    }
   },
 
   getNotUserEmojions: function (callback) {
+
+    console.log("getNotUserEmojions");
+
     let emojions;
 
-    try {
-      emojions = window.localStorage.getItem('notUserEmojions');
-    } catch (e) {
-      console.log("e", e);
-    }
+    if (GLOBAL_STATE.isLoggedIn) {
+      console.log("The user is logged in.");
+      emojions = INITIAL_STATE["not_user_emojions"];
 
-    if (emojions != null) {
-      callback(JSON.parse(emojions));
+      if (emojions != null) {
+        callback(emojions);
+      }
+
     } else {
-      callback(CONSTS.DEFAULT_NOT_USER_EMOJIONS);
+      try {
+        emojions = window.localStorage.getItem('notUserEmojions');
+      } catch (e) {
+        console.log("e", e);
+      }
+
+      if (emojions != null) {
+        callback(JSON.parse(emojions));
+      } else {
+        callback(CONSTS.DEFAULT_NOT_USER_EMOJIONS);
+      }
     }
 
   },

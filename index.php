@@ -2,31 +2,38 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
+$DB = new PDO('sqlite:db.db');
+$auth = new \Delight\Auth\Auth($DB);
+
 class User {
-  function __construct() {
 
-    $this->db = new PDO('sqlite:db.db');
-    $this->auth = new \Delight\Auth\Auth($this->db);
+  public static function getUserId() {
+    global $auth;
 
+    if ($auth->isLoggedIn()) {
+      return $auth->getUserId();
+    } else {
+      return null;
+    }
   }
 
-  function isLoggedIn() {
-    return $this->auth->isLoggedIn();
+  public static function isLoggedIn() {
+    global $auth;
+    return $auth->isLoggedIn();
   }
 
-  function register($username, $password) {
+  public static function register($username, $password, $callback) {
+
+    global $auth;
 
     try {
 
       // Create a new user.
-      $userId = $this->auth->register($username, $password, null, null);
+      $userId = $auth->register($username, $password, null, null);
 
       if ($userId) {
-        // Set this user's default Emojions.
-        $this->setDefaultEmojions($userId);
+        $callback($userId);
       }
-
-      $this->login($username, $password);
 
       // we have signed up a new user with the ID `$userId`
     } catch (\Delight\Auth\InvalidEmailException $e) {
@@ -49,10 +56,14 @@ class User {
 
   }
 
-  function login($username, $password) {
+  public static function login($username, $password) {
+
+    // echo "LOGGIGN IN";
+
+    global $auth;
 
     try {
-      $this->auth->login($username, $password);
+      $auth->login($username, $password);
       // user is logged in
     } catch (\Delight\Auth\InvalidEmailException $e) {
         // wrong email address
@@ -65,15 +76,24 @@ class User {
     }
 
   }
+}
 
-  function setDefaultEmojions($userId) {
+class Emojion {
+
+  /*
+   * @description - Sets the default Emojions for a particular userId.
+   * @param $userId - The user's id in the datbase table.
+   * @return void */
+  static function setDefault($userId) {
+
+    global $DB;
 
     // echo "userId " . $userId;
 
     // Get the first 8 emoji from the all_emojions table
-    $defaultEmojions = $this->db->query("SELECT * FROM all_emojions LIMIT 8");
+    $defaultEmojions = $DB->query("SELECT * FROM all_emojions LIMIT 8");
 
-    $sth = $this->db->prepare("INSERT INTO user_emojions (user_id, emojion_id) VALUES (:userId, :emojionId)");
+    $sth = $DB->prepare("INSERT INTO user_emojions (user_id, emojion_id) VALUES (:userId, :emojionId)");
 
     // set them into the user_emojions table as the user's emojions.
     foreach ($defaultEmojions as $emojion) {
@@ -84,42 +104,166 @@ class User {
 
   }
 
-  function getEmojions() {
+  /*
+   * @description - Get's the user's set emojions
+   * @return array */
+  public static function get($userId) {
 
-    $sth = $this->db->prepare("SELECT * FROM user_emojions WHERE user_id = :userId");
-    $sth->bindParam(':userId', $this->auth->getUserId());
+    global $DB;
+
+    // echo "EMOJION GET";
+    //
+    // echo "user_id " . $userId;
+
+    $sth = $DB->prepare("SELECT * FROM user_emojions WHERE user_id = :userId");
+    $sth->bindParam(':userId', $userId);
     $sth->execute();
 
-    return $sth->fetchAll();
+    $emojions = $sth->fetchAll();
+
+    // echo "emojion_ids";
+    // var_dump($emojion_ids);
+
+    $sth = $DB->prepare("SELECT * FROM all_emojions WHERE key = :emojionId");
+
+    $user_emojions = array();
+
+    // echo "Gonna loop through each of the emojion ids.";
+    foreach ($emojions as $emojion) {
+      $sth->bindParam(":emojionId", $emojion["emojion_id"]);
+      $sth->execute();
+      array_push($user_emojions, $sth->fetchAll()[0]);
+    }
+
+    return $user_emojions;
+
+  }
+
+  /*
+   * @description - Returns an array of all the emotions that are not the user's.
+  * @param $userId - The user's id.
+  * @return Array. */
+  public static function getNot($userId) {
+
+    global $DB;
+
+    // echo "EMOJION GET";
+    //
+    // echo "user_id " . $userId;
+
+    $sth = $DB->prepare("SELECT * FROM user_emojions WHERE user_id = :userId");
+    $sth->bindParam(':userId', $userId);
+    $sth->execute();
+
+    $emojions = $sth->fetchAll();
+
+    // var_dump($emojions);
+
+    // echo "emojion_ids";
+    // var_dump($emojion_ids);
+
+    $sth = $DB->prepare("SELECT * FROM all_emojions");
+    $sth->execute();
+
+    $all_emojions = $sth->fetchAll();
+
+    // var_dump("all_emojions", $all_emojions);
+
+    $not_user_emojions = array();
+
+    // echo "Looping to determine the not user emojions";
+
+    foreach($all_emojions as $all_emojion_key => $all_emojion ) {
+
+      // echo "not_user_emojion_key " . $all_emojion_key;
+
+      $is_in_users = false;
+
+      if ($all_emojion_key <= 9) {
+        foreach ($emojions as $emojion) {
+          if ($all_emojion["key"] === $emojion["emojion_id"]) {
+            $is_in_users = true;
+          }
+        }
+
+
+        if ( ! $is_in_users) {
+
+          // echo "Yep, not in users array.";
+          array_push($not_user_emojions, $all_emojion);
+        }
+
+      } else {
+        array_push($not_user_emojions, $all_emojion);
+      }
+
+    }
+
+    // echo "not_user_emojions";
+    // var_dump($not_user_emojions);
+
+    //echo "What's not_user_emojions?";
+    // var_dump($not_user_emojions);
+
+    return $not_user_emojions;
   }
 
 }
 
-$isLoggedIn = false;
-$user = new User();
+/* DATA that will initially passed to the client on load. */
+$DATA = array(
+  "isLoggedIn" => false
+);
+
+function getInitialData($userId) {
+
+  global $DATA;
+
+  // echo "Calling GET INITIAL DATA.";
+
+  // Get the user's emojions
+  $DATA["user_emojions"] = Emojion::get($userId);
+  $DATA["not_user_emojions"] = Emojion::getNot($userId);
+
+  // The user is logged in now.
+  $DATA["isLoggedIn"] = true;
+
+}
+
+//echo "Gonna check whether the request_method is set right or not.";
 
 if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
+  //var_dump($_POST);
+
+  // echo "Gonna check _POST";
+
   if ( ! empty($_POST)) {
 
-    if ($_POST["signup"]) {
-      $user->register($_POST["signup_email"], $_POST["signup_password"]);
-    } else if ($_POST["login"]) {
-      $user->login($_POST["login_email"], $_POST["login_password"]);
+    if ($_POST["signup"] === "1") {
+      User::register($_POST["signup_email"], $_POST["signup_password"], function ($userId) {
+        // Log the user in immeditely.
+        User::login($username, $password);
+
+        // Set the user's default Emojions
+        Emojion::setDefault($userId);
+
+        getInitialData($userId);
+      });
+
+    } else if ($_POST["login"] === "1") {
       // Login
+      User::login($_POST["login_email"], $_POST["login_password"]);
+
+      $userId = User::getUserId();
+
+      if ($userId) {
+        // Get the initial data with the user's id.
+        getInitialData($userId);
+      }
+
     }
   }
-
-}
-
-if ($user->isLoggedIn()) {
-
-  echo "The User is logged in.";
-
-  $isLoggedIn = true;
-  $userEmojions = $user->getEmojions();
-
-  var_dump($userEmojions);
 
 }
 
@@ -164,7 +308,7 @@ if ($user->isLoggedIn()) {
 
             <div class="Screen Tracked FlexGrid-cell FlexGrid-cell--1of2 BackgroundColor BackgroundColor--white">
 
-              <div v-if="!isLoggedIn" class="Mtop(default) Mstart(default) Mend(default)">
+              <div v-if="!isLoggedIn" class="Mtop(default) Mstart(default) Mend(default) Z(2) P(r)">
                 <div class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(100%)">
 
                  <div class="FlexGrid-cell FlexGrid FlexGrid--alignItemsCenter">
@@ -207,11 +351,12 @@ if ($user->isLoggedIn()) {
 
                 <div v-if="shouldLogin" class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(80%)">
 
-                  <form>
+                  <form action="/" method="POST">
                     <div class="FlexGrid-cell FlexGrid-cell--full Bt(default)">
                       <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
                         <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" required type="email" name="login_email">
                         <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Password" required type="password" name="login_password">
+                        <input type="hidden" name="login" value="1" />
                       </div>
                     </div>
 
@@ -424,9 +569,10 @@ if ($user->isLoggedIn()) {
 
       <script src="assets/js/consts-state.js"></script>
 
-      <?php if ($isLoggedIn): ?>
+      <?php if ($DATA["isLoggedIn"]): ?>
         <script>
           GLOBAL_STATE.isLoggedIn = true;
+          INITIAL_STATE = <?php echo json_encode($DATA, JSON_PRETTY_PRINT); ?>
         </script>
       <?php else: ?>
         <script>
