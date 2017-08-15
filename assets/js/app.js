@@ -53,10 +53,12 @@ const App = new Vue({
   created: function () {
 
     DB.getUserEmojions( (emojions) => {
+      console.log("user emojions", emojions);
       this.emojions = emojions;
     });
 
     DB.getNotUserEmojions( (emojions) => {
+      console.log("this.notUserEmojions", emojions);
       this.notUserEmojions = emojions;
     });
 
