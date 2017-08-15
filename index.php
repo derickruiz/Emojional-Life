@@ -62,8 +62,10 @@ class User {
 
     global $auth;
 
+    $rememberDuration = (int) (60 * 60 * 24); // One day
+
     try {
-      $auth->login($username, $password);
+      $auth->login($username, $password, $rememberDuration);
       // user is logged in
     } catch (\Delight\Auth\InvalidEmailException $e) {
         // wrong email address
@@ -265,6 +267,11 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
     }
   }
 
+}
+
+if (User::isLoggedIn()) {
+  $userId = User::getUserId();
+  getInitialData($userId);
 }
 
 ?>
