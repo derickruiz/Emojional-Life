@@ -1,6 +1,127 @@
 <?php
 
-$notLoggedIn = true;
+require __DIR__ . '/vendor/autoload.php';
+
+class User {
+  function __construct() {
+
+    $this->db = new PDO('sqlite:db.db');
+    $this->auth = new \Delight\Auth\Auth($this->db);
+
+  }
+
+  function isLoggedIn() {
+    return $this->auth->isLoggedIn();
+  }
+
+  function register($username, $password) {
+
+    try {
+
+      // Create a new user.
+      $userId = $this->auth->register($username, $password, null, null);
+
+      if ($userId) {
+        // Set this user's default Emojions.
+        $this->setDefaultEmojions($userId);
+      }
+
+      $this->login($username, $password);
+
+      // we have signed up a new user with the ID `$userId`
+    } catch (\Delight\Auth\InvalidEmailException $e) {
+      print_r('e' . $e);
+      echo "Not a good email";
+          // invalid email address
+    } catch (\Delight\Auth\InvalidPasswordException $e) {
+      print_r('e' . $e);
+      echo "Not a good password.";
+          // invalid password
+    } catch (\Delight\Auth\UserAlreadyExistsException $e) {
+      print_r('e' . $e);
+      echo "Already exists.";
+          // user already exists
+    } catch (\Delight\Auth\TooManyRequestsException $e) {
+      print_r('e' . $e);
+      echo "Too many requests.";
+          // too many requests
+    }
+
+  }
+
+  function login($username, $password) {
+
+    try {
+      $this->auth->login($username, $password);
+      // user is logged in
+    } catch (\Delight\Auth\InvalidEmailException $e) {
+        // wrong email address
+    } catch (\Delight\Auth\InvalidPasswordException $e) {
+        // wrong password
+    } catch (\Delight\Auth\EmailNotVerifiedException $e) {
+        // email not verified
+    } catch (\Delight\Auth\TooManyRequestsException $e) {
+        // too many requests
+    }
+
+  }
+
+  function setDefaultEmojions($userId) {
+
+    // echo "userId " . $userId;
+
+    // Get the first 8 emoji from the all_emojions table
+    $defaultEmojions = $this->db->query("SELECT * FROM all_emojions LIMIT 8");
+
+    $sth = $this->db->prepare("INSERT INTO user_emojions (user_id, emojion_id) VALUES (:userId, :emojionId)");
+
+    // set them into the user_emojions table as the user's emojions.
+    foreach ($defaultEmojions as $emojion) {
+      $sth->bindParam(':userId', $userId);
+      $sth->bindParam(':emojionId', $emojion["key"] );
+      $sth->execute();
+    }
+
+  }
+
+  function getEmojions() {
+
+    $sth = $this->db->prepare("SELECT * FROM user_emojions WHERE user_id = :userId");
+    $sth->bindParam(':userId', $this->auth->getUserId());
+    $sth->execute();
+
+    return $sth->fetchAll();
+  }
+
+}
+
+$isLoggedIn = false;
+$user = new User();
+
+if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
+
+  if ( ! empty($_POST)) {
+
+    if ($_POST["signup"]) {
+      $user->register($_POST["signup_email"], $_POST["signup_password"]);
+    } else if ($_POST["login"]) {
+      $user->login($_POST["login_email"], $_POST["login_password"]);
+      // Login
+    }
+  }
+
+}
+
+if ($user->isLoggedIn()) {
+
+  echo "The User is logged in.";
+
+  $isLoggedIn = true;
+  $userEmojions = $user->getEmojions();
+
+  var_dump($userEmojions);
+
+}
 
 ?>
 
@@ -43,42 +164,62 @@ $notLoggedIn = true;
 
             <div class="Screen Tracked FlexGrid-cell FlexGrid-cell--1of2 BackgroundColor BackgroundColor--white">
 
-              <div class="Mtop(default) Mstart(default) Mend(default)">
-              <div class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(100%)">
+              <div v-if="!isLoggedIn" class="Mtop(default) Mstart(default) Mend(default)">
+                <div class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(100%)">
 
-               <div class="FlexGrid-cell FlexGrid FlexGrid--alignItemsCenter">
-                 <div class="Fz(default) C(darkerGrey) Ff(sansSerifRegular) Pstart(default)">Don't lose your data! 🔥</div>
-               </div>
-
-               <div class="FlexGrid-cell">
-                 <!-- Login / Sign up Tab -->
-
-                 <div class="FlexGrid">
-                   <div class="FlexGrid-cell FlexGrid-cell--1of2 Bstart(default) Br(default)">
-                     <div class="Fz(default) Ff(sansSerifRegular) C(darkerGrey) Ptop(default) Pbottom(default) Ta(c)">Login</div>
-                   </div>
-                   <div class="FlexGrid-cell FlexGrid-cell--1of2">
-                     <div class="Fz(default) Ff(sansSerifBold) C(darkerGrey) Ptop(default) Pbottom(default) Ta(c) Fw(bold) Td(u)">Sign Up</div>
-                   </div>
+                 <div class="FlexGrid-cell FlexGrid FlexGrid--alignItemsCenter">
+                   <div class="Fz(default) C(darkerGrey) Ff(sansSerifRegular) Pstart(default)">Don't lose your data! 🔥</div>
                  </div>
 
-               </div>
+                 <div class="FlexGrid-cell">
+                   <!-- Login / Sign up Tab -->
 
-              </div>
+                   <div class="FlexGrid">
+                     <div v-on:click="toggleLogin" class="FlexGrid-cell FlexGrid-cell--1of2 Bstart(default) Br(default)">
+                       <div v-bind:class="[shouldLogin ? 'Fw(bold) Td(u) Ff(sansSerifBold)' : 'Ff(sansSerifRegular)']" class="Fz(default) C(darkerGrey) Ptop(default) Pbottom(default) Ta(c)">Login</div>
+                     </div>
+                     <div v-on:click="toggleSignUp" class="FlexGrid-cell FlexGrid-cell--1of2">
+                       <div v-bind:class="[shouldSignUp ? 'Fw(bold) Td(u) Ff(sansSerifBold)' : ' Ff(sansSerifRegular)']" class="Fz(default) C(darkerGrey) Ptop(default) Pbottom(default) Ta(c)">Sign Up</div>
+                     </div>
+                   </div>
 
-              <div class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(80%)">
-                <div class="FlexGrid-cell FlexGrid-cell--full Bt(default)">
-                  <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
-                    <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" type="text">
-                    <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Password" type="password">
-                    <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Confirm Password" type="password">
-                  </div>
+                 </div>
+
                 </div>
 
-                <div class="FlexGrid-cell FlexGrid-cell--full">
-                  <button class="Ptop(default) Pbottom(default) Bt(default) Ta(c) Fz(u1) C(darkerGrey) D(b) W(100%) Bgc(grey) Ff(sansSerifBold)">Sign Up</button>
+                <div v-if="shouldSignUp" class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(80%)">
+
+                  <form action="/" method="POST">
+                    <div class="FlexGrid-cell FlexGrid-cell--full Bt(default)">
+                      <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
+                        <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" required type="email" name="signup_email">
+                        <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Password" required type="password" name="signup_password">
+                        <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Confirm Password" required type="password" name="signup_confirm_password">
+                        <input type="hidden" name="signup" value="1" />
+                      </div>
+                    </div>
+
+                    <div class="FlexGrid-cell FlexGrid-cell--full">
+                      <input class="Ptop(default) Pbottom(default) Bt(default) Ta(c) Fz(u1) C(darkerGrey) D(b) W(100%) Bgc(grey) Ff(sansSerifBold)" type="submit" value="Sign Up" name="signup_submit">
+                    </div>
+                  </form>
                 </div>
-              </div>
+
+                <div v-if="shouldLogin" class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(80%)">
+
+                  <form>
+                    <div class="FlexGrid-cell FlexGrid-cell--full Bt(default)">
+                      <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
+                        <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" required type="email" name="login_email">
+                        <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Password" required type="password" name="login_password">
+                      </div>
+                    </div>
+
+                    <div class="FlexGrid-cell FlexGrid-cell--full">
+                      <input class="Ptop(default) Pbottom(default) Bt(default) Ta(c) Fz(u1) C(darkerGrey) D(b) W(100%) Bgc(grey) Ff(sansSerifBold)" type="submit" value="Login" name="login_submit">
+                    </div>
+                  </form>
+                </div>
 
               </div>
 
@@ -89,11 +230,6 @@ $notLoggedIn = true;
                     {{ getPatternsMessage() }}
                   </p>
                 </div>
-
-                <!--
-                <div v-on:click="toggleEntriesForDay" class="Ff(default) Pstart(default) Pend(default) Pbottom(default) Ta(l) Td(u) Ta(l) C(chaliceSilver) Fz(default)">
-                  See my entire day.
-                </div> -->
 
               <div class="Entries">
                 <!-- v-bind:total-entries="entriesToShow.length" -->
@@ -288,13 +424,13 @@ $notLoggedIn = true;
 
       <script src="assets/js/consts-state.js"></script>
 
-      <?php if ($notLoggedIn): ?>
+      <?php if ($isLoggedIn): ?>
         <script>
-          GLOBAL_STATE.notLoggedIn = true;
+          GLOBAL_STATE.isLoggedIn = true;
         </script>
       <?php else: ?>
         <script>
-          GLOBAL_STATE.notLoggedIn = false;
+          GLOBAL_STATE.isLoggedIn = false;
         </script>
       <?php endif; ?>
 

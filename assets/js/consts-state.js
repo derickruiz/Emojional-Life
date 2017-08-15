@@ -1,7 +1,7 @@
 let GLOBAL_STATE = {
   previousScrollY: undefined,
   isFirstTime: true,
-  notLoggedIn: true
+  isLoggedIn: false
 };
 
 const CONSTS = {

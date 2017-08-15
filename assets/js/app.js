@@ -6,7 +6,9 @@ const App = new Vue({
     /* Booleans */
     shouldShowEmoji: true, /* Whether to show the Emoji page or the Tracking page. */
     canSwitchEmoji: false, /* Whether the user can go ahead and start switching emoji by pressing and changing with caorusel */
-
+    shouldLogin: false, /* Whether to show the Login form or not. */
+    shouldSignUp: false, /* Whether to show the sign up form or not. */
+    isLoggedIn: false,
     isShowingAllEntries: false,
 
     hasEntries: false, /* Nope no entries. Used for showing the empty state in the entries screen. */
@@ -65,6 +67,9 @@ const App = new Vue({
     DOM.freezeScreen();
 
     this.canSwitchEmoji = true;
+
+    this.isLoggedIn = GLOBAL_STATE.isLoggedIn;
+    console.log("this.isLoggedIn", this.isLoggedIn);
 
     // What is data that I need immeditely to get the app working right away?
     // The emotions and the tap.
@@ -141,7 +146,7 @@ const App = new Vue({
       console.log("this.showLocationNotification", this.showLocationNotification);
 
       this.$forceUpdate();
-      
+
 
     });
 
@@ -370,6 +375,16 @@ const App = new Vue({
         this.toggleEmoji(true);
       }
 
+    },
+
+    toggleLogin: function () {
+      this.shouldLogin = !this.shouldLogin;
+      this.shouldSignUp = false;
+    },
+
+    toggleSignUp: function () {
+      this.shouldLogin = false;
+      this.shouldSignUp = !this.shouldSignUp;
     }
   }
 });
