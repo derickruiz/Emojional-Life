@@ -19,6 +19,10 @@ class User {
 
   public static function isLoggedIn() {
     global $auth;
+
+    error_log("isLoggedIn?", 3, __DIR__ . "/errors.txt");
+    error_log($auth->isLoggedIn() ? "LOGGED IN" : "LOGGED OUT", 3, __DIR__ . "/errors.txt");
+    error_log(print_r($auth, true), 3, __DIR__ . "/errors.txt");
     return $auth->isLoggedIn();
   }
 
@@ -104,6 +108,21 @@ class Emojion {
       $sth->execute();
     }
 
+  }
+
+  public static function save($userId, $emojions) {
+
+    // Get the first 8 emoji from the all_emojions table
+    $defaultEmojions = $DB->query("SELECT * FROM all_emojions LIMIT 8");
+
+    $sth = $DB->prepare("INSERT INTO user_emojions (user_id, emojion_id) VALUES (:userId, :emojionId)");
+
+    // set them into the user_emojions table as the user's emojions.
+    foreach ($defaultEmojions as $emojion) {
+      $sth->bindParam(':userId', $userId);
+      $sth->bindParam(':emojionId', $emojion["key"] );
+      $sth->execute();
+    }
   }
 
   /*
@@ -212,6 +231,13 @@ class Emojion {
 
 }
 
+$AJAX = array(
+  "saveEmojions" => function ($userId, $newEmojions) {
+    error_log("Calling AJAX.saveEmojions", 3, __DIR__ . "/errors.txt");
+    return json_encode(array("hello" => "world"));
+  }
+);
+
 /* DATA that will initially passed to the client on load. */
 $DATA = array(
   "isLoggedIn" => false
@@ -234,14 +260,23 @@ function getInitialData($userId) {
 
 //echo "Gonna check whether the request_method is set right or not.";
 
+// error_log("Gonna check if the request method os post", 3, __DIR__ . "/errors.txt");
+
 if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
   //var_dump($_POST);
 
   // echo "Gonna check _POST";
 
+  // error_log("Gonna check if _POST is empty", 3, __DIR__ . "/errors.txt");
+  // error_log(print_r($_POST, true), 3, __DIR__ . "/errors.txt");
+
+  // Most likely logging in, signing up, or logging out.
   if ( ! empty($_POST)) {
 
+    //error_log("_POST is not empty", 3, __DIR__ . "/errors.txt");
+
+    // Sign up related logic.
     if ($_POST["signup"] === "1") {
       User::register($_POST["signup_email"], $_POST["signup_password"], function ($userId) {
         // Log the user in immeditely.
@@ -265,6 +300,65 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
       }
 
     }
+
+  } else { // Most likely making a POST (AJAX request in my case) but with the application/json header type so processing here.
+
+    //Make sure that the content type of the POST request has been set to application/json
+    $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
+
+    if ($contentType === "application/json") {
+
+      // error_log("contentType " . $contentType, 3, __DIR__ . "/errors.txt");
+
+      //Receive the RAW post data.
+      $content = trim(file_get_contents("php://input"));
+
+      // error_log("content " . $content, 3, __DIR__ . "/errors.txt");
+
+      //Attempt to decode the incoming RAW post data from JSON.
+      $decoded = json_decode($content, true);
+
+      // error_log("Decoded json " . $decoded, 3, __DIR__ . "/errors.txt");
+
+      //If json_decode failed, the JSON is invalid.
+      if(! is_array($decoded)) {
+        // Return an error for the user.
+        error_log("The json isn't right", 3, __DIR__ . "/errors.txt");
+      } else {
+
+        //Process the JSON.
+
+        error_log("The json is alright. What's decoded?", 3, __DIR__ . "/errors.txt");
+
+        error_log(print_r($decoded, true), 3, __DIR__ . "/errors.txt");
+
+        error_log("ajaxMethod is not empty", 3, __DIR__ . "/errors.txt");
+        error_log($decoded["ajaxMethod"] !== "", 3, __DIR__ . "/errors.txt");
+
+        error_log("User is logged in ", 3, __DIR__ . "/errors.txt");
+        error_log(User::isLoggedIn(), 3, __DIR__ . "/errors.txt");
+
+        if ($decoded["ajaxMethod"] !== "" && User::isLoggedIn()) {
+
+          error_log("About to do the switch statement", 3, __DIR__ . "/errors.txt");
+
+          $userId = User::getUserId();
+
+
+          switch ($decoded["ajaxMethod"]) {
+            case "saveEmojions":
+              echo $AJAX["saveEmojions"]($userId, $decoded["payload"]);
+              exit;
+              break;
+
+          }
+
+        }
+
+      }
+
+    }
+
   }
 
 }
@@ -579,7 +673,7 @@ if (User::isLoggedIn()) {
       <?php if ($DATA["isLoggedIn"]): ?>
         <script>
           GLOBAL_STATE.isLoggedIn = true;
-          INITIAL_STATE = <?php echo json_encode($DATA, JSON_PRETTY_PRINT); ?>
+          USER_DATA = <?php echo json_encode($DATA, JSON_PRETTY_PRINT); ?>
         </script>
       <?php else: ?>
         <script>
@@ -590,6 +684,7 @@ if (User::isLoggedIn()) {
       <script src="assets/js/utils.js"></script>
       <script src="assets/js/dom.js"></script>
 
+      <script src="assets/js/ajax.js"></script> <!-- AJAX stuff -->
       <script src="assets/js/db.js"></script>
 
       <script src="assets/js/components/emojion.js"></script>
