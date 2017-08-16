@@ -25,6 +25,10 @@
 //   //   });
 //   // }
 
+/*
+ * If the user is logged out, then everything will be saved to local storage.
+ * If the user is logged in, we'll save the data to the USER_DATA object.
+ */
 const DB = {
 
   // GETTERS
@@ -223,7 +227,21 @@ const DB = {
    * @description - Saves the user's emojions array into local storage.
    */
   saveUserEmojions: function (emojionsArray) {
-    window.localStorage.setItem('userEmojions', JSON.stringify(emojionsArray));
+
+    if (GLOBAL_STATE.isLoggedIn) {
+      console.log("Saving the user's emojions. Making an ajx request.s");
+
+      console.log("Fetching.");
+
+      AJAX.post("saveEmojions", USER_DATA["user_emojions"]).then(function (json) {
+        console.log("What's the JSON?");
+        console.log("json", json);
+      });
+
+    } else {
+      window.localStorage.setItem('userEmojions', JSON.stringify(emojionsArray));
+    }
+
   },
 
   saveNotUserEmojions: function (emojionsArray) {
@@ -242,7 +260,7 @@ const DB = {
       console.log(" The user is already logged in.");
 
       try {
-        emojions = INITIAL_STATE["user_emojions"];
+        emojions = USER_DATA["user_emojions"];
       } catch (e) {
         console.log("e", e);
       }
@@ -275,7 +293,7 @@ const DB = {
 
     if (GLOBAL_STATE.isLoggedIn) {
       console.log("The user is logged in.");
-      emojions = INITIAL_STATE["not_user_emojions"];
+      emojions = USER_DATA["not_user_emojions"];
 
       if (emojions != null) {
         callback(emojions);
