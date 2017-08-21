@@ -84,6 +84,11 @@ class User {
     }
 
   }
+
+  public static function logout() {
+    global $auth;
+    $auth->logout();
+  }
 }
 
 class Entry {
@@ -160,22 +165,40 @@ class Emojion {
    * @description - Sets the default Emojions for a particular userId.
    * @param $userId - The user's id in the datbase table.
    * @return void */
-  static function setDefault($userId) {
+  static function setDefault($userId, $userEmojions = NULL) {
 
     global $DB;
 
-    // echo "userId " . $userId;
+    if ($userEmojions === NULL) {
+      // Get the first 8 emoji from the all_emojions table
+      $defaultEmojions = $DB->query("SELECT * FROM all_emojions LIMIT 8");
 
-    // Get the first 8 emoji from the all_emojions table
-    $defaultEmojions = $DB->query("SELECT * FROM all_emojions LIMIT 8");
+      $sth = $DB->prepare("INSERT INTO user_emojions (user_id, emojion_id) VALUES (:userId, :emojionId)");
 
-    $sth = $DB->prepare("INSERT INTO user_emojions (user_id, emojion_id) VALUES (:userId, :emojionId)");
+      // set them into the user_emojions table as the user's emojions.
+      foreach ($defaultEmojions as $emojion) {
+        $sth->bindParam(':userId', $userId);
+        $sth->bindParam(':emojionId', $emojion["key"] );
+        $sth->execute();
+      }
 
-    // set them into the user_emojions table as the user's emojions.
-    foreach ($defaultEmojions as $emojion) {
-      $sth->bindParam(':userId', $userId);
-      $sth->bindParam(':emojionId', $emojion["key"] );
-      $sth->execute();
+    } else {
+      // Set the default from those given by the user.
+
+      error_log("Setting emojions from what the user passed in " . "\n", 3, __DIR__ . "/errors.txt");
+
+      error_log("userEmojions " . print_r($userEmojions, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+      $sth = $DB->prepare("INSERT INTO user_emojions (user_id, emojion_id) VALUES (:userId, :emojionId)");
+
+      // set them into the user_emojions table as the user's emojions.
+      foreach ($userEmojions as $userEmojion) {
+        $sth->bindParam(':userId', $userId);
+        $sth->bindParam(':emojionId', $userEmojion["index"]);
+        $sth->execute();
+      }
+
+
     }
 
   }
@@ -375,6 +398,9 @@ function getInitialData($userId) {
   $DATA["entries"] = Entry::getToday($userId);
   // The user is logged in now.
   $DATA["isLoggedIn"] = true;
+
+  error_log("initialData " . print_r($DATA, true) . "\n", 3, __DIR__ . "/errors.txt");
+
 }
 
 //echo "Gonna check whether the request_method is set right or not.";
@@ -383,86 +409,41 @@ function getInitialData($userId) {
 
 if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
-  //var_dump($_POST);
+  //Make sure that the content type of the POST request has been set to application/json
+  $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
 
-  // echo "Gonna check _POST";
+  if ($contentType === "application/json") {
 
-  // error_log("Gonna check if _POST is empty", 3, __DIR__ . "/errors.txt");
-  // error_log(print_r($_POST, true), 3, __DIR__ . "/errors.txt");
+    // error_log("contentType " . $contentType, 3, __DIR__ . "/errors.txt");
 
-  // Most likely logging in, signing up, or logging out.
-  if ( ! empty($_POST)) {
+    //Receive the RAW post data.
+    $content = trim(file_get_contents("php://input"));
 
-    //error_log("_POST is not empty", 3, __DIR__ . "/errors.txt");
+    // error_log("content " . $content, 3, __DIR__ . "/errors.txt");
 
-    // Sign up related logic.
-    if ($_POST["signup"] === "1") {
-      User::register($_POST["signup_email"], $_POST["signup_password"], function ($userId) {
-        // Log the user in immeditely.
-        User::login($_POST["signup_email"], $_POST["signup_password"]);
+    //Attempt to decode the incoming RAW post data from JSON.
+    $decoded = json_decode($content, true);
 
-        // Set the user's default Emojions
-        Emojion::setDefault($userId);
+    // error_log("Decoded json " . $decoded, 3, __DIR__ . "/errors.txt");
 
-        getInitialData($userId);
-      });
+    //If json_decode succeeded , the JSON is valid.
+    if(is_array($decoded)) {
 
-    } else if ($_POST["login"] === "1") {
-      // Login
-      User::login($_POST["login_email"], $_POST["login_password"]);
+      //Process the JSON.
 
-      $userId = User::getUserId();
+      error_log("The json is alright. What's decoded?", 3, __DIR__ . "/errors.txt");
 
-      if ($userId) {
-        // Get the initial data with the user's id.
-        getInitialData($userId);
-      }
+      error_log(print_r($decoded, true), 3, __DIR__ . "/errors.txt");
 
-    }
+      error_log("ajaxMethod is not empty", 3, __DIR__ . "/errors.txt");
+      error_log($decoded["ajaxMethod"] !== "", 3, __DIR__ . "/errors.txt");
 
-  } else { // Most likely making a POST (AJAX request in my case) but with the application/json header type so processing here.
+      error_log("User is logged in ", 3, __DIR__ . "/errors.txt");
+      error_log(User::isLoggedIn(), 3, __DIR__ . "/errors.txt");
 
-    //Make sure that the content type of the POST request has been set to application/json
-    $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';
-
-    if ($contentType === "application/json") {
-
-      // error_log("contentType " . $contentType, 3, __DIR__ . "/errors.txt");
-
-      //Receive the RAW post data.
-      $content = trim(file_get_contents("php://input"));
-
-      // error_log("content " . $content, 3, __DIR__ . "/errors.txt");
-
-      //Attempt to decode the incoming RAW post data from JSON.
-      $decoded = json_decode($content, true);
-
-      // error_log("Decoded json " . $decoded, 3, __DIR__ . "/errors.txt");
-
-      //If json_decode failed, the JSON is invalid.
-      if(! is_array($decoded)) {
-        // Return an error for the user.
-        error_log("The json isn't right", 3, __DIR__ . "/errors.txt");
-      } else {
-
-        //Process the JSON.
-
-        error_log("The json is alright. What's decoded?", 3, __DIR__ . "/errors.txt");
-
-        error_log(print_r($decoded, true), 3, __DIR__ . "/errors.txt");
-
-        error_log("ajaxMethod is not empty", 3, __DIR__ . "/errors.txt");
-        error_log($decoded["ajaxMethod"] !== "", 3, __DIR__ . "/errors.txt");
-
-        error_log("User is logged in ", 3, __DIR__ . "/errors.txt");
-        error_log(User::isLoggedIn(), 3, __DIR__ . "/errors.txt");
-
-        if ($decoded["ajaxMethod"] !== "" && User::isLoggedIn()) {
-
-          error_log("About to do the switch statement", 3, __DIR__ . "/errors.txt");
-
+      if ($decoded["ajaxMethod"] !== "") {
+        if (User::isLoggedIn()) { // All methods related to saving data while logged in.
           $userId = User::getUserId();
-
 
           switch ($decoded["ajaxMethod"]) {
             case "saveEmojions":
@@ -479,15 +460,88 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
               break;
           }
 
-          exit;
+        } else { // Methods related to logging in or signing up and then saving local storage data.
+          // Don't return JSON in this case. Just let it render the HTML.
+
+          error_log("The user is logged out" . "\n", 3, __DIR__ . "/errors.txt");
+          error_log("decoded " . print_r($decoded, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+          switch ($decoded["ajaxMethod"]) {
+            case "signup":
+              $payload = $decoded["payload"];
+              $email = $payload["signUpEmail"];
+              $password = $payload["signUpPassword"];
+
+              error_log("Siging up" . "\n", 3, __DIR__ . "/errors.txt");
+              error_log("payload " . print_r($payload, true) . "\n", 3, __DIR__ . "/errors.txt");
+              error_log("email " . print_r($email, true) . "\n", 3, __DIR__ . "/errors.txt");
+              error_log("password " . print_r($password, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+
+              User::register($email, $password, function ($userId) use ($email, $password, $payload) {
+                // Log the user in immeditely.
+                User::login($email, $password);
+
+                // If the user has custom emojions in local storage set those
+
+                if ( !empty($payload["userEmojions"]) ) {
+                  error_log("has userEmojions in localStorage " . "\n", 3, __DIR__ . "/errors.txt");
+                  Emojion::setDefault($userId, $payload["userEmojions"]);
+                } else {
+                  // Set the user's default Emojions
+                  Emojion::setDefault($userId);
+                }
+
+                // If the user saved entries while not logged in go ahead and save those.
+                // if ( !empty($payload["entries"]) ) {
+                //   error_log("Has entries in local storage. " . "\n", 3, __DIR__ . "/errors.txt");
+                //   $entries = $payload["entries"];
+                //
+                //   foreach($entries as $entry) {
+                //     $emojion = $entry["emojion"];
+                //     $color = $entry["color"];
+                //     Entry::track($userId, $emojion, $color);
+                //   }
+                // }
+
+              });
+              break;
+
+            case "login": break;
+
+
+            // Sign up related logic.
+            // if ($_POST["signup"] === "1") {
+            //   User::register($_POST["signup_email"], $_POST["signup_password"], function ($userId) {
+            //     // Log the user in immeditely.
+            //     User::login($_POST["signup_email"], $_POST["signup_password"]);
+            //
+            //     // Set the user's default Emojions
+            //     Emojion::setDefault($userId);
+            //
+            //     getInitialData($userId);
+            //   });
+            //
+            // } else if ($_POST["login"] === "1") {
+            //   // Login
+            //   User::login($_POST["login_email"], $_POST["login_password"]);
+            //
+            //   $userId = User::getUserId();
+            //
+            //   if ($userId) {
+            //     // Get the initial data with the user's id.
+            //     getInitialData($userId);
+            //   }
+            //
+            // } else if ($_POST["logout"] === "1") {
+            //   User::logout();
+            // }
+          }
 
         }
-
       }
 
     }
-
-    exit;
 
   }
 
@@ -567,15 +621,14 @@ if (User::isLoggedIn()) {
                   <form action="/" method="POST">
                     <div class="FlexGrid-cell FlexGrid-cell--full Bt(default)">
                       <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
-                        <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" required type="email" name="signup_email">
-                        <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Password" required type="password" name="signup_password">
+                        <input v-model="signUpEmail" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" required type="email" name="signup_email">
+                        <input v-model="signUpPassword" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Password" required type="password" name="signup_password">
                         <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Confirm Password" required type="password" name="signup_confirm_password">
-                        <input type="hidden" name="signup" value="1" />
                       </div>
                     </div>
 
                     <div class="FlexGrid-cell FlexGrid-cell--full">
-                      <input class="Ptop(default) Pbottom(default) Bt(default) Ta(c) Fz(u1) C(darkerGrey) D(b) W(100%) Bgc(grey) Ff(sansSerifBold)" type="submit" value="Sign Up" name="signup_submit">
+                      <input v-on:click="signUpUser" class="Ptop(default) Pbottom(default) Bt(default) Ta(c) Fz(u1) C(darkerGrey) D(b) W(100%) Bgc(grey) Ff(sansSerifBold)" type="submit" value="Sign Up" name="signup_submit">
                     </div>
                   </form>
                 </div>
@@ -596,6 +649,14 @@ if (User::isLoggedIn()) {
                     </div>
                   </form>
                 </div>
+
+              </div>
+              <div v-else>
+
+                <form action="/" method="POST">
+                  <input type="hidden" name="logout" value="1" />
+                  <input type="submit" value="Logout" />
+                </form>
 
               </div>
 

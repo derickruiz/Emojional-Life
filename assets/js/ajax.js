@@ -8,7 +8,10 @@ const AJAX = (function () {
     }
   };
 
-  function post(methodName, payload) {
+  function post(methodName, payload, refresh) {
+
+    refresh = refresh || false; // Whether to refresh the page or not after this post succeeds.
+
     options.method = "POST";
     options.body = JSON.stringify({
       "ajaxMethod": methodName,
@@ -16,8 +19,20 @@ const AJAX = (function () {
     });
 
     return fetch("/", options).then(function (response) {
+
       console.log("response after fetching.", response);
-      return response.json();
+
+      response.text().then(function (s) {
+        console.log("s", s);
+      });
+      if (refresh) {
+        location.reload();
+      } else {
+
+        console.log("response after fetching.", response);
+        // return response.json();
+      }
+
     }).catch(function (error) {
       console.log("An error while doing some AJAX stuff.");
       console.log("error", error);
