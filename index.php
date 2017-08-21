@@ -92,7 +92,7 @@ class User {
 }
 
 class Entry {
-  public static function track($userId, $emojion, $color) {
+  public static function track($userId, $emojion, $color, $day = NULL, $time = NULL) {
 
     error_log("Entry.track" . "\n", 3, __DIR__ . "/errors.txt");
 
@@ -104,12 +104,17 @@ class Entry {
 
     $sth = $DB->prepare("INSERT INTO entries (user_id, time, day, emojion_id, color) VALUES (:userId, :time, :day, :emojionId, :color)");
 
-    $time = date('Y-m-d H:i:s', time());
-    $today = date('Y-m-d', time());
+    if ($day === NULL) {
+      $day = date('Y-m-d', time());
+    }
+
+    if ($time === NULL) {
+      $time = date('Y-m-d H:i:s', time());
+    }
 
     $sth->bindParam(':userId', $userId);
     $sth->bindParam(':time', $time);
-    $sth->bindParam(':day', $today);
+    $sth->bindParam(':day', $day);
     $sth->bindParam(':emojionId', $emojion["key"]);
     $sth->bindParam(':color', $color);
     $sth->execute();
@@ -370,7 +375,7 @@ $AJAX = array(
 
     $allUserEntries = Entry::getToday($userId);
 
-    // error_log("allUserEntries (json encoded)" . print_r(json_encode($allUserEntries), true) . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("allUserEntries (json encoded)" . print_r(json_encode($allUserEntries), true) . "\n", 3, __DIR__ . "/errors.txt");
 
     return json_encode($allUserEntries);
   },
@@ -493,16 +498,33 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
                 }
 
                 // If the user saved entries while not logged in go ahead and save those.
-                // if ( !empty($payload["entries"]) ) {
-                //   error_log("Has entries in local storage. " . "\n", 3, __DIR__ . "/errors.txt");
-                //   $entries = $payload["entries"];
-                //
-                //   foreach($entries as $entry) {
-                //     $emojion = $entry["emojion"];
-                //     $color = $entry["color"];
-                //     Entry::track($userId, $emojion, $color);
-                //   }
-                // }
+                if ( !empty($payload["entries"]) ) {
+                  error_log("Has entries in local storage. " . "\n", 3, __DIR__ . "/errors.txt");
+                  $days = $payload["entries"];
+
+                  error_log("days " . print_r($days, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+                  foreach($days as $day => $entries) {
+                    foreach ($entries as $entry) {
+
+                      error_log("day " . print_r($day, true) . "\n", 3, __DIR__ . "/errors.txt");
+                      error_log("entry " . print_r($entry, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+                      $emojion = array();
+                      $emojion["key"] = $entry["index"];
+
+                      error_log("emojion " . print_r($emojion, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+
+                      $color = $entry["color"];
+                      $time = $entry["time"];
+
+                      Entry::track($userId, $emojion, $color, $day, $time);
+
+                    }
+
+                  }
+                }
 
               });
               break;
