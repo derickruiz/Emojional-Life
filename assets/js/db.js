@@ -187,7 +187,7 @@ const DB = {
     if ( ! GLOBAL_STATE.isLoggedIn) {
       callback(DB.getLocalEntries(currentDay));
     } else {
-      // AJAX
+      callback(USER_DATA["entries"]);
     }
   },
 
@@ -213,6 +213,10 @@ const DB = {
 
     let currentDay = moment(moment.now()).format('YYYY-MM-DD');
 
+    console.log("trackEntry");
+    console.log("emojion", emojion);
+    console.log("color", color);
+
     if ( ! GLOBAL_STATE.isLoggedIn) {
       // Save to local storage
       DB.saveLocalEntries(currentDay, emojion, undefined, color);
@@ -220,9 +224,17 @@ const DB = {
 
     } else {
 
-      AJAX.post("trackEntry", currentDay, emojion, color).then(function (json) {
+      console.log("Making the AJAX request");
+      AJAX.post("trackEntry", {
+        emojion: emojion,
+        color: color
+      }).then(function (json) {
+
+
         console.log("What's the JSON?");
         console.log("json", json);
+
+        callback(json);
       });
 
       // Ajax request

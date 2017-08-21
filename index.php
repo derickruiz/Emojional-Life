@@ -5,6 +5,8 @@ require __DIR__ . '/vendor/autoload.php';
 $DB = new PDO('sqlite:db.db');
 $auth = new \Delight\Auth\Auth($DB);
 
+date_default_timezone_set('UTC');
+
 class User {
 
   public static function getUserId() {
@@ -81,6 +83,74 @@ class User {
         // too many requests
     }
 
+  }
+}
+
+class Entry {
+  public static function track($userId, $emojion, $color) {
+
+    error_log("Entry.track" . "\n", 3, __DIR__ . "/errors.txt");
+
+    error_log("Emojion " . print_r($emojion,true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    error_log("color" . $color . "\n", 3, __DIR__ . "/errors.txt");
+
+    global $DB;
+
+    $sth = $DB->prepare("INSERT INTO entries (user_id, time, day, emojion_id, color) VALUES (:userId, :time, :day, :emojionId, :color)");
+
+    $time = date('Y-m-d H:i:s', time());
+    $today = date('Y-m-d', time());
+
+    $sth->bindParam(':userId', $userId);
+    $sth->bindParam(':time', $time);
+    $sth->bindParam(':day', $today);
+    $sth->bindParam(':emojionId', $emojion["key"]);
+    $sth->bindParam(':color', $color);
+    $sth->execute();
+
+  }
+
+  public static function getAllForDate($userId, $day) {
+    global $DB;
+
+    $sth = $DB->prepare("SELECT * FROM entries WHERE `user_id` = :userId AND `day` = :day");
+    $sth->bindParam(':userId', $userId);
+    $sth->bindParam(':day', $day);
+    $sth->execute();
+
+    $allUserEntries = $sth->fetchAll();
+
+    $sth = $DB->query("SELECT * FROM all_emojions");
+    $sth->execute();
+
+    $allEmojions = $sth->fetchAll();
+
+    error_log("allUserEntries (before): " . print_r($allUserEntries, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    error_log("allEmojions: " . print_r($allEmojions, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    $modifiedEntries = [];
+
+    foreach ($allUserEntries as $userEntryKey => $userEntry) {
+      foreach ($allEmojions as $emojion) {
+
+        if ($userEntry["emojion_id"] === $emojion["key"]) {
+          $userEntry["emoji"] = $emojion["emoji"];
+          array_push($modifiedEntries, $userEntry);
+          // error_log("userEntry" . print_r($userEntry, true) . "\n", 3, __DIR__ . "/errors.txt");
+        }
+      }
+    }
+
+    error_log("modifiedEntries" . print_r($modifiedEntries3, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    return $modifiedEntries;
+  }
+
+  public static function getToday($userId) {
+    $today = date('Y-m-d', time());
+    return Entry::getAllForDate($userId, $today);
   }
 }
 
@@ -262,9 +332,24 @@ $AJAX = array(
     return json_encode($user_emojions);
   },
 
-  "trackEntry" => function ($userId, $currentDay, $emojion, $color) {
-    Entry::track($userId, $currentDay, $emojion, $color);
-    return json_encode(Entry::getAll($userId));
+  "trackEntry" => function ($userId, $payload) {
+
+    error_log("trackEntry " . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("payload " . print_r($payload, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    $emojion = $payload["emojion"];
+    $color = $payload["color"];
+
+    error_log("emojion " . print_r($emojion, true) . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("color " . print_r($color, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    Entry::track($userId, $emojion, $color);
+
+    $allUserEntries = Entry::getToday($userId);
+
+    // error_log("allUserEntries (json encoded)" . print_r(json_encode($allUserEntries), true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    return json_encode($allUserEntries);
   },
 
   "saveNote" => function ($userId) {
@@ -287,10 +372,9 @@ function getInitialData($userId) {
   // Get the user's emojions
   $DATA["user_emojions"] = Emojion::get($userId);
   $DATA["not_user_emojions"] = Emojion::getNot($userId);
-
+  $DATA["entries"] = Entry::getToday($userId);
   // The user is logged in now.
   $DATA["isLoggedIn"] = true;
-
 }
 
 //echo "Gonna check whether the request_method is set right or not.";
@@ -386,8 +470,16 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
               echo $AJAX["saveEmojions"]($userId, $decoded["payload"]);
               exit;
               break;
-
+            case "trackEntry":
+              header('Content-Type: application/json');
+              $entries = $AJAX["trackEntry"]($userId, $decoded["payload"]);
+              echo $entries;
+              //error_log("About to return JSON. What's entries? " . print_r($entries, true), 3, __DIR__ . "/errors.txt");
+              exit;
+              break;
           }
+
+          exit;
 
         }
 
