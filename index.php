@@ -5,6 +5,8 @@ require __DIR__ . '/vendor/autoload.php';
 $DB = new PDO('sqlite:db.db');
 $auth = new \Delight\Auth\Auth($DB);
 
+date_default_timezone_set('UTC');
+
 class User {
 
   public static function getUserId() {
@@ -95,24 +97,26 @@ class Entry {
 
     global $DB;
 
-    $sth = $DB->prepare("INSERT INTO entries (user_id, time, emojion_id, color) VALUES (:userId, :time, :emojionId, :color)");
+    $sth = $DB->prepare("INSERT INTO entries (user_id, time, day, emojion_id, color) VALUES (:userId, :time, :day, :emojionId, :color)");
 
-    date_default_timezone_set('UTC');
-    $today = date('Y-m-d H:i:s', time());
+    $time = date('Y-m-d H:i:s', time());
+    $today = date('Y-m-d', time());
 
     $sth->bindParam(':userId', $userId);
-    $sth->bindParam(':time', $today);
+    $sth->bindParam(':time', $time);
+    $sth->bindParam(':day', $today);
     $sth->bindParam(':emojionId', $emojion["key"]);
     $sth->bindParam(':color', $color);
     $sth->execute();
 
   }
 
-  public static function getAll($userId) {
+  public static function getAllForDate($userId, $day) {
     global $DB;
 
-    $sth = $DB->prepare("SELECT * FROM entries WHERE `user_id` = :userId");
+    $sth = $DB->prepare("SELECT * FROM entries WHERE `user_id` = :userId AND `day` = :day");
     $sth->bindParam(':userId', $userId);
+    $sth->bindParam(':day', $day);
     $sth->execute();
 
     $allUserEntries = $sth->fetchAll();
@@ -140,8 +144,13 @@ class Entry {
     }
 
     error_log("modifiedEntries" . print_r($modifiedEntries3, true) . "\n", 3, __DIR__ . "/errors.txt");
-    
+
     return $modifiedEntries;
+  }
+
+  public static function getToday($userId) {
+    $today = date('Y-m-d', time());
+    return Entry::getAllForDate($userId, $today);
   }
 }
 
@@ -336,7 +345,7 @@ $AJAX = array(
 
     Entry::track($userId, $emojion, $color);
 
-    $allUserEntries = Entry::getAll($userId);
+    $allUserEntries = Entry::getToday($userId);
 
     // error_log("allUserEntries (json encoded)" . print_r(json_encode($allUserEntries), true) . "\n", 3, __DIR__ . "/errors.txt");
 
@@ -363,10 +372,9 @@ function getInitialData($userId) {
   // Get the user's emojions
   $DATA["user_emojions"] = Emojion::get($userId);
   $DATA["not_user_emojions"] = Emojion::getNot($userId);
-
+  $DATA["entries"] = Entry::getToday($userId);
   // The user is logged in now.
   $DATA["isLoggedIn"] = true;
-
 }
 
 //echo "Gonna check whether the request_method is set right or not.";

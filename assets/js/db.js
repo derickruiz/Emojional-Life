@@ -187,7 +187,7 @@ const DB = {
     if ( ! GLOBAL_STATE.isLoggedIn) {
       callback(DB.getLocalEntries(currentDay));
     } else {
-      // AJAX
+      callback(USER_DATA["entries"]);
     }
   },
 
@@ -233,7 +233,7 @@ const DB = {
 
         console.log("What's the JSON?");
         console.log("json", json);
-        
+
         callback(json);
       });
 
