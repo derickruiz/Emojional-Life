@@ -110,7 +110,15 @@ const Entry = {
     },
 
     formatTime: function (unformattedTime) {
-      return moment(unformattedTime).format('LT');
+      console.log("What's the unformatted time?");
+      console.log("unformattedTime", unformattedTime);
+
+      if (typeof unformattedTime === "string") {
+        return moment(parseInt(unformattedTime, 10)).format('LT');
+      } else {
+        return moment(unformattedTime).format('LT');
+      }
+
     },
 
     // Just shows the note so the user can read what they've previously written down.
