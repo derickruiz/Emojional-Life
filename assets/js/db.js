@@ -219,6 +219,12 @@ const DB = {
       callback(DB.getLocalEntries(currentDay));
 
     } else {
+
+      AJAX.post("trackEntry", currentDay, emojion, color).then(function (json) {
+        console.log("What's the JSON?");
+        console.log("json", json);
+      });
+
       // Ajax request
     }
   },
@@ -232,6 +238,8 @@ const DB = {
       console.log("Saving the user's emojions. Making an ajx request.s");
 
       console.log("Fetching.");
+
+      console.log(USER_DATA["user_emojions"]);
 
       AJAX.post("saveEmojions", USER_DATA["user_emojions"]).then(function (json) {
         console.log("What's the JSON?");
