@@ -16,6 +16,7 @@ const AJAX = (function () {
     });
 
     return fetch("/", options).then(function (response) {
+      console.log("response after fetching.", response);
       return response.json();
     }).catch(function (error) {
       console.log("An error while doing some AJAX stuff.");
