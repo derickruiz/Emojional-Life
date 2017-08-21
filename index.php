@@ -110,19 +110,33 @@ class Emojion {
 
   }
 
-  public static function save($userId, $emojions) {
+  public static function save($userId, $newEmojions) {
 
-    // Get the first 8 emoji from the all_emojions table
-    $defaultEmojions = $DB->query("SELECT * FROM all_emojions LIMIT 8");
+    global $DB;
 
-    $sth = $DB->prepare("INSERT INTO user_emojions (user_id, emojion_id) VALUES (:userId, :emojionId)");
+    // Get the user's current emojions
+    // Replace each of the keys with the new keys.
+
+    $sth = $DB->prepare("SELECT * FROM user_emojions WHERE user_id = :userId");
+    $sth->bindParam(':userId', $userId);
+    $sth->execute();
+
+    $userEmojions = $sth->fetchAll();
+
+
+    // Save the keys into the database.
+
+    // UPDATE `user_emojions` SET `emojion_id` = :emojionId WHERE `key` = :key
+
+    $sth = $DB->prepare("UPDATE `user_emojions` SET `emojion_id` = :emojionId WHERE `key` = :key");
 
     // set them into the user_emojions table as the user's emojions.
-    foreach ($defaultEmojions as $emojion) {
-      $sth->bindParam(':userId', $userId);
-      $sth->bindParam(':emojionId', $emojion["key"] );
+    foreach ($userEmojions as $key => $userEmojion) {
+      $sth->bindParam(':key', $userEmojion["key"]);
+      $sth->bindParam(':emojionId', $newEmojions[$key]["key"]);
       $sth->execute();
     }
+
   }
 
   /*
@@ -231,11 +245,32 @@ class Emojion {
 
 }
 
+// function mylog($message) {
+//   error_log($message, 3, __DIR__ . "/errors.txt");
+// }
+
 $AJAX = array(
   "saveEmojions" => function ($userId, $newEmojions) {
-    error_log("Calling AJAX.saveEmojions", 3, __DIR__ . "/errors.txt");
-    return json_encode(array("hello" => "world"));
+    // error_log("Calling AJAX.saveEmojions", 3, __DIR__ . "/errors.txt");
+    // error_log(print_r($newEmojions, true), 3, __DIR__ . "/errors.txt");
+
+    Emojion::save($userId, $newEmojions);
+    $user_emojions = Emojion::get($userId, $newEmojions);
+
+    // error_log(print_r($user_emojions, true), 3, __DIR__ . "/errors.txt");
+
+    return json_encode($user_emojions);
+  },
+
+  "trackEntry" => function ($userId, $currentDay, $emojion, $color) {
+    Entry::track($userId, $currentDay, $emojion, $color);
+    return json_encode(Entry::getAll($userId));
+  },
+
+  "saveNote" => function ($userId) {
+    return NULL;
   }
+
 );
 
 /* DATA that will initially passed to the client on load. */
@@ -280,7 +315,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
     if ($_POST["signup"] === "1") {
       User::register($_POST["signup_email"], $_POST["signup_password"], function ($userId) {
         // Log the user in immeditely.
-        User::login($username, $password);
+        User::login($_POST["signup_email"], $_POST["signup_password"]);
 
         // Set the user's default Emojions
         Emojion::setDefault($userId);
@@ -347,6 +382,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
           switch ($decoded["ajaxMethod"]) {
             case "saveEmojions":
+              header('Content-Type: application/json');
               echo $AJAX["saveEmojions"]($userId, $decoded["payload"]);
               exit;
               break;
@@ -358,6 +394,8 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
       }
 
     }
+
+    exit;
 
   }
 
