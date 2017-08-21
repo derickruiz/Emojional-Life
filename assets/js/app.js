@@ -47,7 +47,11 @@ const App = new Vue({
 
     /* UI-only variables. */
     elapsedTime: undefined,
-    emojionBlockColors: ['blue', 'red', 'purple', 'orange', 'green', 'black', 'brown', 'pink']
+    emojionBlockColors: ['blue', 'red', 'purple', 'orange', 'green', 'black', 'brown', 'pink'],
+
+    // Username and password that the user will sign up with.
+    signUpEmail: "",
+    signUpPassword: ""
   },
 
   created: function () {
@@ -255,11 +259,7 @@ const App = new Vue({
 
       // Can probably be sure that this is the first time the user is doing this.
       console.log("this.tooltips", this.tooltips);
-
-      if (this.tooltips.press === true) {
-        this.toggleEmoji(false); // Go ahead and send them back to the patterns page to see more messages.
-      }
-
+      
       DB.recordTooltip('press', (tooltips) => {
         this.tooltips = tooltips;
       });
@@ -347,6 +347,18 @@ const App = new Vue({
       DB.recordTooltip('tap', (tooltips) => {
         this.tooltips = tooltips;
       });
+
+    },
+
+    /*
+     * @description - Just some logic for saving the user. */
+    signUpUser: function (event) {
+
+      event.preventDefault(); // Stop the form from submitting.
+
+      if (this.signUpEmail !== "" && this.signUpPassword !== "") {
+        DB.signUpUser(this.signUpEmail, this.signUpPassword);
+      }
 
     },
 

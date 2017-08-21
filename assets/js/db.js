@@ -242,6 +242,44 @@ const DB = {
   },
 
   /*
+   * @description - Signs up a user to the service and saves all their stuff in local storage.
+   */
+  signUpUser: function (email, password) {
+
+    console.log("DB.signUpUser");
+    console.log("email", email);
+    console.log("password", password);
+
+    console.log("entries");
+    console.log(window.localStorage.getItem('entries'));
+    console.log("userEmojions");
+    console.log(window.localStorage.getItem('userEmojions'));
+
+    let userDataObj = {
+      "signUpEmail": email,
+      "signUpPassword": password
+    };
+
+    let entries = window.localStorage.getItem('entries'),
+        userEmojions = window.localStorage.getItem('userEmojions');
+
+    if (entries != null) {
+      userDataObj["entries"] = JSON.parse(entries);
+    }
+
+    if (userEmojions != null) {
+      userDataObj["userEmojions"] = JSON.parse(userEmojions);
+    }
+
+    console.log("userDataObj", userDataObj);
+
+    AJAX.post("signup", userDataObj, true).then(function (response) {
+      console.log("What's the response?", response);
+    });
+
+  },
+
+  /*
    * @description - Saves the user's emojions array into local storage.
    */
   saveUserEmojions: function (emojionsArray) {
