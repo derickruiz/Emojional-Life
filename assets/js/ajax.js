@@ -20,17 +20,17 @@ const AJAX = (function () {
 
     return fetch("/", options).then(function (response) {
 
-      console.log("response after fetching.", response);
-
-      response.text().then(function (s) {
-        console.log("s", s);
-      });
+      // console.log("response after fetching.", response);
+      //
+      // response.text().then(function (s) {
+      //   console.log("s");
+      // });
       if (refresh) {
         location.reload();
       } else {
 
-        console.log("response after fetching.", response);
-        // return response.json();
+        //console.log("response after fetching.", response);
+        return response.json();
       }
 
     }).catch(function (error) {
