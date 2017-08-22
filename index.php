@@ -119,6 +119,12 @@ class Entry {
     $sth->bindParam(':color', $color);
     $sth->execute();
 
+    $lastId = $DB->lastInsertId();
+
+    error_log("lastId " . print_r($lastId, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    return $lastId;
+
   }
 
   public static function getAllForDate($userId, $day) {
@@ -161,6 +167,25 @@ class Entry {
   public static function getToday($userId) {
     $today = date('Y-m-d', time());
     return Entry::getAllForDate($userId, $today);
+  }
+
+  public static function saveNote($userId, $entryKey, $note) {
+
+    global $DB;
+    
+    error_log("Entry.saveNote" . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("userId " . $userId . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("entryKey " . $entryKey . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("note " . $note . "\n", 3, __DIR__ . "/errors.txt");
+
+    $sth = $DB->prepare("UPDATE `entries` SET `note` = :note WHERE `user_id` = :userId AND `key` = :entryKey");
+    $sth->bindParam(':userId', $userId);
+    $sth->bindParam(':entryKey', $entryKey);
+    $sth->bindParam(':note', $note);
+    $executedStatement = $sth->execute();
+
+    error_log("executedStatement " . print_r($executedStatement, true) . "\n", 3, __DIR__ . "/errors.txt");
+
   }
 }
 
@@ -511,7 +536,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
                       error_log("entry " . print_r($entry, true) . "\n", 3, __DIR__ . "/errors.txt");
 
                       $emojion = array();
-                      $emojion["key"] = $entry["index"];
+                      $emojion["key"] = $entry["key"];
 
                       error_log("emojion " . print_r($emojion, true) . "\n", 3, __DIR__ . "/errors.txt");
 
@@ -519,7 +544,19 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
                       $color = $entry["color"];
                       $time = $entry["time"];
 
-                      Entry::track($userId, $emojion, $color, $day, $time);
+                      $entryId = Entry::track($userId, $emojion, $color, $day, $time);
+
+
+                      error_log("entryId " . print_r($entryId, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+                      error_log("Does the key exist (note) in the entry array? " . array_key_exists("note", $entry) . "\n", 3, __DIR__ . "/errors.txt");
+
+                      if ($entry["note"]) {
+
+                        error_log("The entry has a note " . "\n", 3, __DIR__ . "/errors.txt");
+
+                        Entry::saveNote($userId, $entryId, $entry["note"]);
+                      }
 
                     }
 
