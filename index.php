@@ -818,7 +818,7 @@ if (User::isLoggedIn()) {
           <div class="FlexGrid FlexGrid--guttersOneDown FlexGrid--spaceBetween M">
             <div class="FlexGrid-cell FlexGrid-cell--9of10">
               <p class="Ff(default) Fz(u1) Lh(14) C(white)" style="font-size: 4vh;">
-                {{entry.emoji}} at <span class="Fw(bold)">{{ formatTime(entry.time) }}</span> <span v-if="entry.ll">at <span class="Fs(italic)">{{entry.location}}.</span></span>
+                {{entry.emoji}} at <span class="Fw(bold)">{{ formatTime(entry.time) }}</span> <span v-if="entry.location">at <span class="Fs(italic)">{{entry.location}}.</span></span>
               </p>
             </div>
             <div v-on:click="showNote" class="FlexGrid-cell FlexGrid-cell--1of10 FlexGrid-cell--alignSelfCenter">

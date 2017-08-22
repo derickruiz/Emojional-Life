@@ -42,7 +42,7 @@ const Entry = {
     console.log("this.showTooltip", this.showTooltip);
 
     // The entry already has a note.
-    if (typeof this.entry.note !== "undefined") {
+    if (this.entry.note != null) {
       this.alreadyHasNote = true; // Gonna use this for showing the icon and expanding it and stuff.
     }
 
