@@ -259,7 +259,7 @@ const App = new Vue({
 
       // Can probably be sure that this is the first time the user is doing this.
       console.log("this.tooltips", this.tooltips);
-      
+
       DB.recordTooltip('press', (tooltips) => {
         this.tooltips = tooltips;
       });
@@ -369,8 +369,9 @@ const App = new Vue({
       console.log("entryIndex", entryIndex);
       console.log("note", note);
 
-      DB.saveNote(entry, entryIndex, note, function () {
+      DB.saveNote(entry, entryIndex, note, (updatedEntries) => {
         console.log("Saved the note!");
+        this.entries = updatedEntries;
       });
 
       // Still false so that means it's the first time for a user to be writing a note.

@@ -172,7 +172,7 @@ class Entry {
   public static function saveNote($userId, $entryKey, $note) {
 
     global $DB;
-    
+
     error_log("Entry.saveNote" . "\n", 3, __DIR__ . "/errors.txt");
     error_log("userId " . $userId . "\n", 3, __DIR__ . "/errors.txt");
     error_log("entryKey " . $entryKey . "\n", 3, __DIR__ . "/errors.txt");
@@ -405,8 +405,22 @@ $AJAX = array(
     return json_encode($allUserEntries);
   },
 
-  "saveNote" => function ($userId) {
-    return NULL;
+  "saveNote" => function ($userId, $payload) {
+
+    error_log("AJAX.saveNote " . "\n", 3, __DIR__ . "/errors.txt");
+
+    $entry = $payload["entry"];
+    $entryId = $entry["key"];
+    $note = $payload["note"];
+
+    error_log("entry " . print_r($entry, true) . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("note " . print_r($note, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    Entry::saveNote($userId, $entryId, $note);
+
+    $allUserEntries = Entry::getToday($userId);
+
+    return json_encode($allUserEntries);
   }
 
 );
@@ -486,6 +500,12 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
               $entries = $AJAX["trackEntry"]($userId, $decoded["payload"]);
               echo $entries;
               //error_log("About to return JSON. What's entries? " . print_r($entries, true), 3, __DIR__ . "/errors.txt");
+              exit;
+              break;
+            case "saveNote":
+              header('Content-Type: application/json');
+              $entries = $AJAX["saveNote"]($userId, $decoded["payload"]);
+              echo $entries;
               exit;
               break;
           }
