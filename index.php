@@ -199,7 +199,7 @@ class Emojion {
       // set them into the user_emojions table as the user's emojions.
       foreach ($userEmojions as $userEmojion) {
         $sth->bindParam(':userId', $userId);
-        $sth->bindParam(':emojionId', $userEmojion["index"]);
+        $sth->bindParam(':emojionId', $userEmojion["key"]);
         $sth->execute();
       }
 
