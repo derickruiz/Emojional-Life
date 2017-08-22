@@ -109,7 +109,7 @@ class Entry {
     }
 
     if ($time === NULL) {
-      $time = date('Y-m-d H:i:s', time());
+      $time = time();
     }
 
     $sth->bindParam(':userId', $userId);
