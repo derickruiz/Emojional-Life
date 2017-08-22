@@ -436,10 +436,18 @@ function getInitialData($userId) {
 
   // echo "Calling GET INITIAL DATA.";
 
+  $today = strtotime("now");
+  $sevenDaysAgo = strtotime("-1 week");
+
+  error_log("getInitialData " . "\n", 3, __DIR__ . "/errors.txt");
+  error_log("today " . print_r($today, true), 3, __DIR__ . "/errors.txt");
+  error_log("sevenDaysAgo " . print_r($sevenDaysAgo, true), 3, __DIR__ . "/errors.txt");
+
   // Get the user's emojions
   $DATA["user_emojions"] = Emojion::get($userId);
   $DATA["not_user_emojions"] = Emojion::getNot($userId);
   $DATA["entries"] = Entry::getToday($userId);
+  $DATA["previousDayCharts"] = Charts::getRange();
   // The user is logged in now.
   $DATA["isLoggedIn"] = true;
 
@@ -586,35 +594,61 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
               });
               break;
 
-            case "login": break;
+            case "login":
+
+              error_log("Logging the user in." . "\n", 3, __DIR__ . "/errors.txt");
+
+              $payload = $decoded["payload"];
+              $email = $payload["loginEmail"];
+              $password = $payload["loginPassword"];
+
+              User::login($email, $password);
+
+              // If the user saved entries while not logged in go ahead and save those.
+
+              // TODO: Make this into a function.
+              if ( !empty($payload["entries"]) ) {
+                error_log("Has entries in local storage. " . "\n", 3, __DIR__ . "/errors.txt");
+                $days = $payload["entries"];
+
+                error_log("days " . print_r($days, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+                foreach($days as $day => $entries) {
+                  foreach ($entries as $entry) {
+
+                    error_log("day " . print_r($day, true) . "\n", 3, __DIR__ . "/errors.txt");
+                    error_log("entry " . print_r($entry, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+                    $emojion = array();
+                    $emojion["key"] = $entry["key"];
+
+                    error_log("emojion " . print_r($emojion, true) . "\n", 3, __DIR__ . "/errors.txt");
 
 
-            // Sign up related logic.
-            // if ($_POST["signup"] === "1") {
-            //   User::register($_POST["signup_email"], $_POST["signup_password"], function ($userId) {
-            //     // Log the user in immeditely.
-            //     User::login($_POST["signup_email"], $_POST["signup_password"]);
-            //
-            //     // Set the user's default Emojions
-            //     Emojion::setDefault($userId);
-            //
-            //     getInitialData($userId);
-            //   });
-            //
-            // } else if ($_POST["login"] === "1") {
-            //   // Login
-            //   User::login($_POST["login_email"], $_POST["login_password"]);
-            //
-            //   $userId = User::getUserId();
-            //
-            //   if ($userId) {
-            //     // Get the initial data with the user's id.
-            //     getInitialData($userId);
-            //   }
-            //
-            // } else if ($_POST["logout"] === "1") {
-            //   User::logout();
-            // }
+                    $color = $entry["color"];
+                    $time = $entry["time"];
+
+                    $entryId = Entry::track($userId, $emojion, $color, $day, $time);
+
+
+                    error_log("entryId " . print_r($entryId, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+                    error_log("Does the key exist (note) in the entry array? " . array_key_exists("note", $entry) . "\n", 3, __DIR__ . "/errors.txt");
+
+                    if ($entry["note"]) {
+
+                      error_log("The entry has a note " . "\n", 3, __DIR__ . "/errors.txt");
+
+                      Entry::saveNote($userId, $entryId, $entry["note"]);
+                    }
+
+                  }
+
+                }
+              }
+
+            break;
+
           }
 
         }
@@ -697,7 +731,7 @@ if (User::isLoggedIn()) {
 
                 <div v-if="shouldSignUp" class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(80%)">
 
-                  <form action="/" method="POST">
+                  <form action="/" method="POST" v-on:submit.prevent="signUpUser">
                     <div class="FlexGrid-cell FlexGrid-cell--full Bt(default)">
                       <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
                         <input v-model="signUpEmail" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" required type="email" name="signup_email">
@@ -707,19 +741,18 @@ if (User::isLoggedIn()) {
                     </div>
 
                     <div class="FlexGrid-cell FlexGrid-cell--full">
-                      <input v-on:click="signUpUser" class="Ptop(default) Pbottom(default) Bt(default) Ta(c) Fz(u1) C(darkerGrey) D(b) W(100%) Bgc(grey) Ff(sansSerifBold)" type="submit" value="Sign Up" name="signup_submit">
+                      <input class="Ptop(default) Pbottom(default) Bt(default) Ta(c) Fz(u1) C(darkerGrey) D(b) W(100%) Bgc(grey) Ff(sansSerifBold)" type="submit" value="Sign Up" name="signup_submit">
                     </div>
                   </form>
                 </div>
 
                 <div v-if="shouldLogin" class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(80%)">
 
-                  <form action="/" method="POST">
+                  <form action="/" method="POST" v-on:submit.prevent="loginUser">
                     <div class="FlexGrid-cell FlexGrid-cell--full Bt(default)">
                       <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
-                        <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" required type="email" name="login_email">
-                        <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Password" required type="password" name="login_password">
-                        <input type="hidden" name="login" value="1" />
+                        <input v-model="loginEmail" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" required type="email" name="login_email">
+                        <input v-model="loginPassword" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Password" required type="password" name="login_password">
                       </div>
                     </div>
 
@@ -940,10 +973,14 @@ if (User::isLoggedIn()) {
 
       <script src="assets/js/consts-state.js"></script>
 
+      <script src="assets/js/utils.js"></script>
+
       <?php if ($DATA["isLoggedIn"]): ?>
         <script>
           GLOBAL_STATE.isLoggedIn = true;
           USER_DATA = <?php echo json_encode($DATA, JSON_PRETTY_PRINT); ?>
+
+          UTILS.removeUserDataFromLocalStorage(); // Deleting already saved data from local storage.
         </script>
       <?php else: ?>
         <script>
@@ -951,7 +988,6 @@ if (User::isLoggedIn()) {
         </script>
       <?php endif; ?>
 
-      <script src="assets/js/utils.js"></script>
       <script src="assets/js/dom.js"></script>
 
       <script src="assets/js/ajax.js"></script> <!-- AJAX stuff -->

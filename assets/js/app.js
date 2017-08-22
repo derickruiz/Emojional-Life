@@ -51,7 +51,9 @@ const App = new Vue({
 
     // Username and password that the user will sign up with.
     signUpEmail: "",
-    signUpPassword: ""
+    signUpPassword: "",
+    loginEmail: "",
+    loginPassword: ""
   },
 
   created: function () {
@@ -352,14 +354,16 @@ const App = new Vue({
 
     /*
      * @description - Just some logic for saving the user. */
-    signUpUser: function (event) {
-
-      event.preventDefault(); // Stop the form from submitting.
-
+    signUpUser: function () {
       if (this.signUpEmail !== "" && this.signUpPassword !== "") {
         DB.signUpUser(this.signUpEmail, this.signUpPassword);
       }
+    },
 
+    loginUser: function () {
+      if (this.loginEmail !== "" && this.loginPassword !== "") {
+        DB.loginUser(this.loginEmail, this.loginPassword);
+      }
     },
 
     // entry, entryIndex, note, callback)

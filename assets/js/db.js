@@ -292,6 +292,34 @@ const DB = {
   },
 
   /*
+   * @description - Logs a user into the service and saves their entries (if any) from local storage into the DB.
+   */
+  loginUser: function (email, password) {
+
+    console.log("DB.loginUser");
+    console.log("email", email);
+    console.log("password", password);
+
+    let userDataObj = {
+      "loginEmail": email,
+      "loginPassword": password
+    };
+
+    let entries = window.localStorage.getItem('entries');
+
+    if (entries != null) {
+      userDataObj["entries"] = JSON.parse(entries);
+    }
+
+    console.log("userDataObj", userDataObj);
+
+    AJAX.post("login", userDataObj).then(function (response) {
+      console.log("What's the response?", response);
+    });
+
+  },
+
+  /*
    * @description - Saves the user's emojions array into local storage.
    */
   saveUserEmojions: function (emojionsArray) {

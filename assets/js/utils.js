@@ -105,19 +105,20 @@ const UTILS = {
 
   },
 
+  /* @description - Only removes the entries and emojions so when the user logs in it's a clean slate again. */
+  removeUserDataFromLocalStorage: function () {
+    window.localStorage.removeItem('entries');
+    window.localStorage.removeItem('userEmojions');
+    window.localStorage.removeItem('notUserEmojions');
+  },
+
+  /* @description - Removes all local storage stuff including tooltips and user location. */
   removeAllLocalStorage: function () {
-    window.localStorage.removeItem('resting');
-
-window.localStorage.removeItem('tooltips');
-
-window.localStorage.removeItem('entries');
-
-window.localStorage.removeItem('userEmojions');
-
-window.localStorage.removeItem('notUserEmojions');
-
-window.localStorage.removeItem('userLocation');
-
+    window.localStorage.removeItem('tooltips');
+    window.localStorage.removeItem('entries');
+    window.localStorage.removeItem('userEmojions');
+    window.localStorage.removeItem('notUserEmojions');
+    window.localStorage.removeItem('userLocation');
   }
 };
 
