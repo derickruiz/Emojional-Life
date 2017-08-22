@@ -22,123 +22,124 @@ const CONSTS = {
     "color" : "oxford",
     "emoji" : "😄",
     "emotion" : "Happy",
-    "index" : 0
+    "key" : 1
   }, {
     "color" : "rajah",
     "emoji" : "😌",
     "emotion" : "Grateful",
-    "index" : 1
+    "key" : 2
   }, {
     "color" : "tractor",
     "emoji" : "😎",
     "emotion" : "Cool",
-    "index" : 2
+    "key" : 3
   }, {
     "color" : "pastel",
     "emoji" : "🤣",
     "emotion" : "Funny",
-    "index" : 3
+    "key" : 4
   }, {
     "color" : "pictoral",
     "emoji" : "😡",
     "emotion" : "Frustrated",
-    "index" : 4
+    "key" : 5
   }, {
     "color" : "spanish",
     "emoji" : "💪",
     "emotion" : "Confident",
-    "index" : 5
+    "key" : 6
   }, {
     "color" : "tractor",
     "emoji" : "😰",
     "emotion" : "Anxious",
-    "index" : 6
+    "key" : 7
   }, {
     "color" : "caribeen",
-    "emoji" : "☹",
-    "emotion" : "Sad",
-    "index" : 7
+    "emoji" : "🤡",
+    "emotion" : "Clown",
+    "key" : 8
   } ],
 
-  DEFAULT_NOT_USER_EMOJIONS: [ {
-    "color" : "oxford",
-    "emoji" : "🤡",
-    "emotion": "Clown",
-    "index" : 8
-  }, {
+  DEFAULT_NOT_USER_EMOJIONS: [{
     "color" : "rajah",
     "emoji" : "🤓",
     "emotion": "Smart",
-    "index" : 9
+    "key" : 9
   }, {
     "color" : "caribeen",
     "emoji" : "🤑",
     "emotion": "Greedy",
-    "index" : 10
+    "key" : 10
   }, {
     "color" : "tractor",
     "emoji" : "😍",
     "emotion": "Love",
-    "index" : 11
+    "key" : 11
   }, {
     "color" : "oxford",
     "emoji" : "😱",
     "emotion": "Panic",
-    "index" : 12
+    "key" : 12
   }, {
     "color" : "oxford",
     "emoji" : "😰",
     "emotion": "Embarassed",
-    "index" : 13
+    "key" : 13
   }, {
     "color" : "spanish",
     "emoji" : "😭",
     "emotion": "Sad",
-    "index" : 14
+    "key" : 14
   }, {
     "color" : "tractor",
     "emoji" : "👿",
     "emotion": "Evil",
-    "index" : 15
+    "key" : 15
   }, {
     "color" : "pastel",
     "emoji" : "👻",
     "emotion": "Empty",
-    "index" : 16
+    "key" : 16
   }, {
     "color" : "caribeen",
     "emoji" : "👽",
     "emotion": "Different",
-    "index" : 17
+    "key" : 17
   }, {
     "color" : "rajah",
     "emoji" : "🤖",
     "emotion": "Emotionless",
-    "index" : 18
+    "key" : 18
   }, {
     "color" : "pictoral",
     "emoji" : "🤥",
     "emotion": "Liar",
-    "index" : 19
+    "key" : 19
   }, {
     "color" : "caribeen",
     "emoji" : "😝",
     "emotion": "Playful",
-    "index" : 20
+    "key" : 20
   }, {
     "color" : "oxford",
     "emoji" : "😇",
     "emotion": "Innocent",
-    "index" : 21
+    "key" : 21
   }, {
     "color" : "tractor",
     "emoji" : "👅",
     "emotion": "Horny",
-    "index" : 22
+    "key" : 22
   }, {
     "color" : "caribeen",
     "emoji" : "💅🏻",
     "emotion": "Pretty",
-    "index" : 23
-  } ]
+    "key" : 23
+  },
+  {
+    "color": "brown",
+    "emoji": "💩",
+    "emotion": "Shit",
+    "key": 24
+  }]
 };

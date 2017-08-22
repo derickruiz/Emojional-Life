@@ -119,6 +119,12 @@ class Entry {
     $sth->bindParam(':color', $color);
     $sth->execute();
 
+    $lastId = $DB->lastInsertId();
+
+    error_log("lastId " . print_r($lastId, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    return $lastId;
+
   }
 
   public static function getAllForDate($userId, $day) {
@@ -162,6 +168,25 @@ class Entry {
     $today = date('Y-m-d', time());
     return Entry::getAllForDate($userId, $today);
   }
+
+  public static function saveNote($userId, $entryKey, $note) {
+
+    global $DB;
+
+    error_log("Entry.saveNote" . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("userId " . $userId . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("entryKey " . $entryKey . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("note " . $note . "\n", 3, __DIR__ . "/errors.txt");
+
+    $sth = $DB->prepare("UPDATE `entries` SET `note` = :note WHERE `user_id` = :userId AND `key` = :entryKey");
+    $sth->bindParam(':userId', $userId);
+    $sth->bindParam(':entryKey', $entryKey);
+    $sth->bindParam(':note', $note);
+    $executedStatement = $sth->execute();
+
+    error_log("executedStatement " . print_r($executedStatement, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+  }
 }
 
 class Emojion {
@@ -199,7 +224,7 @@ class Emojion {
       // set them into the user_emojions table as the user's emojions.
       foreach ($userEmojions as $userEmojion) {
         $sth->bindParam(':userId', $userId);
-        $sth->bindParam(':emojionId', $userEmojion["index"]);
+        $sth->bindParam(':emojionId', $userEmojion["key"]);
         $sth->execute();
       }
 
@@ -380,8 +405,22 @@ $AJAX = array(
     return json_encode($allUserEntries);
   },
 
-  "saveNote" => function ($userId) {
-    return NULL;
+  "saveNote" => function ($userId, $payload) {
+
+    error_log("AJAX.saveNote " . "\n", 3, __DIR__ . "/errors.txt");
+
+    $entry = $payload["entry"];
+    $entryId = $entry["key"];
+    $note = $payload["note"];
+
+    error_log("entry " . print_r($entry, true) . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("note " . print_r($note, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    Entry::saveNote($userId, $entryId, $note);
+
+    $allUserEntries = Entry::getToday($userId);
+
+    return json_encode($allUserEntries);
   }
 
 );
@@ -463,6 +502,12 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
               //error_log("About to return JSON. What's entries? " . print_r($entries, true), 3, __DIR__ . "/errors.txt");
               exit;
               break;
+            case "saveNote":
+              header('Content-Type: application/json');
+              $entries = $AJAX["saveNote"]($userId, $decoded["payload"]);
+              echo $entries;
+              exit;
+              break;
           }
 
         } else { // Methods related to logging in or signing up and then saving local storage data.
@@ -511,7 +556,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
                       error_log("entry " . print_r($entry, true) . "\n", 3, __DIR__ . "/errors.txt");
 
                       $emojion = array();
-                      $emojion["key"] = $entry["index"];
+                      $emojion["key"] = $entry["key"];
 
                       error_log("emojion " . print_r($emojion, true) . "\n", 3, __DIR__ . "/errors.txt");
 
@@ -519,7 +564,19 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
                       $color = $entry["color"];
                       $time = $entry["time"];
 
-                      Entry::track($userId, $emojion, $color, $day, $time);
+                      $entryId = Entry::track($userId, $emojion, $color, $day, $time);
+
+
+                      error_log("entryId " . print_r($entryId, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+                      error_log("Does the key exist (note) in the entry array? " . array_key_exists("note", $entry) . "\n", 3, __DIR__ . "/errors.txt");
+
+                      if ($entry["note"]) {
+
+                        error_log("The entry has a note " . "\n", 3, __DIR__ . "/errors.txt");
+
+                        Entry::saveNote($userId, $entryId, $entry["note"]);
+                      }
 
                     }
 

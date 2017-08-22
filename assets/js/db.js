@@ -205,6 +205,18 @@ const DB = {
       callback(DB.saveLocalEntries(entryDate, entry, entryIndex));
     } else {
 
+      AJAX.post("saveNote", {
+        entry: entry,
+        note: note
+      }).then(function (json) {
+
+
+        console.log("What's the JSON?");
+        console.log("json", json);
+
+        callback(json);
+      });
+
     }
 
   },
