@@ -303,7 +303,7 @@ class Charts {
     // error_log("endRange " . print_r($endRange, true) . "\n", 3, __DIR__ . "/errors.txt");
 
 
-    return $stats;
+    return array_reverse($stats);
 
   }
 
@@ -997,7 +997,7 @@ if (User::isLoggedIn()) {
 
 
                 <div v-if="previousDayCharts" class="js-charts Ptop(d2)" style="display: flex; flex-wrap: nowrap; overflow-x: hidden;">
-                  <day-emotion-chart v-for="chart in previousDayCharts" v-bind:data="chart"></day-emotion-chart>
+                  <day-emotion-chart v-for="(chart, day) in previousDayCharts" v-bind:day="day" v-bind:data="chart"></day-emotion-chart>
                 </div>
 
                 <div v-else class="js-charts Ptop(d2)" style="display: flex; flex-wrap: nowrap; overflow-x: hidden;">
