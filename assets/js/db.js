@@ -457,22 +457,25 @@ const DB = {
     }
   },
 
-  saveLocationToEntry: function (entryIndex, entry, positionObj) {
+  saveLocationToEntry: function (entryIndex, entry, positionObj, callback) {
     console.log('savelocation to entry');
     console.log("entryIndex", entryIndex);
     console.log('entry', entry);
     console.log('positionObj', positionObj);
-    let entryDate = moment(entry.time).format('YYYY-MM-DD');
+
+    let entryDate = moment(+entry.time).format('YYYY-MM-DD');
+
+    console.log("What's entryDate?", entryDate);
+
     entry.location = {
       latitude: positionObj.coords.latitude,
       longitude: positionObj.coords.longitude
     };
 
-    if (typeof callback !== "undefined") {
-      callback(DB.saveLocalEntries(entryDate, entry, entryIndex));
-    } else {
-      DB.saveLocalEntries(entryDate, entry, entryIndex)
-    }
+    DB.saveLocalEntries(entryDate, entry, entryIndex)
 
+    if (typeof callback !== "undefined") {
+      callback(DB.getLocalEntries(entryDate));
+    }
   }
 };

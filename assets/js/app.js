@@ -342,7 +342,10 @@ const App = new Vue({
             window.navigator.geolocation.getCurrentPosition(function (position) {
               console.log('position', position);
               DB.saveLocationToEntry(entryIndex, entry, position, function (entries) {
+                console.log("Saved the location to the entry.");
+
                 self.entries = entries;
+                // Why is it not updating?
                 self.$forceUpdate();
               });
             });

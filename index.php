@@ -1154,7 +1154,8 @@ if (User::isLoggedIn()) {
           </div>
 
           <div v-if="callToActionMessage && method" v-on="methods" class="FlexGrid-cell FlexGrid-cell--full Bt(default)">
-            <button class="W(100%) Bgc(grey) Pstart(default) Pend(default) Ptop(default) Pbottom(default) C(darkerGrey) Ff(sansSerifBold) Fz(default) Fw(bold) Td(u) Ta(c)">{{callToActionMessage}}</button>
+            <button v-if="statusText" disabled class="W(100%) Bgc(grey) Pstart(default) Pend(default) Ptop(default) Pbottom(default) C(darkerGrey) Ff(sansSerif) Fz(default) Ta(c)">{{statusText}}</button>
+            <button v-else class="W(100%) Bgc(grey) Pstart(default) Pend(default) Ptop(default) Pbottom(default) C(darkerGrey) Ff(sansSerifBold) Fz(default) Fw(bold) Td(u) Ta(c)">{{callToActionMessage}}</button>
           </div>
 
         </div>
