@@ -60,6 +60,9 @@ const UTILS = {
 
   convertUnixTimeToPMAM(unixTime) {
 
+    console.log("convertUnixTimeToPMAM");
+    console.log("unixTime", unixTime);
+
     function formatAMPM(date) {
       var hours = date.getHours(),
           minutes = date.getMinutes(),

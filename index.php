@@ -156,8 +156,17 @@ class Entry {
     }
 
     if ($time === NULL) {
-      $time = time();
+      $time = time() * 1000; // Get it in milliseconds. Default is seconds.
     }
+
+    // Time isn't saving correctly?
+    // Need to figure out why...
+
+    error_log("What's time() ? " . print_r(time(), true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    // Something going on with these two variables. The dates keep being set as the same???
+    error_log("day " . print_r($day, true) . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("time " . print_r($time, true) . "\n", 3, __DIR__ . "/errors.txt");
 
     $sth->bindParam(':userId', $userId);
     $sth->bindParam(':time', $time);
