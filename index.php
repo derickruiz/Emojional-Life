@@ -1060,11 +1060,11 @@ if (User::isLoggedIn()) {
                 <entry ref="entries" v-for="(entry, index) in entries" v-bind:total-entries="entries.length" v-bind:entry="entry" v-bind:index="index" v-on:save-note="saveNote" v-bind:show-tooltip="tooltips.write">
               </div>
 
-              <div v-if="showLocationNotification" class="Notifications Ptop(u4) Pstart(default) Pend(default)">
+              <div v-if="showLocationNotification" class="Notifications Pstart(default) Pend(default)">
                 <notification emoji="🌏" message="Add location to each notification to see how where you're at effects how you feel." call-to-action-message="Add location" method="askUserForLocation"></notification>
               </div>
 
-              <div v-bind:class="[previousDayCharts ? '' : 'PreviousDayEmotions--empty']" class="Pstart(default) Pend(default) PreviousDayEmotions Ptop(u4) Pbottom(u4) Mtop(u4)">
+              <div v-bind:class="[previousDayCharts ? '' : 'PreviousDayEmotions--empty Mtop(u4)']" class="Pstart(default) Pend(default) PreviousDayEmotions Ptop(u4) Pbottom(u4)">
 
                 <div v-if="!previousDayCharts" class="Loading Flex Flex--center Pstart(default) Pend(default)">
                   <div>
@@ -1220,7 +1220,7 @@ if (User::isLoggedIn()) {
       </script>
 
       <script type="text/template" id="notification_template">
-        <div v-if="shouldShow" class="Notification FlexGrid BackgroundColor Border(default) Br(4px) Bgc(grey)">
+        <div v-if="shouldShow" class="Notification Mtop(u4) FlexGrid BackgroundColor Border(default) Br(4px) Bgc(grey)">
           <div class="FlexGrid-cell FlexGrid FlexGrid-cell--autoSize FlexGrid-cell--alignCenter">
               <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
                 <p class="Ff(default) Fz(u1) Lh(11)">
