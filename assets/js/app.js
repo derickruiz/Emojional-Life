@@ -352,7 +352,7 @@ const App = new Vue({
             });
           }
         });
-        
+
       });
 
       DB.recordTooltip('tap', (tooltips) => {
@@ -397,12 +397,7 @@ const App = new Vue({
         console.log("tooltips", tooltips);
         this.tooltips = tooltips;
       });
-
-      console.log("entries.length");
-      if (this.entries.length === 1) {
-        this.toggleEmoji(true);
-      }
-
+      
     },
 
     toggleLogin: function () {
