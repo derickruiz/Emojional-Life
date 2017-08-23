@@ -20,6 +20,42 @@ class Utils {
 
 class User {
 
+  public static function getTimezone($userId) {
+
+    global $DB;
+
+    $sth = $DB->prepare("SELECT * FROM `user_timezones` WHERE `user_id` = :userId LIMIT 1");
+    $sth->bindParam(':userId', $userId);
+
+    $sth->execute();
+
+    $results = $sth->fetchAll();
+
+    error_log("getTimezone " . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("results " . print_r($results, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    return $results[0]["timezone"];
+
+  }
+
+  public static function saveTimezone($userId, $timezoneOffsetMinutes) {
+    global $DB;
+
+    error_log("User.saveTimezone " . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("timezoneOffsetMinutes " . print_r($timezoneOffsetMinutes, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    // Convert minutes to seconds
+    $timezoneName = timezone_name_from_abbr("", $timezoneOffsetMinutes * 60, false);
+
+    error_log("timezoneName " . print_r($timezoneName, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    $sth = $DB->prepare("INSERT INTO user_timezones (user_id, timezone) VALUES (:userId, :timezone)");
+    $sth->bindParam(":userId", $userId);
+    $sth->bindParam(":timezone", $timezoneOffsetMinutes);
+    $sth->execute();
+
+  }
+
   public static function getUserId() {
     global $auth;
 
@@ -218,7 +254,7 @@ class Charts {
 
     $startDateTime = new DateTime($startRangeFormatted);
     $endDateTime = new DateTime($endRangeFormatted);
-    
+
     $period = new DatePeriod(
       $startDateTime,
       new DateInterval('P1D'),
@@ -583,6 +619,7 @@ function getInitialData($userId) {
   $DATA["not_user_emojions"] = Emojion::getNot($userId);
   $DATA["previousDayCharts"] = Charts::getRange($userId, $today, $sevenDaysAgo);
   $DATA["entries"] = Entry::getToday($userId);
+  $DATA["timezoneOffset"] = User::getTimezone($userId);
   // The user is logged in now.
   $DATA["isLoggedIn"] = true;
 
@@ -685,6 +722,13 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
                   Emojion::setDefault($userId);
                 }
 
+                error_log("timezone " . print_r($payload["timezone"], true) . "\n", 3, __DIR__ . "/errors.txt");
+
+                if ( !empty($payload["timezone"]) ) {
+                  error_log("Saving the user time zone " . "\n", 3, __DIR__ . "/errors.txt");
+                  User::saveTimezone($userId, $payload["timezone"]);
+                }
+
                 // If the user saved entries while not logged in go ahead and save those.
                 if ( !empty($payload["entries"]) ) {
                   error_log("Has entries in local storage. " . "\n", 3, __DIR__ . "/errors.txt");
@@ -739,8 +783,12 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
               User::login($email, $password);
 
-              // If the user saved entries while not logged in go ahead and save those.
+              if ( !empty($payload["timezone"]) ) {
+                error_log("Saving the user time zone " . "\n", 3, __DIR__ . "/errors.txt");
+                User::saveTimezone(User::getUserId(), $payload["timezone"]);
+              }
 
+              // If the user saved entries while not logged in go ahead and save those.
               // TODO: Make this into a function.
               if ( !empty($payload["entries"]) ) {
                 error_log("Has entries in local storage. " . "\n", 3, __DIR__ . "/errors.txt");

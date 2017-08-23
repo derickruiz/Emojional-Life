@@ -269,7 +269,8 @@ const DB = {
 
     let userDataObj = {
       "signUpEmail": email,
-      "signUpPassword": password
+      "signUpPassword": password,
+      "timezone": UTILS.getClientTimezone()
     };
 
     let entries = window.localStorage.getItem('entries'),
@@ -302,7 +303,8 @@ const DB = {
 
     let userDataObj = {
       "loginEmail": email,
-      "loginPassword": password
+      "loginPassword": password,
+      "timezone": UTILS.getClientTimezone()
     };
 
     let entries = window.localStorage.getItem('entries');
