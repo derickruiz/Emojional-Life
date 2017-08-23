@@ -457,21 +457,43 @@ const DB = {
     }
   },
 
-  saveLocationToEntry: function (entryIndex, entry, positionObj) {
+  saveLocationToEntry: function (entryIndex, entry, positionObj, callback) {
     console.log('savelocation to entry');
     console.log("entryIndex", entryIndex);
     console.log('entry', entry);
     console.log('positionObj', positionObj);
-    let entryDate = moment(entry.time).format('YYYY-MM-DD');
-    entry.location = {
-      latitude: positionObj.coords.latitude,
-      longitude: positionObj.coords.longitude
-    };
 
-    if (typeof callback !== "undefined") {
-      callback(DB.saveLocalEntries(entryDate, entry, entryIndex));
+    let entryDate = moment(+entry.time).format('YYYY-MM-DD');
+
+    console.log("What's entryDate?", entryDate);
+
+    let latitude = positionObj.coords.latitude,
+        longitude = positionObj.coords.longitude
+
+    if (GLOBAL_STATE.isLoggedIn) {
+
+      console.log("What's the entryKey?", entry["key"]);
+
+      console.log("latitude", latitude);
+      console.log("longitude", longitude);
+
+      AJAX.post("saveLocationToEntry", {
+        entryKey: entry["key"],
+        latitude: latitude,
+        longitude: longitude
+      }).then(function (json) {
+        console.log("Coming back from saveLocationToEntry.");
+        console.log("What's the JSON?");
+        console.log("json", json);
+
+        callback(json);
+      });
     } else {
       DB.saveLocalEntries(entryDate, entry, entryIndex)
+
+      if (typeof callback !== "undefined") {
+        callback(DB.getLocalEntries(entryDate));
+      }
     }
 
   }

@@ -10,11 +10,43 @@ date_default_timezone_set('UTC');
 class Utils {
 
   /* https://stackoverflow.com/questions/13076867/computing-the-percentage-of-values-in-an-array */
-  public static function averageArray ($array, $round = 1) {
+  public static function averageArray($array, $round = 1) {
     $num = count($array);
     return array_map(function($val) use ($num, $round) {
       return array('count'=> $val, 'avg' => round( $val / $num * 100, $round));
     }, array_count_values($array));
+  }
+
+  /*
+   * @description - Use the Google API's to reverse GEOCODE the LAT N' LONG for a city and country.
+   * @return String */
+  public static function getCityCountryFromLatLong($latitude, $longitude) {
+    error_log("Utils::getCityCountryFromLatLong " . "\n", 3, __DIR__ . "/errors.txt");
+    $url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=" . $latitude . "," . $longitude . "&sensor=true";
+    $data = file_get_contents($url);
+
+    $jsondata = json_decode($data, true);
+
+    // city
+    foreach ($jsondata["results"] as $result) {
+        foreach ($result["address_components"] as $address) {
+            if (in_array("locality", $address["types"])) {
+                $city = $address["long_name"];
+            }
+        }
+    }
+
+    // country
+    foreach ($jsondata["results"] as $result) {
+        foreach ($result["address_components"] as $address) {
+            if (in_array("country", $address["types"])) {
+                $country = $address["long_name"];
+            }
+        }
+    }
+
+    return $city . ", " . $country;
+
   }
 }
 
@@ -243,6 +275,38 @@ class Entry {
     error_log("executedStatement " . print_r($executedStatement, true) . "\n", 3, __DIR__ . "/errors.txt");
 
   }
+
+  public static function saveLocation($userId, $entryKey, $latitude, $longitude) {
+
+    global $DB;
+
+    error_log("Entry.saveLocation " . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("userId " . $userId . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("entryKey " . $entryKey . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("latitude " . $latitude . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("longitude " . $longitude . "\n", 3, __DIR__ . "/errors.txt");
+
+    error_log("latitude type " . gettype($latitude) . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("longitude type " . gettype($longitude) . "\n", 3, __DIR__ . "/errors.txt");
+
+    $cityAndCountry = Utils::getCityCountryFromLatLong($latitude, $longitude);
+
+    error_log("cityAndCountry " . print_r($cityAndCountry, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    //WhyTF is this not working?
+    $sth = $DB->prepare("UPDATE `entries` SET `latitude` = :latitude, `longitude` = :longitude, `location` = :location WHERE `user_id` = :userId AND `key` = :entryKey");
+    $sth->bindParam(':userId', $userId);
+    $sth->bindParam(':entryKey', $entryKey);
+    $sth->bindParam(':latitude', $latitude);
+    $sth->bindParam(':longitude', $longitude);
+    $sth->bindParam(':location', $cityAndCountry);
+
+    $executedStatement = $sth->execute();
+
+    error_log("executedStatement " . print_r($executedStatement, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+  }
+
 }
 
 /* Gets the data for previous entries to render into a chart. */
@@ -601,6 +665,19 @@ $AJAX = array(
     $allUserEntries = Entry::getToday($userId);
 
     return json_encode($allUserEntries);
+  },
+
+  "saveLocationToEntry" => function ($userId, $payload) {
+    $entryKey = $payload["entryKey"];
+    $latitude = $payload["latitude"];
+    $longitude = $payload["longitude"];
+
+    Entry::saveLocation($userId, $entryKey, $latitude, $longitude);
+
+    $allUserEntries = Entry::getToday($userId);
+
+    return json_encode($allUserEntries);
+
   }
 
 );
@@ -694,6 +771,12 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
             case "saveNote":
               header('Content-Type: application/json');
               $entries = $AJAX["saveNote"]($userId, $decoded["payload"]);
+              echo $entries;
+              exit;
+              break;
+            case "saveLocationToEntry":
+              header('Content-Type: application/json');
+              $entries = $AJAX["saveLocationToEntry"]($userId, $decoded["payload"]);
               echo $entries;
               exit;
               break;
@@ -1154,7 +1237,8 @@ if (User::isLoggedIn()) {
           </div>
 
           <div v-if="callToActionMessage && method" v-on="methods" class="FlexGrid-cell FlexGrid-cell--full Bt(default)">
-            <button class="W(100%) Bgc(grey) Pstart(default) Pend(default) Ptop(default) Pbottom(default) C(darkerGrey) Ff(sansSerifBold) Fz(default) Fw(bold) Td(u) Ta(c)">{{callToActionMessage}}</button>
+            <button v-if="statusText" disabled class="W(100%) Bgc(grey) Pstart(default) Pend(default) Ptop(default) Pbottom(default) C(darkerGrey) Ff(sansSerif) Fz(default) Ta(c)">{{statusText}}</button>
+            <button v-else class="W(100%) Bgc(grey) Pstart(default) Pend(default) Ptop(default) Pbottom(default) C(darkerGrey) Ff(sansSerifBold) Fz(default) Fw(bold) Td(u) Ta(c)">{{callToActionMessage}}</button>
           </div>
 
         </div>

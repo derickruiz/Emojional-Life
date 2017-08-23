@@ -337,18 +337,22 @@ const App = new Vue({
         DB.getUserLocationPermissions( (permissionObj) => {
           if (permissionObj.permission === "granted") {
 
-            console.log('gonna get the geolocation.');
+            // Show a loading icon "Earth emoji" on the entry.
 
+            // Make an ajax request to save the location data.
             window.navigator.geolocation.getCurrentPosition(function (position) {
               console.log('position', position);
               DB.saveLocationToEntry(entryIndex, entry, position, function (entries) {
+                console.log("Saved the location to the entry.");
+
                 self.entries = entries;
+                // Why is it not updating?
                 self.$forceUpdate();
               });
             });
           }
         });
-
+        
       });
 
       DB.recordTooltip('tap', (tooltips) => {

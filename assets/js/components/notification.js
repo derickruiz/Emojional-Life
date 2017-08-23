@@ -27,7 +27,8 @@ const Notification = {
 
     return {
       methods: {},
-      shouldShow: true
+      shouldShow: true,
+      statusText: undefined
     };
 
   },
@@ -46,13 +47,19 @@ const Notification = {
 
       let self = this;
 
+      this.statusText = "Loading...";
+
       if (window.navigator.geolocation !== "undefined") {
         console.log("Gonna ask for the user's permission.");
         window.navigator.geolocation.getCurrentPosition(function (position) {
           // Save into the DB.
           DB.saveUserLocationPermissions("granted");
+
+          self.shouldShow = false;
+
         }, function (error) {
           DB.saveUserLocationPermissions("denied");
+          self.shouldShow = false;
         });
       }
     }
