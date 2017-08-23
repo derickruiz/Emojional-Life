@@ -36,7 +36,7 @@ const App = new Vue({
     entriesToShow: undefined, /* Shows the last two inputted notes for the day. */
     emojions: undefined, /* The emojis. */
     currentDay: undefined, /* For saving notes into the right place in the database. */
-
+    previousDayCharts: undefined, /* The charts for the previous days */
     notUserEmojions: [], /* The list of emojis that are currently not in the user's 8. */
     emptyTracking: undefined, /* Not sure? */
 
@@ -119,6 +119,11 @@ const App = new Vue({
 
       console.log("this.hasEntries", this.hasEntries);
 
+    });
+
+    DB.getPreviousDayCharts((charts) => {
+      console.log("What's charts?", charts);
+      this.previousDayCharts = charts;
     });
 
     /*
