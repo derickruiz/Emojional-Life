@@ -1038,15 +1038,7 @@ if (User::isLoggedIn()) {
                 </div>
 
               </div>
-              <div v-else>
-
-                <form action="/" method="POST">
-                  <input type="hidden" name="logout" value="1" />
-                  <input type="submit" value="Logout" />
-                </form>
-
-              </div>
-
+              
               <div v-if="hasEntries">
 
                 <div class="Pstart(default) Pend(default) Ptop(u1) Pbottom(default)">
