@@ -467,15 +467,34 @@ const DB = {
 
     console.log("What's entryDate?", entryDate);
 
-    entry.location = {
-      latitude: positionObj.coords.latitude,
-      longitude: positionObj.coords.longitude
-    };
+    let latitude = positionObj.coords.latitude,
+        longitude = positionObj.coords.longitude
 
-    DB.saveLocalEntries(entryDate, entry, entryIndex)
+    if (GLOBAL_STATE.isLoggedIn) {
 
-    if (typeof callback !== "undefined") {
-      callback(DB.getLocalEntries(entryDate));
+      console.log("What's the entryKey?", entry["key"]);
+
+      console.log("latitude", latitude);
+      console.log("longitude", longitude);
+
+      AJAX.post("saveLocationToEntry", {
+        entryKey: entry["key"],
+        latitude: latitude,
+        longitude: longitude
+      }).then(function (json) {
+        console.log("Coming back from saveLocationToEntry.");
+        console.log("What's the JSON?");
+        console.log("json", json);
+
+        callback(json);
+      });
+    } else {
+      DB.saveLocalEntries(entryDate, entry, entryIndex)
+
+      if (typeof callback !== "undefined") {
+        callback(DB.getLocalEntries(entryDate));
+      }
     }
+
   }
 };
