@@ -48,7 +48,20 @@ const UTILS = {
     array[index] = newItem;
   },
 
+  getClientTimezone: function() {
+    let offset = new Date().getTimezoneOffset();
+
+    offset = offset === 0 ? 0 : -offset;
+
+    console.log("What's the offset?", offset);
+
+    return offset;
+  },
+
   convertUnixTimeToPMAM(unixTime) {
+
+    console.log("convertUnixTimeToPMAM");
+    console.log("unixTime", unixTime);
 
     function formatAMPM(date) {
       var hours = date.getHours(),

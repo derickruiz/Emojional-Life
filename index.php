@@ -7,7 +7,54 @@ $auth = new \Delight\Auth\Auth($DB);
 
 date_default_timezone_set('UTC');
 
+class Utils {
+
+  /* https://stackoverflow.com/questions/13076867/computing-the-percentage-of-values-in-an-array */
+  public static function averageArray ($array, $round = 1) {
+    $num = count($array);
+    return array_map(function($val) use ($num, $round) {
+      return array('count'=> $val, 'avg' => round( $val / $num * 100, $round));
+    }, array_count_values($array));
+  }
+}
+
 class User {
+
+  public static function getTimezone($userId) {
+
+    global $DB;
+
+    $sth = $DB->prepare("SELECT * FROM `user_timezones` WHERE `user_id` = :userId LIMIT 1");
+    $sth->bindParam(':userId', $userId);
+
+    $sth->execute();
+
+    $results = $sth->fetchAll();
+
+    error_log("getTimezone " . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("results " . print_r($results, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    return $results[0]["timezone"];
+
+  }
+
+  public static function saveTimezone($userId, $timezoneOffsetMinutes) {
+    global $DB;
+
+    error_log("User.saveTimezone " . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("timezoneOffsetMinutes " . print_r($timezoneOffsetMinutes, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    // Convert minutes to seconds
+    $timezoneName = timezone_name_from_abbr("", $timezoneOffsetMinutes * 60, false);
+
+    error_log("timezoneName " . print_r($timezoneName, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    $sth = $DB->prepare("INSERT INTO user_timezones (user_id, timezone) VALUES (:userId, :timezone)");
+    $sth->bindParam(":userId", $userId);
+    $sth->bindParam(":timezone", $timezoneOffsetMinutes);
+    $sth->execute();
+
+  }
 
   public static function getUserId() {
     global $auth;
@@ -109,8 +156,17 @@ class Entry {
     }
 
     if ($time === NULL) {
-      $time = time();
+      $time = time() * 1000; // Get it in milliseconds. Default is seconds.
     }
+
+    // Time isn't saving correctly?
+    // Need to figure out why...
+
+    error_log("What's time() ? " . print_r(time(), true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    // Something going on with these two variables. The dates keep being set as the same???
+    error_log("day " . print_r($day, true) . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("time " . print_r($time, true) . "\n", 3, __DIR__ . "/errors.txt");
 
     $sth->bindParam(':userId', $userId);
     $sth->bindParam(':time', $time);
@@ -185,6 +241,130 @@ class Entry {
     $executedStatement = $sth->execute();
 
     error_log("executedStatement " . print_r($executedStatement, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+  }
+}
+
+/* Gets the data for previous entries to render into a chart. */
+class Charts {
+
+  /*
+   * @description - Returns all the data to renders charts from a start date to an end date.
+   * @return Array */
+  public static function getRange($userId, $endRange, $startRange) {
+    global $DB;
+
+    $startRangeFormatted = date('Y-m-d', $startRange);
+    $endRangeFormatted = date('Y-m-d', $endRange);
+
+    error_log("startRangeFormatted " . print_r($startRangeFormatted, true) . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("endRangeFormatted " . print_r($endRangeFormatted, true) . "\n", 3, __DIR__ . "/errors.txt");
+    // Create an array of days between these two
+
+    $startDateTime = new DateTime($startRangeFormatted);
+    $endDateTime = new DateTime($endRangeFormatted);
+
+    $period = new DatePeriod(
+      $startDateTime,
+      new DateInterval('P1D'),
+      $endDateTime
+    );
+
+    error_log("What's the period? " . print_r($period, true) . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("What's the iterator as an array? " . print_r(iterator_to_array($period), true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    // Loop through those days
+    error_log("About to loop through the period." . "\n", 3, __DIR__ . "/errors.txt");
+
+    $stats = array();
+
+    foreach ($period as $day) {
+
+      $formattedDay = $day->format('Y-m-d');
+      error_log("What's the formattedDay? " . print_r($formattedDay, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+      // Get all entries for those days and return the stats.
+
+      $sth = $DB->prepare('SELECT * FROM `entries` WHERE `user_id` = :userId AND `day` = :day');
+      $sth->bindParam(':userId', $userId);
+      $sth->bindParam(':day', $formattedDay);
+      $sth->execute();
+
+      $entriesForDay = $sth->fetchAll();
+
+      if ( !empty($entriesForDay)) {
+        $stats[$formattedDay] = Charts::getStatsForDay($entriesForDay);
+      }
+
+    }
+
+    // error_log("Charts.getRange " . "\n", 3, __DIR__ . "/errors.txt");
+    // error_log("startRange " . print_r($startRange, true) . "\n", 3, __DIR__ . "/errors.txt");
+    // error_log("endRange " . print_r($endRange, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+
+    return $stats;
+
+  }
+
+  public static function getStatsForDay($entries) {
+
+    global $DB;
+
+    error_log("Charts.getStats" . "\n", 3, __DIR__ . "/errors.txt");
+
+    error_log("entries " . print_r($entries, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    $allEmojionIds = array();
+
+    // I need to create a structure something like this.
+    // array(
+    //   "08-22-2017" => array(
+    //     labels: ['🤔', '👆', '🌏'],
+    //     series: [5, 3, 4]
+    //   )
+
+    // Loop through the entries.
+    // Add the emoji_id to an Array
+
+    foreach($entries as $entry) {
+      array_push($allEmojionIds, $entry["emojion_id"]);
+    }
+
+    error_log("allEmojiIds " . print_r($allEmojionIds, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    $averages = Utils::averageArray($allEmojionIds);
+
+    error_log("averages " . print_r($averages, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    $labels = array();
+    $series = array();
+
+    foreach ($averages as $emojionId => $average) {
+
+      error_log("emojionId " . print_r($emojionId, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+      // Getting the emoji for the labels array.
+      $sth = $DB->prepare("SELECT * FROM `all_emojions` WHERE `key` = :emojionId LIMIT 1");
+      $sth->bindParam(":emojionId", $emojionId);
+      $sth->execute();
+
+      $emojion = $sth->fetchAll();
+
+      error_log("emojion " . print_r($emojion, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+      array_push($labels, $emojion[0]["emoji"]);
+      array_push($series, $average["avg"]);
+    }
+
+    $stats = array(
+      "labels" => $labels,
+      "series" => $series
+    );
+
+    error_log("stats " . print_r($stats, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    return $stats;
 
   }
 }
@@ -446,8 +626,9 @@ function getInitialData($userId) {
   // Get the user's emojions
   $DATA["user_emojions"] = Emojion::get($userId);
   $DATA["not_user_emojions"] = Emojion::getNot($userId);
+  $DATA["previousDayCharts"] = Charts::getRange($userId, $today, $sevenDaysAgo);
   $DATA["entries"] = Entry::getToday($userId);
-  $DATA["previousDayCharts"] = Charts::getRange();
+  $DATA["timezoneOffset"] = User::getTimezone($userId);
   // The user is logged in now.
   $DATA["isLoggedIn"] = true;
 
@@ -550,6 +731,13 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
                   Emojion::setDefault($userId);
                 }
 
+                error_log("timezone " . print_r($payload["timezone"], true) . "\n", 3, __DIR__ . "/errors.txt");
+
+                if ( !empty($payload["timezone"]) ) {
+                  error_log("Saving the user time zone " . "\n", 3, __DIR__ . "/errors.txt");
+                  User::saveTimezone($userId, $payload["timezone"]);
+                }
+
                 // If the user saved entries while not logged in go ahead and save those.
                 if ( !empty($payload["entries"]) ) {
                   error_log("Has entries in local storage. " . "\n", 3, __DIR__ . "/errors.txt");
@@ -604,8 +792,12 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
               User::login($email, $password);
 
-              // If the user saved entries while not logged in go ahead and save those.
+              if ( !empty($payload["timezone"]) ) {
+                error_log("Saving the user time zone " . "\n", 3, __DIR__ . "/errors.txt");
+                User::saveTimezone(User::getUserId(), $payload["timezone"]);
+              }
 
+              // If the user saved entries while not logged in go ahead and save those.
               // TODO: Make this into a function.
               if ( !empty($payload["entries"]) ) {
                 error_log("Has entries in local storage. " . "\n", 3, __DIR__ . "/errors.txt");
@@ -789,9 +981,9 @@ if (User::isLoggedIn()) {
                 <notification emoji="🌏" message="Add location to each notification to see how where you're at effects how you feel." call-to-action-message="Add location" method="askUserForLocation"></notification>
               </div>
 
-              <div class="Pstart(default) Pend(default) PreviousDayEmotions PreviousDayEmotions--empty Ptop(u4) Pbottom(u4) Mtop(u4)">
+              <div v-bind:class="[previousDayCharts ? '' : 'PreviousDayEmotions--empty']" class="Pstart(default) Pend(default) PreviousDayEmotions Ptop(u4) Pbottom(u4) Mtop(u4)">
 
-                <div class="Loading Flex Flex--center Pstart(default) Pend(default)">
+                <div v-if="!previousDayCharts" class="Loading Flex Flex--center Pstart(default) Pend(default)">
                   <div>
                     <div class="Loading-emoji Loading-emoji--noAnimation">👻</div>
                     <div class="Ff(sansSerifBold) Fz(u2) Mtop(u5) Ta(c)">Track at least a day of entries to start seeing stats on other days.</div>
@@ -803,7 +995,12 @@ if (User::isLoggedIn()) {
                   What about other days?
                 </p>
 
-                <div class="js-charts Ptop(d2)" style="display: flex; flex-wrap: nowrap; overflow-x: hidden;">
+
+                <div v-if="previousDayCharts" class="js-charts Ptop(d2)" style="display: flex; flex-wrap: nowrap; overflow-x: hidden;">
+                  <day-emotion-chart v-for="chart in previousDayCharts" v-bind:data="chart"></day-emotion-chart>
+                </div>
+
+                <div v-else class="js-charts Ptop(d2)" style="display: flex; flex-wrap: nowrap; overflow-x: hidden;">
                   <day-emotion-chart></day-emotion-chart>
                   <day-emotion-chart></day-emotion-chart>
                   <day-emotion-chart></day-emotion-chart>
@@ -978,9 +1175,10 @@ if (User::isLoggedIn()) {
       <?php if ($DATA["isLoggedIn"]): ?>
         <script>
           GLOBAL_STATE.isLoggedIn = true;
-          USER_DATA = <?php echo json_encode($DATA, JSON_PRETTY_PRINT); ?>
 
           UTILS.removeUserDataFromLocalStorage(); // Deleting already saved data from local storage.
+
+          USER_DATA = <?php echo json_encode($DATA, JSON_PRETTY_PRINT); ?>
         </script>
       <?php else: ?>
         <script>

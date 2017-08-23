@@ -269,7 +269,8 @@ const DB = {
 
     let userDataObj = {
       "signUpEmail": email,
-      "signUpPassword": password
+      "signUpPassword": password,
+      "timezone": UTILS.getClientTimezone()
     };
 
     let entries = window.localStorage.getItem('entries'),
@@ -302,7 +303,8 @@ const DB = {
 
     let userDataObj = {
       "loginEmail": email,
-      "loginPassword": password
+      "loginPassword": password,
+      "timezone": UTILS.getClientTimezone()
     };
 
     let entries = window.localStorage.getItem('entries');
@@ -313,7 +315,7 @@ const DB = {
 
     console.log("userDataObj", userDataObj);
 
-    AJAX.post("login", userDataObj).then(function (response) {
+    AJAX.post("login", userDataObj, true).then(function (response) {
       console.log("What's the response?", response);
     });
 
@@ -381,6 +383,16 @@ const DB = {
         callback(CONSTS.DEFAULT_USER_EMOJIONS);
       }
     }
+  },
+
+  getPreviousDayCharts: function (callback) {
+
+    if (GLOBAL_STATE.isLoggedIn) {
+      callback(USER_DATA["previousDayCharts"]);
+    } else {
+      callback(undefined);
+    }
+
   },
 
   getNotUserEmojions: function (callback) {

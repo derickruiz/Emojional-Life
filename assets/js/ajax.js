@@ -28,7 +28,6 @@ const AJAX = (function () {
       if (refresh) {
         location.reload();
       } else {
-
         //console.log("response after fetching.", response);
         return response.json();
       }

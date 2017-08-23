@@ -2,12 +2,22 @@ const DayEmotionChart = {
 
   template: "<div class='js-chart'><slot></slot></div>",
 
-  mounted: function () {
+  props: {
+    data: {
+      type: Object,
+      required: false,
+      default: function () {
 
-    var data = {
-      labels: ['🤔', '👆', '🌏'],
-      series: [5, 3, 4]
-    };
+        return {
+          labels: ['🤔', '👆', '🌏'],
+          series: [5, 3, 4]
+        };
+
+      }
+    }
+  },
+
+  mounted: function () {
 
     var options = {
       labelInterpolationFnc: function(value) {
@@ -17,7 +27,7 @@ const DayEmotionChart = {
       height: '100px'
     };
 
-    new Chartist.Pie(this.$el, data, options);
+    new Chartist.Pie(this.$el, this.data, options);
   }
 };
 
