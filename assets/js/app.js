@@ -123,7 +123,12 @@ const App = new Vue({
 
     DB.getPreviousDayCharts((charts) => {
       console.log("What's charts?", charts);
-      this.previousDayCharts = charts;
+
+      if (charts && Object.keys(charts).length >= 1) {
+        this.hasEntries = true;
+        this.previousDayCharts = charts;
+      }
+
     });
 
     /*
@@ -352,7 +357,7 @@ const App = new Vue({
             });
           }
         });
-        
+
       });
 
       DB.recordTooltip('tap', (tooltips) => {
@@ -397,11 +402,6 @@ const App = new Vue({
         console.log("tooltips", tooltips);
         this.tooltips = tooltips;
       });
-
-      console.log("entries.length");
-      if (this.entries.length === 1) {
-        this.toggleEmoji(true);
-      }
 
     },
 
