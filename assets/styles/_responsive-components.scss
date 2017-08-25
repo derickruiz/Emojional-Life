@@ -12,6 +12,10 @@
     grid-template-columns: repeat(2, 25vw);
   }
 
+  .Entries > .EmotionNote + .EmotionNote {
+    margin-top: $scale-three-down;
+  }
+
   // And the patterns screen takes up the other half.
   .Screen {
     margin-top: $navbar-height; // Making up for the navbar being at the top now.

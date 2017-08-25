@@ -84,6 +84,10 @@
   &.FlexGrid-cell--1of10 {
     flex: 0 0 10%;
   }
+
+  &.FlexGrid-cell--halfScreen {
+    flex: 0 0 50vw;
+  }
 }
 
 .Flex {

@@ -1131,7 +1131,7 @@ if (User::isLoggedIn()) {
 
         </div>
         <!-- style="z-index: 5; position: fixed; width: 100%; bottom: 0;" -->
-        <div class="Z(2) P(f) W(100%) B(0) rsp-1-T(0) rsp-1-Bb(default) O(hidden) FlexGrid-cell FlexGrid-cell--nav FlexGrid FlexGrid-cell--alignCenter"><!-- Navigation -->
+        <div class="Z(2) P(f) W(100%) B(0) rsp-1-T(0) rsp-1-Bb(default) BackgroundColor BackgroundColor--white O(hidden) FlexGrid-cell FlexGrid-cell--nav FlexGrid FlexGrid-cell--alignCenter"><!-- Navigation -->
           <div class="FlexGrid FlexGrid--full FlexGrid--fullHeight rsp-1-D(n)">
 
             <div v-on:click="toggleEmoji(true)" class="C(p) BackgroundColor BackgroundColor--white FlexGrid-cell FlexGrid-cell--flex FlexGrid-cell--alignCenter Br(default) Bt(default) Pos(r)">
@@ -1160,7 +1160,7 @@ if (User::isLoggedIn()) {
 
           <div class="FlexGrid FlexGrid--alignCenter W(100%) D(n) rsp-1-D(f)">
 
-           <div class="FlexGrid-cell FlexGrid FlexGrid--alignItemsCenter Br(default)">
+           <div class="FlexGrid-cell FlexGrid FlexGrid--alignItemsCenter FlexGrid-cell--halfScreen Br(default) rsp-1-Bs(contentbox)">
              <div class="Fz(default) C(black) Ff(sansSerifBlack) Pstart(default)">Emojional Life</div>
            </div>
 
