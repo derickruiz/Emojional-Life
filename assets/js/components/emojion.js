@@ -46,6 +46,12 @@ const Emojion = {
        color: this.emojion.color,
 
        /*
+        * @description - The text color for the emojion block
+        * @type String
+        */
+        textColor: this.emojion.text_color,
+        
+       /*
         * @description - The color of the emotion when switching using the carouselColor
         * @type String
         */

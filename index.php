@@ -1200,11 +1200,11 @@ if (User::isLoggedIn()) {
       </div>
 
       <script type="text/x-template" id="emojion_template">
-        <div class="Emotion BackgroundColor js-emotion" v-bind:class="['BackgroundColor--' + colors[index], canSwitchEmoji && isChangingEmoji ? 'Emotion--isSwitching js-emotion-switching' : '']">
-          <emojion-carousel v-if="canSwitchEmoji && isChangingEmoji" v-bind:emojions="notUserEmojions" v-bind:color="colors[index]" v-on:select-emoji-to-change-to="selectEmojionToChangeTo"></emojion-carousel>
+        <div class="Emotion BackgroundColor js-emotion" v-bind:style="{ backgroundColor: '#' + color }" v-bind:class="[canSwitchEmoji && isChangingEmoji ? 'Emotion--isSwitching js-emotion-switching' : '']">
+          <emojion-carousel v-if="canSwitchEmoji && isChangingEmoji" v-bind:emojions="notUserEmojions" v-on:select-emoji-to-change-to="selectEmojionToChangeTo"></emojion-carousel>
           <div v-else class="Fz(10vh)">
             <div class="Ta(c)">{{emojion.emoji}}</div>
-            <div v-bind:class="[colors[index] === 'black' ? 'C(white)' : 'C(black)']" class="Ff(serifItalic) Fz(u2) Ta(c)">{{emojion.emotion}}</div>
+            <div v-bind:style="{ color: '#' + textColor }" class="Ff(serifItalic) Fz(u2) Ta(c)">{{emojion.emotion}}</div>
           </div>
 
         </div>
@@ -1212,10 +1212,10 @@ if (User::isLoggedIn()) {
 
       <script type="text/x-template" id="emojion_carousel_template">
         <div class="EmotionCarousel">
-          <div v-for="emojion in emojions" class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">
+          <div v-for="emojion in emojions" v-bind:style="{ backgroundColor: '#' + emojion.color }" class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">
             <div>
               <div class="Ta(c)">{{emojion.emoji}}</div>
-              <div v-bind:class="[color === 'black' ? 'C(white)' : 'C(black)']" class="Ff(serifItalic) Fz(u2) Ta(c)">{{emojion.emotion}}</div>
+              <div v-bind:style="{ color: '#' + emojion.text_color }" class="Ff(serifItalic) Fz(u2) Ta(c)">{{emojion.emotion}}</div>
             </div>
           </div>
         </div>
@@ -1237,7 +1237,7 @@ if (User::isLoggedIn()) {
           </div>
 
           <textarea v-if="canInputNote" v-on:input="resizeTextArea" rows="1" class="Mtop(d2) Ptop(d2) Pbottom(d2) Ff(default) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Resize(none) js-note-input" placeholder="I feel this way because.."></textarea>
-          <div class="Mtop(d2) Ff(default) C(white) Fz(default) Lh(14)" v-if="!canInputNote && alreadyHasNote && isViewingNote">{{entry.note}}</div>
+          <div class="Mtop(d2) Ff(sansSerifRegular) C(white) Fz(default) Lh(14)" v-if="!canInputNote && alreadyHasNote && isViewingNote">{{entry.note}}</div>
           <tooltip v-if="showTooltip && (index === totalEntries - 1) && !shouldResizeTextArea" emoji="✍" action="Write" message="a note." tooltip-type="write"></tooltip>
           <button v-if="shouldResizeTextArea && canInputNote" v-on:click="saveNote" class="D(b) W(100%)" style="min-height: 44px;">Save Note</button>
         </div>
