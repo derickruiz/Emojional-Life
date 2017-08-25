@@ -18,7 +18,7 @@ const DOM = {
     }, 0);
 
     document.body.classList.remove("Ox(hidden)");
-    document.body.classList.add("O(hidden)");
+    document.body.classList.add("O(hidden)", "rsp-1-Oy(visible)");
 
   },
 
@@ -28,7 +28,7 @@ const DOM = {
       window.scrollTo(0, GLOBAL_STATE.previousScrollY);
     }, 0);
 
-    document.body.classList.remove("O(hidden)");
+    document.body.classList.remove("O(hidden)", "rsp-1-Oy(visible)");
     document.body.classList.add("Ox(hidden)");
   },
 
