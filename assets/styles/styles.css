@@ -294,14 +294,20 @@ textarea {
   flex-wrap: wrap; }
   .FlexGrid.FlexGrid--full {
     width: 100%; }
+  .FlexGrid.FlexGrid--spaceBetween {
+    justify-content: space-between; }
   .FlexGrid.FlexGrid--fullHeight {
     height: 100%; }
   .FlexGrid.FlexGrid--guttersOneDown {
-    margin-left: -0.618rem; }
+    margin-left: -0.786163522rem; }
   .FlexGrid.FlexGrid--guttersOneDown > .FlexGrid-cell {
-    padding-left: 0.618rem; }
+    padding-left: 0.786163522rem; }
   .FlexGrid.FlexGrid--alignItemsCenter {
     align-items: center; }
+  .FlexGrid.FlexGrid--reverse {
+    flex-direction: row-reverse; }
+  .FlexGrid.FlexGrid--inline {
+    display: inline-flex; }
 
 .FlexGrid-cell {
   flex: 1; }
@@ -324,6 +330,10 @@ textarea {
     margin-left: auto; }
   .FlexGrid-cell.FlexGrid-cell--alignItemsCenter {
     align-items: center; }
+  .FlexGrid-cell.FlexGrid-cell--9of10 {
+    flex: 0 0 90%; }
+  .FlexGrid-cell.FlexGrid-cell--1of10 {
+    flex: 0 0 10%; }
 
 .Flex {
   display: flex; }
@@ -334,8 +344,26 @@ textarea {
 .D\(b\) {
   display: block; }
 
+.Mtop\(default\) {
+  margin-top: 1rem; }
+
 .Mtop\(d2\) {
-  margin-top: 0.618rem; }
+  margin-top: 0.6180530833rem; }
+
+.Mtop\(d3\) {
+  margin-top: 0.4858907888rem; }
+
+.Mtop\(u4\) {
+  margin-top: 2.6178722243rem; }
+
+.Mtop\(u5\) {
+  margin-top: 3.3299334693rem; }
+
+.Mstart\(default\) {
+  margin-left: 1rem; }
+
+.Mend\(default\) {
+  margin-right: 1rem; }
 
 .Pstart\(default\) {
   padding-left: 1rem; }
@@ -346,17 +374,32 @@ textarea {
 .Ptop\(default\) {
   padding-top: 1rem; }
 
+.Ptop\(u1\) {
+  padding-top: 1.272rem; }
+
+.Ptop\(u4\) {
+  padding-top: 2.6178722243rem; }
+
 .Pbottom\(default\) {
   padding-bottom: 1rem; }
 
+.Pbottom\(u1\) {
+  padding-bottom: 1.272rem; }
+
+.Pbottom\(u4\) {
+  padding-bottom: 2.6178722243rem; }
+
 .Ptop\(d2\) {
-  padding-top: 0.618rem; }
+  padding-top: 0.6180530833rem; }
 
 .Pbottom\(d2\) {
-  padding-bottom: 0.618rem; }
+  padding-bottom: 0.6180530833rem; }
+
+.Mbottom\(default\) {
+  margin-bottom: 1rem; }
 
 .P\(d2\) {
-  padding: 0.61804697157rem; }
+  padding: 0.6180530833rem; }
 
 .P\(default\) {
   padding: 1rem; }
@@ -364,17 +407,49 @@ textarea {
 .C\(white\) {
   color: white; }
 
-.Ff\(default\) {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+.C\(darkerGrey\) {
+  color: #7E7E7E; }
+
+.Bgc\(grey\) {
+  background-color: #F2F2F2; }
+
+.Ff\(sansSerifRegular\) {
+  font-family: "Slate-Book", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: normal; }
+
+.Ff\(sansSerifBold\) {
+  font-family: "Slate-Medium", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 400; }
+
+.Ff\(serifRegular\) {
+  font-family: "Plantin", "Times New Roman", Times, serif;
+  font-weight: normal; }
+
+.Ff\(serifItalic\) {
+  font-family: "Plantin-Italic", "Times New Roman", Times, serif;
+  font-style: italic; }
+
+.Ff\(serifBold\) {
+  font-family: "Plantin-Bold", "Times New Roman", Times, serif;
+  font-weight: 400; }
 
 .Fz\(u1\) {
-  font-size: 1.618rem; }
+  font-size: 1.272rem; }
 
 .Fz\(u2\) {
-  font-size: 2.617924rem; }
+  font-size: 1.618rem; }
+
+.Fz\(u3\) {
+  font-size: 2.058075648rem; }
 
 .Fz\(10vh\) {
   font-size: 10vh; }
+
+.Fz\(default\) {
+  font-size: 1rem; }
+
+.Lh\(11\) {
+  line-height: 1.1; }
 
 .Lh\(14\) {
   line-height: 1.4; }
@@ -416,13 +491,16 @@ textarea {
   overflow-y: hidden; }
 
 .Br\(default\) {
-  border-right: 1px solid #252525; }
+  border-right: 1px solid #7E7E7E; }
 
 .Bt\(default\) {
-  border-top: 1px solid #252525; }
+  border-top: 1px solid #7E7E7E; }
 
 .Br\(4px\) {
   border-radius: 4px; }
+
+.Border\(default\) {
+  border: 1px solid #7E7E7E; }
 
 .C\(p\) {
   cursor: pointer; }
@@ -433,14 +511,14 @@ textarea {
 .P\(f\) {
   position: fixed; }
 
+.P\(r\) {
+  position: relative; }
+
 .Lh\(12\) {
   line-height: 1.2; }
 
 .Bs\(default\) {
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5); }
-
-.Br\(tractorDark\) {
-  border-right: 1px solid #d61c35; }
 
 .Z\(2\) {
   z-index: 2; }
@@ -455,7 +533,7 @@ textarea {
   left: 0; }
 
 .L\(d2\) {
-  left: 0.618rem; }
+  left: 0.6180530833rem; }
 
 .T\(0\) {
   top: 0; }
@@ -539,24 +617,41 @@ body {
   cursor: pointer;
   transition: transform 180ms ease;
   transform: scale(1); }
+  .Emotion.Emotion--isSwitching {
+    z-index: 2;
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.4); }
+  .Emotion.Emotion--isSwitching:nth-child(odd) {
+    transform: scale(1.3) translate3d(10%, 5%, 0); }
+  .Emotion.Emotion--isSwitching:nth-child(even) {
+    transform: scale(1.3) translate3d(-10%, 5%, 0); }
+  .Emotion.Emotion--isSwitching:nth-child(1) {
+    transform: scale(1.3) translate3d(10%, 10%, 0); }
+  .Emotion.Emotion--isSwitching:nth-child(2) {
+    transform: scale(1.3) translate3d(-10%, 10%, 0); }
+  .Emotion.Emotion--isSwitching:nth-child(7) {
+    transform: scale(1.3) translate3d(10%, -10%, 0); }
+  .Emotion.Emotion--isSwitching:nth-child(8) {
+    transform: scale(1.3) translate3d(-10%, -10%, 0); }
 
-.Emotion:hover {
+.Emotion:not(.Emotion--isSwitching):hover {
   transform: scale(0.9); }
 
-.Emotion:active {
+.Emotion:not(.Emotion--isSwitching):active {
   transform: scale(0.8); }
 
 .EmotionNote {
-  transition: all 1s linear; }
+  transition: background-color 350ms ease; }
 
 .EmotionNote.EmotionNote--active {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: auto;
+  min-height: 100%;
   z-index: 2;
-  transition: all 1s linear; }
+  transition: background-color 350ms ease;
+  padding-bottom: calc(44px + 1rem); }
 
 .EmotionCarousel {
   width: 100%;
@@ -568,7 +663,6 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: black;
   z-index: 1; }
 
 .Loading-emoji {
@@ -579,6 +673,35 @@ body {
   font-size: 20vh;
   z-index: 2;
   animation: bounce 1.5s 0s infinite; }
+
+.Loading-emoji.Loading-emoji--noAnimation {
+  animation: none;
+  top: 30%;
+  font-size: 10vh; }
+
+.BackgroundColor--blue {
+  background-color: #7F96FF; }
+
+.BackgroundColor--red {
+  background-color: #FF331F; }
+
+.BackgroundColor--purple {
+  background-color: #6F58C9; }
+
+.BackgroundColor--orange {
+  background-color: #F7B267; }
+
+.BackgroundColor--green {
+  background-color: #8ACB88; }
+
+.BackgroundColor--black {
+  background-color: #0B0A07; }
+
+.BackgroundColor--brown {
+  background-color: #54494B; }
+
+.BackgroundColor--pink {
+  background-color: #FF4F79; }
 
 .BackgroundColor--oxford {
   background-color: #090446; }
@@ -621,6 +744,8 @@ body {
   position: relative;
   width: 100vw;
   min-height: 100%; }
+  .Screen.Tracked {
+    padding-bottom: calc(44px * 2); }
 
 .Tracked--empty {
   background-color: #000;
@@ -638,32 +763,35 @@ body {
   left: 0;
   background-color: rgba(0, 0, 0, 0.4); }
 
-.EmotionNote {
-  transition: all 1s linear; }
-
-.EmotionNote.EmotionNote--active {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  transition: all 1s linear; }
-
 .Tooltip {
-  position: relative; }
-
-.Tooltip::before {
   position: absolute;
-  top: -0.618rem;
+  top: 24vh;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.4); }
+  .Tooltip::before {
+    position: absolute;
+    top: -0.618rem;
+    left: 1rem;
+    content: " ";
+    display: block;
+    width: 0;
+    height: 0;
+    border-left: 0.618rem solid transparent;
+    border-right: 0.618rem solid transparent;
+    border-bottom: 0.618rem solid black; }
+
+.Tooltip.Tooltip--right {
+  right: 1rem; }
+
+.Tooltip.Tooltip--write {
+  top: auto; }
+
+.Tooltip.Tooltip--press {
   left: 1rem;
-  content: " ";
-  display: block;
-  width: 0;
-  height: 0;
-  border-left: 0.618rem solid transparent;
-  border-right: 0.618rem solid transparent;
-  border-bottom: 0.618rem solid black; }
+  top: 48vh; }
+
+.Tooltip.Tooltip--right::before {
+  left: auto;
+  right: 1rem; }
 
 .Progress {
   position: absolute;
@@ -673,5 +801,37 @@ body {
   height: 100%;
   transition: transform 180ms ease;
   transform: translate3d(-100%, 0px, 0px); }
+
+.Notifications > .Notification + .Notification {
+  margin-top: 0.786163522rem; }
+
+.Patterns.Patterns--empty,
+.PreviousDayEmotions.PreviousDayEmotions--empty {
+  position: relative;
+  border-top: 1px solid grey;
+  border-bottom: 1px solid grey; }
+
+.PreviousDayEmotions.PreviousDayEmotions--empty + .Patterns.Patterns--empty {
+  border-top: none; }
+
+.Patterns > .Loading,
+.PreviousDayEmotions > .Loading {
+  display: none; }
+
+.Patterns.Patterns--empty::before,
+.PreviousDayEmotions.PreviousDayEmotions--empty::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #F2F2F2;
+  opacity: 0.8; }
+
+.Patterns.Patterns--empty > .Loading,
+.PreviousDayEmotions.PreviousDayEmotions--empty > .Loading {
+  display: flex; }
 
 /*# sourceMappingURL=styles.css.map */
