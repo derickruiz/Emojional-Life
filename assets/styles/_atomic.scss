@@ -3,6 +3,10 @@
   display: block;
 }
 
+.D\(n\) {
+  display: none;
+}
+
 .Mtop\(default\) {
   margin-top: $scale-default;
 }
@@ -106,6 +110,11 @@
   font-weight: 400;
 }
 
+.Ff\(sansSerifBlack\) {
+  font-family: $font-family-sansSerifBlack;
+  font-weight: bold;
+}
+
 .Ff\(serifRegular\) {
   font-family: $font-family-serifRegular;
   font-weight: normal;
@@ -199,19 +208,23 @@
 }
 
 .Br\(default\) {
-  border-right: 1px solid $color-darkerGrey;
+  border-right: 1px solid $color-alto;
 }
 
 .Bt\(default\) {
-  border-top: 1px solid $color-darkerGrey;
+  border-top: 1px solid $color-alto;
 }
 
 .Br\(4px\) {
   border-radius: 4px;
 }
 
+.Bb\(default\) {
+  border-bottom: 1px solid $color-alto;
+}
+
 .Border\(default\) {
-  border: 1px solid $color-darkerGrey;
+  border: 1px solid $color-alto;
 }
 
 .C\(p\) {
@@ -260,4 +273,8 @@
 
 .T\(0\)  {
   top: 0;
+}
+
+.B\(0\) {
+  bottom: 0;
 }

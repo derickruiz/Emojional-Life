@@ -19,6 +19,9 @@ $color-smokyBlack: #0C090D;
 $color-caribeenGreen: #03CEA4;
 $color-chaliceSilver: #a0a0a0;
 
+$color-alto: #D8D8D8;
+$color-gray: #7E7E7E;
+$color-alabaster: #F8F8F8;
 
 // Fonts
 $font-family-serifRegular: "Plantin", "Times New Roman", Times, serif;
@@ -26,6 +29,7 @@ $font-family-serifItalic: "Plantin-Italic", "Times New Roman", Times, serif;
 $font-family-serifBold: "Plantin-Bold", "Times New Roman", Times, serif;
 $font-family-sansSerifRegular: 'Slate-Book', "Helvetica Neue", Helvetica, Arial, sans-serif;
 $font-family-sansSerifBold: 'Slate-Medium', "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-family-sansSerifBlack: 'Slate-Black', "Helvetica Neue", Helvetica, Arial, sans-serif;
 
 // Scale 1.272
 $scale-five-up: 3.32993346926rem;
@@ -42,3 +46,5 @@ $scale-three-down: 0.48589078879rem;
 $size: calc(25vh - 11px);
 $navbar-height: 44px;
 $box-shadow-default: 4px 4px 12px rgba(0, 0, 0, 0.4);
+
+$resize-point-1: 800px;

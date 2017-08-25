@@ -1,0 +1,31 @@
+@media (min-width: #{$resize-point-1}) {
+
+  body {
+    background-color: $color-alabaster;
+  }
+
+  // At this point I'm just gonna put everything on a single screen.
+
+  // EMOTIONS TAKE UP one half of the screen
+  .Emotions {
+    position: fixed;
+    grid-template-columns: repeat(2, 25vw);
+  }
+
+  // And the patterns screen takes up the other half.
+  .Screen {
+    margin-top: $navbar-height; // Making up for the navbar being at the top now.
+    width: 50vw;
+  }
+
+  .App-container {
+    width: 100vw;
+
+    &.moveLeft {
+      transform: none;
+      transition: none;
+    }
+
+  }
+
+}
