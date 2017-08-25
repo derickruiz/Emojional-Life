@@ -56,7 +56,7 @@ class User {
 
     global $DB;
 
-    $sth = $DB->prepare("SELECT * FROM `user_timezones` WHERE `user_id` = :userId LIMIT 1");
+    $sth = $DB->prepare("SELECT * FROM `user_timezones` WHERE `user_id` = :userId");
     $sth->bindParam(':userId', $userId);
 
     $sth->execute();
@@ -66,7 +66,7 @@ class User {
     error_log("getTimezone " . "\n", 3, __DIR__ . "/errors.txt");
     error_log("results " . print_r($results, true) . "\n", 3, __DIR__ . "/errors.txt");
 
-    return $results[0]["timezone"];
+    return $results[ count($results) - 1]["timezone"];
 
   }
 
@@ -74,13 +74,18 @@ class User {
     global $DB;
 
     error_log("User.saveTimezone " . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("userId " . print_r($userId, true) . "\n", 3, __DIR__ . "/errors.txt");
     error_log("timezoneOffsetMinutes " . print_r($timezoneOffsetMinutes, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    error_log("timezoneOffsetMinutes gettype " . gettype($timezoneOffsetMinutes) . "\n", 3, __DIR__ . "/errors.txt");
+
 
     // Convert minutes to seconds
     $timezoneName = timezone_name_from_abbr("", $timezoneOffsetMinutes * 60, false);
 
     error_log("timezoneName " . print_r($timezoneName, true) . "\n", 3, __DIR__ . "/errors.txt");
 
+    // Not sure why this thing isn't updating?
     $sth = $DB->prepare("INSERT INTO user_timezones (user_id, timezone) VALUES (:userId, :timezone)");
     $sth->bindParam(":userId", $userId);
     $sth->bindParam(":timezone", $timezoneOffsetMinutes);
@@ -971,7 +976,7 @@ if (User::isLoggedIn()) {
         <div class="FlexGrid-cell FlexGrid-cell--fullMinusNav">
 
           <div class="App-container FlexGrid" v-bind:class="{ 'moveLeft': !shouldShowEmoji }">
-            <div class="Screen FlexGrid-cell FlexGrid-cell--1of2">
+            <div class="Screen FlexGrid-cell FlexGrid-cell--1of2 rsp-1-Br(default)">
               <div class="Emotions js-emotions">
                 <emojion ref="emojions" v-for="(emojion, index) in emojions" v-bind:can-switch-emoji="canSwitchEmoji" v-bind:not-user-emojions="notUserEmojions" v-bind:colors="emojionBlockColors" v-bind:index="index" v-bind:emojion="emojion" v-on:turn-on-carousel="turnOnCarousel" v-on:turn-off-carousel="turnOffCarousel" v-on:track-entry="trackEntry"></emojion>
               </div>
@@ -979,66 +984,68 @@ if (User::isLoggedIn()) {
               <tooltip v-if="tooltips.press && !tooltips.tap" emoji="👆" action="Press and hold" message="to change emotions." tooltip-type="press"></tooltip>
             </div>
 
-            <div class="Screen Tracked FlexGrid-cell FlexGrid-cell--1of2 BackgroundColor BackgroundColor--white">
+            <div class="Screen Tracked FlexGrid-cell FlexGrid-cell--1of2">
 
-              <div v-if="!isLoggedIn" class="Mtop(default) Mstart(default) Mend(default) Z(2) P(r)">
-                <div class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(100%)">
+              <div v-if="!isLoggedIn" class="Pstart(default) Pend(default) Z(2) P(r) Bb(default) rsp-1-D(n)">
+                <div class="FlexGrid FlexGrid--alignCenter W(100%)">
 
                  <div class="FlexGrid-cell FlexGrid FlexGrid--alignItemsCenter">
-                   <div class="Fz(default) C(darkerGrey) Ff(sansSerifRegular) Pstart(default)">Don't lose your data! 🔥</div>
+                   <div class="Fz(default) C(black) Ff(sansSerifBlack)">Emojional Life</div>
                  </div>
 
                  <div class="FlexGrid-cell">
                    <!-- Login / Sign up Tab -->
 
                    <div class="FlexGrid">
-                     <div v-on:click="toggleLogin" class="FlexGrid-cell FlexGrid-cell--1of2 Bstart(default) Br(default)">
-                       <div v-bind:class="[shouldLogin ? 'Fw(bold) Td(u) Ff(sansSerifBold)' : 'Ff(sansSerifRegular)']" class="Fz(default) C(darkerGrey) Ptop(default) Pbottom(default) Ta(c)">Login</div>
+                     <div v-on:click="toggleLogin" class="FlexGrid-cell FlexGrid-cell--1of3">
+                       <div v-bind:class="[shouldLogin ? 'Fw(bold) Td(u) Ff(sansSerifBold)' : 'Ff(sansSerifRegular)']" class="Fz(default) C(black) Ptop(default) Pbottom(default) Ta(c)">Login</div>
                      </div>
-                     <div v-on:click="toggleSignUp" class="FlexGrid-cell FlexGrid-cell--1of2">
-                       <div v-bind:class="[shouldSignUp ? 'Fw(bold) Td(u) Ff(sansSerifBold)' : ' Ff(sansSerifRegular)']" class="Fz(default) C(darkerGrey) Ptop(default) Pbottom(default) Ta(c)">Sign Up</div>
+                     <div v-on:click="toggleSignUp" class="FlexGrid-cell FlexGrid-cell--1of3">
+                       <div v-bind:class="[shouldSignUp ? 'Fw(bold) Td(u) Ff(sansSerifBold)' : ' Ff(sansSerifRegular)']" class="Fz(default) C(black) Ptop(default) Pbottom(default) Ta(c)">Sign Up</div>
+                     </div>
+                     <div class="FlexGrid-cell FlexGrid-cell--1of3 FlexGrid-cell--flex FlexGrid-cell--alignCenter">
+                       <div class="Fz(default)">👤</div>
                      </div>
                    </div>
 
                  </div>
 
                 </div>
-
-                <div v-if="shouldSignUp" class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(80%)">
-
-                  <form action="/" method="POST" v-on:submit.prevent="signUpUser">
-                    <div class="FlexGrid-cell FlexGrid-cell--full Bt(default)">
-                      <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
-                        <input v-model="signUpEmail" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" required type="email" name="signup_email">
-                        <input v-model="signUpPassword" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Password" required type="password" name="signup_password">
-                        <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Confirm Password" required type="password" name="signup_confirm_password">
-                      </div>
-                    </div>
-
-                    <div class="FlexGrid-cell FlexGrid-cell--full">
-                      <input class="Ptop(default) Pbottom(default) Bt(default) Ta(c) Fz(u1) C(darkerGrey) D(b) W(100%) Bgc(grey) Ff(sansSerifBold)" type="submit" value="Sign Up" name="signup_submit">
-                    </div>
-                  </form>
-                </div>
-
-                <div v-if="shouldLogin" class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(80%)">
-
-                  <form action="/" method="POST" v-on:submit.prevent="loginUser">
-                    <div class="FlexGrid-cell FlexGrid-cell--full Bt(default)">
-                      <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
-                        <input v-model="loginEmail" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" required type="email" name="login_email">
-                        <input v-model="loginPassword" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Password" required type="password" name="login_password">
-                      </div>
-                    </div>
-
-                    <div class="FlexGrid-cell FlexGrid-cell--full">
-                      <input class="Ptop(default) Pbottom(default) Bt(default) Ta(c) Fz(u1) C(darkerGrey) D(b) W(100%) Bgc(grey) Ff(sansSerifBold)" type="submit" value="Login" name="login_submit">
-                    </div>
-                  </form>
-                </div>
-
               </div>
-              
+
+              <div v-if="shouldSignUp" class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(80%) Z(2) P(r)">
+
+                <form action="/" method="POST" v-on:submit.prevent="signUpUser">
+                  <div class="FlexGrid-cell FlexGrid-cell--full">
+                    <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
+                      <input v-model="signUpEmail" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" required type="email" name="signup_email">
+                      <input v-model="signUpPassword" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Password" required type="password" name="signup_password">
+                      <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Confirm Password" required type="password" name="signup_confirm_password">
+                    </div>
+                  </div>
+
+                  <div class="FlexGrid-cell FlexGrid-cell--full">
+                    <input class="Ptop(default) Pbottom(default) Bt(default) Ta(c) Fz(u1) C(darkerGrey) D(b) W(100%) Bgc(grey) Ff(sansSerifBold)" type="submit" value="Sign Up" name="signup_submit">
+                  </div>
+                </form>
+              </div>
+
+              <div v-if="shouldLogin" class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(80%) Z(2) P(r)">
+
+                <form action="/" method="POST" v-on:submit.prevent="loginUser">
+                  <div class="FlexGrid-cell FlexGrid-cell--full">
+                    <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
+                      <input v-model="loginEmail" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" required type="email" name="login_email">
+                      <input v-model="loginPassword" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Password" required type="password" name="login_password">
+                    </div>
+                  </div>
+
+                  <div class="FlexGrid-cell FlexGrid-cell--full">
+                    <input class="Ptop(default) Pbottom(default) Bt(default) Ta(c) Fz(u1) C(darkerGrey) D(b) W(100%) Bgc(grey) Ff(sansSerifBold)" type="submit" value="Login" name="login_submit">
+                  </div>
+                </form>
+              </div>
+
               <div v-if="hasEntries">
 
                 <div class="Pstart(default) Pend(default) Ptop(u1) Pbottom(default)">
@@ -1047,7 +1054,7 @@ if (User::isLoggedIn()) {
                   </p>
                 </div>
 
-              <div class="Entries">
+              <div class="Entries Pstart(default) Pend(default)">
                 <!-- v-bind:total-entries="entriesToShow.length" -->
                 <entry ref="entries" v-for="(entry, index) in entries" v-bind:total-entries="entries.length" v-bind:entry="entry" v-bind:index="index" v-on:save-note="saveNote" v-bind:show-tooltip="tooltips.write">
               </div>
@@ -1056,7 +1063,7 @@ if (User::isLoggedIn()) {
                 <notification emoji="🌏" message="Add location to each notification to see how where you're at effects how you feel." call-to-action-message="Add location" method="askUserForLocation"></notification>
               </div>
 
-              <div v-bind:class="[previousDayCharts ? '' : 'PreviousDayEmotions--empty Mtop(u4)']" class="Pstart(default) Pend(default) PreviousDayEmotions Ptop(u4) Pbottom(u4)">
+              <div v-bind:class="[previousDayCharts ? '' : 'PreviousDayEmotions--empty Mtop(u4)']" class="Pstart(default) Pend(default) PreviousDayEmotions Ptop(u4) Pbottom(u4) Bt(default)">
 
                 <div v-if="!previousDayCharts" class="Loading Flex Flex--center Pstart(default) Pend(default)">
                   <div>
@@ -1123,32 +1130,72 @@ if (User::isLoggedIn()) {
           </div>
 
         </div>
-        <div style="z-index: 5; position: fixed; width: 100%; bottom: 0;" class="FlexGrid-cell FlexGrid-cell--nav FlexGrid FlexGrid-cell--alignCenter"><!-- Navigation -->
-          <div class="FlexGrid FlexGrid--full FlexGrid--fullHeight">
+        <!-- style="z-index: 5; position: fixed; width: 100%; bottom: 0;" -->
+        <div class="Z(2) P(f) W(100%) B(0) rsp-1-T(0) rsp-1-Bb(default) O(hidden) FlexGrid-cell FlexGrid-cell--nav FlexGrid FlexGrid-cell--alignCenter"><!-- Navigation -->
+          <div class="FlexGrid FlexGrid--full FlexGrid--fullHeight rsp-1-D(n)">
 
-            <div v-on:click="toggleEmoji(true)" class="C(p) BackgroundColor BackgroundColor--smoky FlexGrid-cell FlexGrid-cell--flex FlexGrid-cell--alignCenter Br(default) Bt(default) Pos(r)">
+            <div v-on:click="toggleEmoji(true)" class="C(p) BackgroundColor BackgroundColor--white FlexGrid-cell FlexGrid-cell--flex FlexGrid-cell--alignCenter Br(default) Bt(default) Pos(r)">
               <div class="Pos(r) FlexGrid FlexGrid--guttersOneDown">
                 <div class="FlexGrid-cell FlexGrid-cell--autoSize">
                   😄
                 </div>
                 <div class="FlexGrid-cell FlexGrid-cell--autoSize FlexGrid-cell--alignSelfCenter">
-                  <div v-bind:class=" { 'Td(u) Fw(bold)': shouldShowEmoji }" class="Ff(default) C(white) Fz(default)">
+                  <div v-bind:class=" { 'Td(u) Fw(bold)': shouldShowEmoji }" class="Ff(default) C(black) Fz(default)">
                     Emotions
                   </div>
                 </div>
               </div>
             </div>
-            <div v-on:click="toggleEmoji(false)" class="C(p) BackgroundColor BackgroundColor--smoky FlexGrid-cell FlexGrid-cell--flex FlexGrid-cell--alignCenter Bt(default)">
+            <div v-on:click="toggleEmoji(false)" class="C(p) BackgroundColor BackgroundColor--white FlexGrid-cell FlexGrid-cell--flex FlexGrid-cell--alignCenter Bt(default)">
               <div class="FlexGrid FlexGrid--guttersOneDown">
                 <div class="FlexGrid-cell FlexGrid-cell--autoSize">
                   🕘
                 </div>
                 <div class="FlexGrid-cell FlexGrid-cell--autoSize FlexGrid-cell--alignSelfCenter">
-                  <div v-bind:class=" { 'Td(u) Fw(bold)': !shouldShowEmoji }" class="Ff(default) C(white) Fz(default)">Patterns</div>
+                  <div v-bind:class=" { 'Td(u) Fw(bold)': !shouldShowEmoji }" class="Ff(default) C(black) Fz(default)">Patterns</div>
                 </div>
               </div>
             </div>
           </div>
+
+          <div class="FlexGrid FlexGrid--alignCenter W(100%) D(n) rsp-1-D(f)">
+
+           <div class="FlexGrid-cell FlexGrid FlexGrid--alignItemsCenter Br(default)">
+             <div class="Fz(default) C(black) Ff(sansSerifBlack) Pstart(default)">Emojional Life</div>
+           </div>
+
+           <div class="FlexGrid-cell">
+             <!-- Login / Sign up Tab -->
+
+             <div class="FlexGrid FlexGrid--alignCenter W(100%)">
+
+              <div class="FlexGrid-cell FlexGrid FlexGrid--alignItemsCenter">
+                <div class="Fz(default) C(darkerGrey) Ff(sansSerifRegular) Pstart(default)">Don't lose your data! 🔥</div>
+              </div>
+
+              <div class="FlexGrid-cell">
+                <!-- Login / Sign up Tab -->
+
+                <div class="FlexGrid">
+                  <div v-on:click="toggleLogin" class="FlexGrid-cell FlexGrid-cell--1of3">
+                    <div v-bind:class="[shouldLogin ? 'Fw(bold) Td(u) Ff(sansSerifBold)' : 'Ff(sansSerifRegular)']" class="Fz(default) C(black) Ptop(default) Pbottom(default) Ta(c)">Login</div>
+                  </div>
+                  <div v-on:click="toggleSignUp" class="FlexGrid-cell FlexGrid-cell--1of3">
+                    <div v-bind:class="[shouldSignUp ? 'Fw(bold) Td(u) Ff(sansSerifBold)' : ' Ff(sansSerifRegular)']" class="Fz(default) C(black) Ptop(default) Pbottom(default) Ta(c)">Sign Up</div>
+                  </div>
+                  <div class="FlexGrid-cell FlexGrid-cell--1of3 FlexGrid-cell--flex FlexGrid-cell--alignCenter">
+                    <div class="Fz(default)">👤</div>
+                  </div>
+                </div>
+
+              </div>
+
+             </div>
+
+           </div>
+
+          </div>
+
         </div>
       </div>
 

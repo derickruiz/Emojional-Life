@@ -1,0 +1,30 @@
+@media (min-width: #{$resize-point-1}) {
+
+  .rsp-1-T\(0\){
+    top: 0;
+  }
+
+  .rsp-1-D\(n\) {
+    display: none;
+  }
+
+  .rsp-1-D\(f\) {
+    display: flex;
+  }
+
+  .rsp-1-Bb\(default\) {
+    border-bottom: 1px solid $color-alto;
+  }
+
+  .rsp-1-Br\(default\) {
+    border-right: 1px solid $color-alto;
+  }
+
+  .rsp-1-Pstart\(default\) {
+    padding-left: $scale-default;
+  }
+
+  .rsp-1-Pend\(default\) {
+    padding-right: $scale-default;
+  }
+}
