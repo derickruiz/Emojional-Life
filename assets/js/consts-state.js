@@ -19,127 +19,281 @@ const CONSTS = {
   },
 
   DEFAULT_USER_EMOJIONS: [ {
-    "color" : "oxford",
-    "emoji" : "😄",
-    "emotion" : "Happy",
-    "key" : 1
-  }, {
-    "color" : "rajah",
-    "emoji" : "😌",
-    "emotion" : "Grateful",
-    "key" : 2
-  }, {
-    "color" : "tractor",
-    "emoji" : "😎",
-    "emotion" : "Cool",
-    "key" : 3
-  }, {
-    "color" : "pastel",
-    "emoji" : "🤣",
-    "emotion" : "Funny",
-    "key" : 4
-  }, {
-    "color" : "pictoral",
-    "emoji" : "😡",
-    "emotion" : "Frustrated",
-    "key" : 5
-  }, {
-    "color" : "spanish",
-    "emoji" : "💪",
-    "emotion" : "Confident",
-    "key" : 6
-  }, {
-    "color" : "tractor",
-    "emoji" : "😰",
-    "emotion" : "Anxious",
-    "key" : 7
-  }, {
-    "color" : "caribeen",
-    "emoji" : "🤡",
-    "emotion" : "Clown",
-    "key" : 8
-  } ],
-
-  DEFAULT_NOT_USER_EMOJIONS: [{
-    "color" : "rajah",
-    "emoji" : "🤓",
-    "emotion": "Smart",
-    "key" : 9
-  }, {
-    "color" : "caribeen",
-    "emoji" : "🤑",
-    "emotion": "Greedy",
-    "key" : 10
-  }, {
-    "color" : "tractor",
-    "emoji" : "😍",
-    "emotion": "Love",
-    "key" : 11
-  }, {
-    "color" : "oxford",
-    "emoji" : "😱",
-    "emotion": "Panic",
-    "key" : 12
-  }, {
-    "color" : "oxford",
-    "emoji" : "😰",
-    "emotion": "Embarassed",
-    "key" : 13
-  }, {
-    "color" : "spanish",
-    "emoji" : "😭",
-    "emotion": "Sad",
-    "key" : 14
-  }, {
-    "color" : "tractor",
-    "emoji" : "👿",
-    "emotion": "Evil",
-    "key" : 15
-  }, {
-    "color" : "pastel",
-    "emoji" : "👻",
-    "emotion": "Empty",
-    "key" : 16
-  }, {
-    "color" : "caribeen",
-    "emoji" : "👽",
-    "emotion": "Different",
-    "key" : 17
-  }, {
-    "color" : "rajah",
-    "emoji" : "🤖",
-    "emotion": "Emotionless",
-    "key" : 18
-  }, {
-    "color" : "pictoral",
-    "emoji" : "🤥",
-    "emotion": "Liar",
-    "key" : 19
-  }, {
-    "color" : "caribeen",
-    "emoji" : "😝",
-    "emotion": "Playful",
-    "key" : 20
-  }, {
-    "color" : "oxford",
-    "emoji" : "😇",
-    "emotion": "Innocent",
-    "key" : 21
-  }, {
-    "color" : "tractor",
-    "emoji" : "👅",
-    "emotion": "Horny",
-    "key" : 22
-  }, {
-    "color" : "caribeen",
-    "emoji" : "💅🏻",
-    "emotion": "Pretty",
-    "key" : 23
+     "emoji":"\ud83d\ude04",
+     "0":"\ud83d\ude04",
+     "emotion":"Happy",
+     "1":"Happy",
+     "key":"1",
+     "2":"1",
+     "color":"F4C811",
+     "3":"F4C811",
+     "text_color":"413504",
+     "4":"413504"
   },
   {
-    "color": "brown",
-    "emoji": "💩",
-    "emotion": "Shit",
-    "key": 24
-  }]
+     "emoji":"\ud83d\ude0c",
+     "0":"\ud83d\ude0c",
+     "emotion":"Grateful",
+     "1":"Grateful",
+     "key":"2",
+     "2":"2",
+     "color":"5BE399",
+     "3":"5BE399",
+     "text_color":"163826",
+     "4":"163826"
+  },
+  {
+     "emoji":"\ud83d\ude0e",
+     "0":"\ud83d\ude0e",
+     "emotion":"Cool",
+     "1":"Cool",
+     "key":"3",
+     "2":"3",
+     "color":"6734F1",
+     "3":"6734F1",
+     "text_color":"1F1146",
+     "4":"1F1146"
+  },
+  {
+     "emoji":"\ud83e\udd23",
+     "0":"\ud83e\udd23",
+     "emotion":"Funny",
+     "1":"Funny",
+     "key":"4",
+     "2":"4",
+     "color":"F16E27",
+     "3":"F16E27",
+     "text_color":"341706",
+     "4":"341706"
+  },
+  {
+     "emoji":"\ud83d\ude21",
+     "0":"\ud83d\ude21",
+     "emotion":"Frustrated",
+     "1":"Frustrated",
+     "key":"5",
+     "2":"5",
+     "color":"F04235",
+     "3":"F04235",
+     "text_color":"40110D",
+     "4":"40110D"
+  },
+  {
+     "emoji":"\ud83d\udcaa",
+     "0":"\ud83d\udcaa",
+     "emotion":"Confident",
+     "1":"Confident",
+     "key":"6",
+     "2":"6",
+     "color":"7A2EF1",
+     "3":"7A2EF1",
+     "text_color":"200A44",
+     "4":"200A44"
+  },
+  {
+     "emoji":"\ud83d\ude30",
+     "0":"\ud83d\ude30",
+     "emotion":"Anxious",
+     "1":"Anxious",
+     "key":"7",
+     "2":"7",
+     "color":"150311",
+     "3":"150311",
+     "text_color":"FFFFFF",
+     "4":"FFFFFF"
+  },
+  {
+     "emoji":"\ud83e\udd21",
+     "0":"\ud83e\udd21",
+     "emotion":"Clown",
+     "1":"Clown",
+     "key":"8",
+     "2":"8",
+     "color":"F0E311",
+     "3":"F0E311",
+     "text_color":"615C0A",
+     "4":"615C0A"
+  }],
+
+  DEFAULT_NOT_USER_EMOJIONS: [
+   {
+      "emoji":"\ud83e\udd13",
+      "0":"\ud83e\udd13",
+      "emotion":"Smart",
+      "1":"Smart",
+      "key":"9",
+      "2":"9",
+      "color":"445EF1",
+      "3":"445EF1",
+      "text_color":"23256D",
+      "4":"23256D"
+   },
+   {
+      "emoji":"\ud83e\udd11",
+      "0":"\ud83e\udd11",
+      "emotion":"Greedy",
+      "1":"Greedy",
+      "key":"10",
+      "2":"10",
+      "color":"61E354",
+      "3":"61E354",
+      "text_color":"1D4319",
+      "4":"1D4319"
+   },
+   {
+      "emoji":"\ud83d\ude0d",
+      "0":"\ud83d\ude0d",
+      "emotion":"Love",
+      "1":"Love",
+      "key":"11",
+      "2":"11",
+      "color":"EC3751",
+      "3":"EC3751",
+      "text_color":"3D0D14",
+      "4":"3D0D14"
+   },
+   {
+      "emoji":"\ud83d\ude31",
+      "0":"\ud83d\ude31",
+      "emotion":"Panic",
+      "1":"Panic",
+      "key":"12",
+      "2":"12",
+      "color":"150311",
+      "3":"150311",
+      "text_color":"FFFFFF",
+      "4":"FFFFFF"
+   },
+   {
+      "emoji":"\ud83d\ude2d",
+      "0":"\ud83d\ude2d",
+      "emotion":"Sad",
+      "1":"Sad",
+      "key":"14",
+      "2":"14",
+      "color":"445EF1",
+      "3":"445EF1",
+      "text_color":"172054",
+      "4":"172054"
+   },
+   {
+      "emoji":"\ud83d\udc7f",
+      "0":"\ud83d\udc7f",
+      "emotion":"Evil",
+      "1":"Evil",
+      "key":"15",
+      "2":"15",
+      "color":"F04235",
+      "3":"F04235",
+      "text_color":"300C0A",
+      "4":"300C0A"
+   },
+   {
+      "emoji":"\ud83d\udc7b",
+      "0":"\ud83d\udc7b",
+      "emotion":"Empty",
+      "1":"Empty",
+      "key":"16",
+      "2":"16",
+      "color":"FFFFFF",
+      "3":"FFFFFF",
+      "text_color":"000000",
+      "4":"000000"
+   },
+   {
+      "emoji":"\ud83d\udc7d",
+      "0":"\ud83d\udc7d",
+      "emotion":"Different",
+      "1":"Different",
+      "key":"17",
+      "2":"17",
+      "color":"6A6A6A",
+      "3":"6A6A6A",
+      "text_color":"FFFFFF",
+      "4":"FFFFFF"
+   },
+   {
+      "emoji":"\ud83e\udd16",
+      "0":"\ud83e\udd16",
+      "emotion":"Emotionless",
+      "1":"Emotionless",
+      "key":"18",
+      "2":"18",
+      "color":"A6A6A6",
+      "3":"A6A6A6",
+      "text_color":"000000",
+      "4":"000000"
+   },
+   {
+      "emoji":"\ud83e\udd25",
+      "0":"\ud83e\udd25",
+      "emotion":"Liar",
+      "1":"Liar",
+      "key":"19",
+      "2":"19",
+      "color":"4B93F1",
+      "3":"4B93F1",
+      "text_color":"172E4D",
+      "4":"172E4D"
+   },
+   {
+      "emoji":"\ud83d\ude1d",
+      "0":"\ud83d\ude1d",
+      "emotion":"Playful",
+      "1":"Playful",
+      "key":"20",
+      "2":"20",
+      "color":"F19D11",
+      "3":"F19D11",
+      "text_color":"312004",
+      "4":"312004"
+   },
+   {
+      "emoji":"\ud83d\ude07",
+      "0":"\ud83d\ude07",
+      "emotion":"Innocent",
+      "1":"Innocent",
+      "key":"21",
+      "2":"21",
+      "color":"FFFFFF",
+      "3":"FFFFFF",
+      "text_color":"000000",
+      "4":"000000"
+   },
+   {
+      "emoji":"\ud83d\udc45",
+      "0":"\ud83d\udc45",
+      "emotion":"Horny",
+      "1":"Horny",
+      "key":"22",
+      "2":"22",
+      "color":"F03177",
+      "3":"F03177",
+      "text_color":"380A1B",
+      "4":"380A1B"
+   },
+   {
+      "emoji":"\ud83d\udc85\ud83c\udffb",
+      "0":"\ud83d\udc85\ud83c\udffb",
+      "emotion":"Pretty",
+      "1":"Pretty",
+      "key":"23",
+      "2":"23",
+      "color":"6734F1",
+      "3":"6734F1",
+      "text_color":"170B37",
+      "4":"170B37"
+   },
+   {
+      "emoji":"\ud83d\udca9",
+      "0":"\ud83d\udca9",
+      "emotion":"Shit",
+      "1":"Shit",
+      "key":"24",
+      "2":"24",
+      "color":"788311",
+      "3":"788311",
+      "text_color":"181B03",
+      "4":"181B03"
+   }]
 };
