@@ -341,7 +341,7 @@ const App = new Vue({
      * @description: Puts a new entry into tracking
      * @use - Called from click event.
      */
-    trackEntry: function (emojion, color) {
+    trackEntry: function (emojion, color, textColor) {
       console.log("Tracking the entry.");
 
       let self = this;
@@ -353,11 +353,11 @@ const App = new Vue({
       console.log("emojion", emojion);
       console.log("color", color);
 
-      DB.trackEntry(emojion, color, (newEntries) => {
+      DB.trackEntry(emojion, color, textColor, (newEntries) => {
 
         console.log("Tracking an entry.");
         console.log("newEntries", newEntries);
-        
+
         this.entries = newEntries;
         this.toggleEmoji(false); // Move user to patterns page after tapping an emotion.
 

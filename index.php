@@ -197,7 +197,7 @@ class User {
 }
 
 class Entry {
-  public static function track($userId, $emojion, $color, $day = NULL, $time = NULL) {
+  public static function track($userId, $emojion, $color, $day = NULL, $time = NULL, $textColor) {
 
     error_log("Entry.track" . "\n", 3, __DIR__ . "/errors.txt");
 
@@ -207,7 +207,7 @@ class Entry {
 
     global $DB;
 
-    $sth = $DB->prepare("INSERT INTO entries (user_id, time, day, emojion_id, color) VALUES (:userId, :time, :day, :emojionId, :color)");
+    $sth = $DB->prepare("INSERT INTO entries (user_id, time, day, emojion_id, color, text_color) VALUES (:userId, :time, :day, :emojionId, :color, :textColor)");
 
     if ($day === NULL) {
       $day = date('Y-m-d', time());
@@ -231,6 +231,7 @@ class Entry {
     $sth->bindParam(':day', $day);
     $sth->bindParam(':emojionId', $emojion["key"]);
     $sth->bindParam(':color', $color);
+    $sth->bindParam(':textColor', $textColor);
     $sth->execute();
 
     $lastId = $DB->lastInsertId();
@@ -665,11 +666,13 @@ $AJAX = array(
 
     $emojion = $payload["emojion"];
     $color = $payload["color"];
+    $textColor = $payload["textColor"];
 
     error_log("emojion " . print_r($emojion, true) . "\n", 3, __DIR__ . "/errors.txt");
     error_log("color " . print_r($color, true) . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("textColor " . print_r($textColor, true) . "\n", 3, __DIR__ . "/errors.txt");
 
-    Entry::track($userId, $emojion, $color);
+    Entry::track($userId, $emojion, $color, NULL, NULL, $textColor);
 
     $allUserEntries = Entry::getToday($userId);
 
@@ -881,8 +884,9 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
                       $color = $entry["color"];
                       $time = $entry["time"];
+                      $textColor = $entry["text_color"];
 
-                      $entryId = Entry::track($userId, $emojion, $color, $day, $time);
+                      $entryId = Entry::track($userId, $emojion, $color, $day, $time, $textColor);
 
 
                       error_log("entryId " . print_r($entryId, true) . "\n", 3, __DIR__ . "/errors.txt");
@@ -941,8 +945,9 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
                     $color = $entry["color"];
                     $time = $entry["time"];
+                    $textColor = $entry["text_color"];
 
-                    $entryId = Entry::track($userId, $emojion, $color, $day, $time);
+                    $entryId = Entry::track($userId, $emojion, $color, $day, $time, $textColor);
 
 
                     error_log("entryId " . print_r($entryId, true) . "\n", 3, __DIR__ . "/errors.txt");
@@ -1291,11 +1296,11 @@ if (User::isLoggedIn()) {
       </script>
 
       <script type="text/x-template" id="entry_template">
-        <div class="EmotionNote BackgroundColor Pstart(default) Pend(default) Ptop(default) Pbottom(default)" v-bind:class="['BackgroundColor--' + entry.color, shouldResizeTextArea && canInputNote ? 'EmotionNote--active' : '']">
+        <div class="EmotionNote BackgroundColor Pstart(default) Pend(default) Ptop(default) Pbottom(default)" v-bind:class="[shouldResizeTextArea && canInputNote ? 'EmotionNote--active' : '']" v-bind:style="{ 'background-color': '#' + entry.color }">
 
           <div class="FlexGrid FlexGrid--guttersOneDown FlexGrid--spaceBetween M">
             <div class="FlexGrid-cell FlexGrid-cell--9of10">
-              <p class="Ff(default) Fz(u1) Lh(14) C(white)" style="font-size: 4vh;">
+              <p class="Ff(default) Fz(u1) Lh(14) C(white)" style="font-size: 4vh;" v-bind:style="{ 'color': '#' + entry.text_color }">
                 {{entry.emoji}} at <span class="Fw(bold)">{{ formatTime(entry.time) }}</span> <span v-if="entry.location">at <span class="Fs(italic)">{{entry.location}}.</span></span>
               </p>
             </div>
