@@ -919,7 +919,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
               User::login($email, $password);
 
               $userId = User::getUserId();
-              
+
               error_log("What's the payload? " . print_r($payload, true) . "\n", 3, __DIR__ . "/errors.txt");
 
               if ( !empty($payload["timezone"]) ) {
@@ -1133,6 +1133,11 @@ if (User::isLoggedIn()) {
               </div>
 
               <div v-if="hasEntries">
+
+                <div class="Pstart(default) Pend(default) Ptop(u1) Pbottom(default)">
+                  <div class="Fz(u5) Ff(sansSerifBlack) C(black)">Patterns</div>
+                  <div class="Fz(default) Ff(serifRegular) C(darkerGrey)">All of your tracked emotions, patterns, and charts will appear here.</div>
+                </div>
 
                 <div class="Pstart(default) Pend(default) Ptop(u1) Pbottom(default)">
                   <p class="Ff(sansSerifBold) Fz(u3) Lh(11) C(black)">
