@@ -979,8 +979,8 @@ if (User::isLoggedIn()) {
         <div class="FlexGrid-cell FlexGrid-cell--fullMinusNav">
 
           <div class="App-container FlexGrid" v-bind:class="{ 'moveLeft': !shouldShowEmoji }">
-            <div class="Screen FlexGrid-cell FlexGrid-cell--1of2 rsp-1-FlexGrid-cell--382 rsp-1-Br(default)">
-              <div class="Emotions js-emotions FlexGrid">
+            <div class="Screen FlexGrid-cell FlexGrid-cell--1of2 rsp-1-FlexGrid-cell--382">
+              <div class="Emotions js-emotions FlexGrid rsp-1-P(f) rsp-1-W(382%) rsp-1-Br(default)">
                 <emojion ref="emojions" v-for="(emojion, index) in emojions" v-bind:can-switch-emoji="canSwitchEmoji" v-bind:not-user-emojions="notUserEmojions" v-bind:colors="emojionBlockColors" v-bind:index="index" v-bind:emojion="emojion" v-on:turn-on-carousel="turnOnCarousel" v-on:turn-off-carousel="turnOffCarousel" v-on:track-entry="trackEntry"></emojion>
               </div>
               <tooltip v-if="tooltips.tap" emoji="👆" action="Tap" message="to track an emotion." reverse arrow-position="right" tooltip-type="tap"></tooltip>
@@ -1115,7 +1115,7 @@ if (User::isLoggedIn()) {
 
         </div>
         <!-- style="z-index: 5; position: fixed; width: 100%; bottom: 0;" -->
-        <div class="Z(2) P(f) W(100vw) B(0) rsp-1-T(0) rsp-1-Bb(default) BackgroundColor BackgroundColor--white O(hidden) FlexGrid-cell FlexGrid-cell--nav FlexGrid FlexGrid-cell--alignCenter"><!-- Navigation -->
+        <div class="Z(2) P(f) W(100%) B(0) rsp-1-T(0) rsp-1-Bb(default) BackgroundColor BackgroundColor--white O(hidden) FlexGrid-cell FlexGrid-cell--nav FlexGrid FlexGrid-cell--alignCenter"><!-- Navigation -->
           <div class="FlexGrid FlexGrid--full FlexGrid--fullHeight rsp-1-D(n)">
 
             <div v-on:click="toggleEmoji(true)" class="C(p) BackgroundColor BackgroundColor--white FlexGrid-cell FlexGrid-cell--flex FlexGrid-cell--alignCenter Br(default) Bt(default) Pos(r)">
@@ -1307,7 +1307,7 @@ if (User::isLoggedIn()) {
       <script src="assets/js/components/day-emotion-chart.js"></script>
       <script src="assets/js/components/day-emotion-chart-carousel.js"></script>
 
-      <!-- <script src="assets/js/app.js"></script> -->
+      <script src="assets/js/app.js"></script>
 
       <!-- <script src="assets/js/init.js"></script> -->
 

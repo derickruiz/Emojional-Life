@@ -16,8 +16,9 @@
   }
 
   .App-container {
-    width: 100vw;
 
+    width: 100%;
+    
     &.moveLeft {
       transform: none;
       transition: none;

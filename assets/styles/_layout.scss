@@ -106,9 +106,15 @@
 @media (min-width: #{$resize-point-1}) {
 
   .FlexGrid-cell {
-    &.rsp-1-FlexGrid-cell--400 {
-      flex: 0 0 400px;
+
+    &.rsp-1-FlexGrid-cell--382 {
+      flex: 0 0 38.2%;
     }
+
+    &.rsp-1-FlexGrid-cell--618 {
+      flex: 0 0 61.8%;
+    }
+    
   }
-  
+
 }

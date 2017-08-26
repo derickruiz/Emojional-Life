@@ -3,8 +3,6 @@
 @import "variables";
 
 @import "layout";
-@import "atomic";
-@import "responsive-atomic";
 @import "animations";
 
 body {
@@ -14,3 +12,6 @@ body {
 
 @import "components";
 @import "responsive-components";
+
+@import "atomic";
+@import "responsive-atomic";
