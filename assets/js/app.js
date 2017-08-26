@@ -415,6 +415,12 @@ const App = new Vue({
       }
     },
 
+    logoutUser: function () {
+
+      console.log("Calling App.logoutUser");
+      DB.logoutUser();
+    },
+
     // entry, entryIndex, note, callback)
     saveNote: function (entry, entryIndex, note) {
       console.log("App.saveNote");

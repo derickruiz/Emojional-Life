@@ -42,7 +42,7 @@ const DB = {
       if (callback) {
         callback(ERROR_DATA);
       }
-      
+
     } else {
 
       if (callback) {
@@ -339,6 +339,17 @@ const DB = {
       console.log("What's the response?", response);
     });
 
+  },
+
+  /*
+   * @description - Just logs the user out and then refreshes the page. */
+  logoutUser: function () {
+
+    console.log("Calling DB.logoutUser");
+
+    AJAX.post("logout", {}, true).then(function (response) {
+      console.log("What's the response?", response);
+    });
   },
 
   /*

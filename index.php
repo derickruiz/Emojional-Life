@@ -187,6 +187,9 @@ class User {
   }
 
   public static function logout() {
+
+    error_log("User::logout" . "\n", 3, __DIR__ . "/errors.txt");
+
     global $auth;
     $auth->logout();
   }
@@ -803,6 +806,16 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
               echo $entries;
               exit;
               break;
+            case "logout":
+
+              error_log("Calling logout from AJAX" . "\n", 3, __DIR__ . "/errors.txt");
+
+              if (User::isLoggedIn()) {
+                User::logout();
+              }
+
+              break;
+
           }
 
         } else { // Methods related to logging in or signing up and then saving local storage data.
@@ -945,8 +958,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
                 }
               }
 
-            break;
-
+              break;
           }
 
         }
@@ -961,6 +973,10 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 $ERRORS = array();
 
 if (User::isLoggedIn()) {
+
+  $_SESSION["ERROR_MESSAGE"] = NULL;
+  $_SESSION["ERROR_FOR"] = NULL;
+
   $userId = User::getUserId();
   getInitialData($userId);
 } else {
@@ -975,7 +991,7 @@ if (User::isLoggedIn()) {
     $ERRORS["message"] = $_SESSION["ERROR_MESSAGE"];
     $ERRORS["for"] = $_SESSION["ERROR_FOR"];
   }
-  
+
 }
 
 ?>
@@ -1022,17 +1038,17 @@ if (User::isLoggedIn()) {
 
             <div class="Screen Tracked FlexGrid-cell FlexGrid-cell--1of2 rsp-1-FlexGrid-cell--618">
 
-              <div v-if="!isLoggedIn" class="Pstart(default) Pend(default) Z(2) P(r) Bb(default) rsp-1-D(n)">
+              <div class="Pstart(default) Pend(default) Z(2) P(r) Bb(default) rsp-1-D(n)">
                 <div class="FlexGrid FlexGrid--alignCenter W(100%)">
 
                  <div class="FlexGrid-cell FlexGrid FlexGrid--alignItemsCenter">
                    <div class="Fz(default) C(black) Ff(sansSerifBlack)">Emojional Life</div>
                  </div>
 
-                 <div class="FlexGrid-cell">
+                 <div class="FlexGrid-cell" v-bind:class="[isLoggedIn ? 'FlexGrid FlexGrid--alignFlexEnd' : '' ]">
                    <!-- Login / Sign up Tab -->
 
-                   <div class="FlexGrid">
+                   <div v-if="!isLoggedIn" class="FlexGrid">
                      <div v-on:click="toggleLogin" class="FlexGrid-cell FlexGrid-cell--1of3">
                        <div v-bind:class="[shouldLogin ? 'Fw(bold) Td(u) Ff(sansSerifBold)' : 'Ff(sansSerifRegular)']" class="Fz(default) C(black) Ptop(default) Pbottom(default) Ta(c)">Login</div>
                      </div>
@@ -1043,6 +1059,17 @@ if (User::isLoggedIn()) {
                        <div class="Fz(default)">👤</div>
                      </div>
                    </div>
+
+                   <div v-else class="FlexGrid">
+
+                     <div v-on:click="logoutUser" class="FlexGrid-cell FlexGrid-cell--autoSize">
+                       <div class="Fz(default) Td(u) C(black) Ptop(default) Pbottom(default) Ta(c) Ff(sansSerifRegular) C(darkerGrey)">Logout</div>
+                     </div>
+                     <div class="FlexGrid-cell FlexGrid-cell--autoSize FlexGrid FlexGrid--alignItemsCenter Mstart(d2)">
+                       <span class="Fz(default)">👤</span>
+                     </div>
+                   </div>
+
 
                  </div>
 
@@ -1196,14 +1223,14 @@ if (User::isLoggedIn()) {
 
              <div class="FlexGrid FlexGrid--alignCenter W(100%)">
 
-              <div class="FlexGrid-cell FlexGrid FlexGrid--alignItemsCenter">
-                <div class="Fz(default) C(darkerGrey) Ff(sansSerifRegular) Pstart(default)">Don't lose your data! 🔥</div>
+              <div class="FlexGrid-cell FlexGrid FlexGrid--alignItemsCenter Pstart(default)">
+                <div class="Fz(default) C(darkerGrey) Ff(sansSerifRegular)">Don't lose your data! 🔥</div>
               </div>
 
               <div class="FlexGrid-cell">
                 <!-- Login / Sign up Tab -->
 
-                <div class="FlexGrid">
+                <div v-if="!isLoggedIn" class="FlexGrid">
                   <div v-on:click="toggleLogin" class="FlexGrid-cell FlexGrid-cell--1of3">
                     <div v-bind:class="[shouldLogin ? 'Fw(bold) Td(u) Ff(sansSerifBold)' : 'Ff(sansSerifRegular)']" class="Fz(default) C(black) Ptop(default) Pbottom(default) Ta(c)">Login</div>
                   </div>
@@ -1214,6 +1241,17 @@ if (User::isLoggedIn()) {
                     <div class="Fz(default)">👤</div>
                   </div>
                 </div>
+
+                <div v-else class="FlexGrid FlexGrid--alignFlexEnd Pend(default)">
+
+                  <div v-on:click="logoutUser" class="FlexGrid-cell FlexGrid-cell--autoSize">
+                    <div class="Fz(default) Td(u) C(black) Ptop(default) Pbottom(default) Ta(c) Ff(sansSerifRegular) C(darkerGrey)">Logout</div>
+                  </div>
+                  <div class="FlexGrid-cell FlexGrid-cell--autoSize FlexGrid FlexGrid--alignItemsCenter Mstart(d2)">
+                    <span class="Fz(default)">👤</span>
+                  </div>
+                </div>
+
 
               </div>
 

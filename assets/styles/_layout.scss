@@ -1,4 +1,3 @@
-
 .FlexGrid {
   display: flex;
   flex-wrap: wrap;
@@ -33,6 +32,10 @@
 
   &.FlexGrid--inline {
     display: inline-flex;
+  }
+
+  &.FlexGrid--alignFlexEnd {
+    justify-content: flex-end;
   }
 }
 
@@ -92,6 +95,7 @@
   &.FlexGrid-cell--halfScreen {
     flex: 0 0 50vw;
   }
+
 }
 
 .Flex {
@@ -114,7 +118,7 @@
     &.rsp-1-FlexGrid-cell--618 {
       flex: 0 0 61.8%;
     }
-    
+
   }
 
 }

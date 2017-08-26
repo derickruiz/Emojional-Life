@@ -31,6 +31,10 @@
   margin-left: $scale-default;
 }
 
+.Mstart\(d2\) {
+  margin-left: $scale-two-down;
+}
+
 .Mend\(default\) {
   margin-right: $scale-default;
 }
@@ -149,6 +153,10 @@
 
 .Fz\(default\) {
   font-size: $scale-default;
+}
+
+.Fz\(d2\) {
+  font-size: $scale-two-down;
 }
 
 .Lh\(11\) {
