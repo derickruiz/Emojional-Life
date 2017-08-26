@@ -967,16 +967,19 @@ if (User::isLoggedIn()) {
 
       <link rel="stylesheet" href="https://unpkg.com/flickity@2.0.9/dist/flickity.css">
 
-      <div class="Loading BackgroundColor BackgroundColor--smoky js-loading">
-        <div class="Loading-emoji">🤔</div>
-        <div>Loading...</div>
+      <div class="Loading js-loading Flex Flex--center Pstart(default) Pend(default)">
+        <div>
+          <div class="Loading-emoji">🤔</div>
+          <div class="Ff(sansSerifBold) Fz(u2) Mtop(u5) Ta(c)">Loading the app, One second.</div>
+        </div>
+
       </div>
 
       <div id="app" class="App FlexGrid js-app hidden">
         <div class="FlexGrid-cell FlexGrid-cell--fullMinusNav">
 
           <div class="App-container FlexGrid" v-bind:class="{ 'moveLeft': !shouldShowEmoji }">
-            <div class="Screen FlexGrid-cell FlexGrid-cell--1of2 rsp-1-Br(default)">
+            <div class="Screen FlexGrid-cell FlexGrid-cell--1of2 rsp-1-FlexGrid-cell--382 rsp-1-Br(default)">
               <div class="Emotions js-emotions FlexGrid">
                 <emojion ref="emojions" v-for="(emojion, index) in emojions" v-bind:can-switch-emoji="canSwitchEmoji" v-bind:not-user-emojions="notUserEmojions" v-bind:colors="emojionBlockColors" v-bind:index="index" v-bind:emojion="emojion" v-on:turn-on-carousel="turnOnCarousel" v-on:turn-off-carousel="turnOffCarousel" v-on:track-entry="trackEntry"></emojion>
               </div>
@@ -984,7 +987,7 @@ if (User::isLoggedIn()) {
               <tooltip v-if="tooltips.press && !tooltips.tap" emoji="👆" action="Press and hold" message="to change emotions." tooltip-type="press"></tooltip>
             </div>
 
-            <div class="Screen Tracked FlexGrid-cell FlexGrid-cell--1of2">
+            <div class="Screen Tracked FlexGrid-cell FlexGrid-cell--1of2 rsp-1-FlexGrid-cell--618">
 
               <div v-if="!isLoggedIn" class="Pstart(default) Pend(default) Z(2) P(r) Bb(default) rsp-1-D(n)">
                 <div class="FlexGrid FlexGrid--alignCenter W(100%)">
@@ -1112,7 +1115,7 @@ if (User::isLoggedIn()) {
 
         </div>
         <!-- style="z-index: 5; position: fixed; width: 100%; bottom: 0;" -->
-        <div class="Z(2) P(f) W(100%) B(0) rsp-1-T(0) rsp-1-Bb(default) BackgroundColor BackgroundColor--white O(hidden) FlexGrid-cell FlexGrid-cell--nav FlexGrid FlexGrid-cell--alignCenter"><!-- Navigation -->
+        <div class="Z(2) P(f) W(100vw) B(0) rsp-1-T(0) rsp-1-Bb(default) BackgroundColor BackgroundColor--white O(hidden) FlexGrid-cell FlexGrid-cell--nav FlexGrid FlexGrid-cell--alignCenter"><!-- Navigation -->
           <div class="FlexGrid FlexGrid--full FlexGrid--fullHeight rsp-1-D(n)">
 
             <div v-on:click="toggleEmoji(true)" class="C(p) BackgroundColor BackgroundColor--white FlexGrid-cell FlexGrid-cell--flex FlexGrid-cell--alignCenter Br(default) Bt(default) Pos(r)">
@@ -1141,7 +1144,7 @@ if (User::isLoggedIn()) {
 
           <div class="FlexGrid FlexGrid--alignCenter W(100%) D(n) rsp-1-D(f)">
 
-           <div class="FlexGrid-cell FlexGrid FlexGrid--alignItemsCenter FlexGrid-cell--halfScreen Br(default)">
+           <div class="FlexGrid-cell FlexGrid FlexGrid--alignItemsCenter FlexGrid-cell--halfScreen Br(default) rsp-1-FlexGrid-cell--382">
              <div class="Fz(default) C(black) Ff(sansSerifBlack) Pstart(default)">Emojional Life</div>
            </div>
 
@@ -1304,7 +1307,7 @@ if (User::isLoggedIn()) {
       <script src="assets/js/components/day-emotion-chart.js"></script>
       <script src="assets/js/components/day-emotion-chart-carousel.js"></script>
 
-      <script src="assets/js/app.js"></script>
+      <!-- <script src="assets/js/app.js"></script> -->
 
       <!-- <script src="assets/js/init.js"></script> -->
 

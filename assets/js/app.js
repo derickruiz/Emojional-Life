@@ -334,6 +334,7 @@ const App = new Vue({
         this.toggleEmoji(false); // Move user to patterns page after tapping an emotion.
 
         if (this.entries && this.entries.length >= 1) {
+          this.hasTodayEntries = true;
           this.hasEntries = true;
         }
 
