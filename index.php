@@ -429,6 +429,7 @@ class Charts {
 
     $labels = array();
     $series = array();
+    $colors = array();
 
     foreach ($averages as $emojionId => $average) {
 
@@ -444,12 +445,14 @@ class Charts {
       error_log("emojion " . print_r($emojion, true) . "\n", 3, __DIR__ . "/errors.txt");
 
       array_push($labels, $emojion[0]["emoji"]);
+      array_push($colors, $emojion[0]["color"]);
       array_push($series, $average["avg"]);
     }
 
     $stats = array(
       "labels" => $labels,
-      "series" => $series
+      "series" => $series,
+      "colors" => $colors
     );
 
     error_log("stats " . print_r($stats, true) . "\n", 3, __DIR__ . "/errors.txt");

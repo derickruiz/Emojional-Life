@@ -10,7 +10,8 @@ const DayEmotionChart = {
 
         return {
           labels: ['🤔', '👆', '🌏'],
-          series: [5, 3, 4]
+          series: [5, 3, 4],
+          colors: ['green', 'blue', 'red', 'orange']
         };
 
       }
@@ -23,7 +24,7 @@ const DayEmotionChart = {
 
   mounted: function () {
 
-    var options = {
+    let options = {
       labelInterpolationFnc: function(value) {
         return value;
       },
@@ -31,7 +32,27 @@ const DayEmotionChart = {
       height: '100px'
     };
 
-    new Chartist.Pie(this.$el.querySelector(".js-chart"), this.data, options);
+    let chart = new Chartist.Pie(this.$el.querySelector(".js-chart"), this.data, options);
+
+    let index = 0; // Gonna use this to render the correct color form the colors array.
+
+    let self = this;
+
+    chart.on('draw', function (context) {
+      console.log("Drawing the chart.");
+      console.log("What's the context?");
+      console.log(context);
+
+      if (context.type === "slice") {
+
+        context.element.attr({
+          "fill": "#" + self.data.colors[index]
+        });
+
+        index += 1;
+      }
+
+    });
   },
 
   methods: {
