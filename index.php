@@ -1230,15 +1230,15 @@ if (User::isLoggedIn()) {
               <div class="FlexGrid-cell">
                 <!-- Login / Sign up Tab -->
 
-                <div v-if="!isLoggedIn" class="FlexGrid">
-                  <div v-on:click="toggleLogin" class="FlexGrid-cell FlexGrid-cell--1of3">
+                <div v-if="!isLoggedIn" class="FlexGrid FlexGrid--alignFlexEnd Pend(u1)">
+                  <div v-on:click="toggleLogin" class="FlexGrid-cell FlexGrid-cell--autoSize">
                     <div v-bind:class="[shouldLogin ? 'Fw(bold) Td(u) Ff(sansSerifBold)' : 'Ff(sansSerifRegular)']" class="Fz(default) C(black) Ptop(default) Pbottom(default) Ta(c)">Login</div>
                   </div>
-                  <div v-on:click="toggleSignUp" class="FlexGrid-cell FlexGrid-cell--1of3">
-                    <div v-bind:class="[shouldSignUp ? 'Fw(bold) Td(u) Ff(sansSerifBold)' : ' Ff(sansSerifRegular)']" class="Fz(default) C(black) Ptop(default) Pbottom(default) Ta(c)">Sign Up</div>
+                  <div v-on:click="toggleSignUp" class="FlexGrid-cell FlexGrid-cell--autoSize">
+                    <div v-bind:class="[shouldSignUp ? 'Fw(bold) Td(u) Ff(sansSerifBold)' : ' Ff(sansSerifRegular)']" class="Fz(default) C(black) Ptop(default) Pbottom(default) Ta(c) Mstart(default)">Sign Up</div>
                   </div>
-                  <div class="FlexGrid-cell FlexGrid-cell--1of3 FlexGrid-cell--flex FlexGrid-cell--alignCenter">
-                    <div class="Fz(default)">👤</div>
+                  <div class="FlexGrid-cell FlexGrid-cell--autoSize FlexGrid-cell--flex FlexGrid-cell--alignCenter">
+                    <div class="Fz(default) Mstart(default)">👤</div>
                   </div>
                 </div>
 
