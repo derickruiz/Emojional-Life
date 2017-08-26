@@ -354,6 +354,10 @@ const App = new Vue({
       console.log("color", color);
 
       DB.trackEntry(emojion, color, (newEntries) => {
+
+        console.log("Tracking an entry.");
+        console.log("newEntries", newEntries);
+        
         this.entries = newEntries;
         this.toggleEmoji(false); // Move user to patterns page after tapping an emotion.
 

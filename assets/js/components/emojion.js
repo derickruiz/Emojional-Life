@@ -50,7 +50,7 @@ const Emojion = {
         * @type String
         */
         textColor: this.emojion.text_color,
-        
+
        /*
         * @description - The color of the emotion when switching using the carouselColor
         * @type String
@@ -112,6 +112,7 @@ const Emojion = {
       this.carouselColor = emojion.color;
       this.emojionToChangeTo = emojion;
       this.emojionToChangeToIndex = emojionIndex;
+
     },
 
     turnOnOffCarousel: function () {
@@ -121,6 +122,7 @@ const Emojion = {
 
         this.emoji = this.emojionToChangeTo.emoji;
         this.color = this.emojionToChangeTo.color;
+        this.textColor = this.emojionToChangeTo.text_color;
 
         console.log('this.emojionToChangeToIndex', this.emojionToChangeToIndex);
 
