@@ -918,6 +918,10 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
               User::login($email, $password);
 
+              $userId = User::getUserId();
+              
+              error_log("What's the payload? " . print_r($payload, true) . "\n", 3, __DIR__ . "/errors.txt");
+
               if ( !empty($payload["timezone"]) ) {
                 error_log("Saving the user time zone " . "\n", 3, __DIR__ . "/errors.txt");
                 User::saveTimezone(User::getUserId(), $payload["timezone"]);
@@ -926,7 +930,8 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
               // If the user saved entries while not logged in go ahead and save those.
               // TODO: Make this into a function.
               if ( !empty($payload["entries"]) ) {
-                error_log("Has entries in local storage. " . "\n", 3, __DIR__ . "/errors.txt");
+
+                error_log("Has entries in local storage (logging in). " . "\n", 3, __DIR__ . "/errors.txt");
                 $days = $payload["entries"];
 
                 error_log("days " . print_r($days, true) . "\n", 3, __DIR__ . "/errors.txt");
