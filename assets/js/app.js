@@ -11,7 +11,9 @@ const App = new Vue({
     isLoggedIn: false,
     isShowingAllEntries: false,
 
-    hasEntries: false, /* Nope no entries. Used for showing the empty state in the entries screen. */
+    /* Whether the user has any entries at all (any days). Used for showing the empty state in the entries screen. */
+    hasEntries: false,
+    hasTodayEntries: false, /* Whether the user has any entries today. */
 
     /*
      * @description: Whether to try and get the geolocation directly when tracking an entry
@@ -114,6 +116,7 @@ const App = new Vue({
       this.entries = entries;
 
       if (this.entries && this.entries.length >= 1) {
+        this.hasTodayEntries = true;
         this.hasEntries = true;
       }
 

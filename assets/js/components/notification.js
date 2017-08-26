@@ -20,6 +20,12 @@ const Notification = {
     method: {
       type: String,
       required: false
+    },
+
+    first: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
 

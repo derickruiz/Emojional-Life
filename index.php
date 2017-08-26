@@ -977,7 +977,7 @@ if (User::isLoggedIn()) {
 
           <div class="App-container FlexGrid" v-bind:class="{ 'moveLeft': !shouldShowEmoji }">
             <div class="Screen FlexGrid-cell FlexGrid-cell--1of2 rsp-1-Br(default)">
-              <div class="Emotions js-emotions">
+              <div class="Emotions js-emotions FlexGrid">
                 <emojion ref="emojions" v-for="(emojion, index) in emojions" v-bind:can-switch-emoji="canSwitchEmoji" v-bind:not-user-emojions="notUserEmojions" v-bind:colors="emojionBlockColors" v-bind:index="index" v-bind:emojion="emojion" v-on:turn-on-carousel="turnOnCarousel" v-on:turn-off-carousel="turnOffCarousel" v-on:track-entry="trackEntry"></emojion>
               </div>
               <tooltip v-if="tooltips.tap" emoji="👆" action="Tap" message="to track an emotion." reverse arrow-position="right" tooltip-type="tap"></tooltip>
@@ -1015,7 +1015,7 @@ if (User::isLoggedIn()) {
 
               <div v-if="shouldSignUp" class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(80%) Z(2) P(r)">
 
-                <form action="/" method="POST" v-on:submit.prevent="signUpUser">
+                <form class="W(100%) D(b)" action="/" method="POST" v-on:submit.prevent="signUpUser">
                   <div class="FlexGrid-cell FlexGrid-cell--full">
                     <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
                       <input v-model="signUpEmail" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" required type="email" name="signup_email">
@@ -1032,7 +1032,7 @@ if (User::isLoggedIn()) {
 
               <div v-if="shouldLogin" class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(80%) Z(2) P(r)">
 
-                <form action="/" method="POST" v-on:submit.prevent="loginUser">
+                <form class="W(100%) D(b)" action="/" method="POST" v-on:submit.prevent="loginUser">
                   <div class="FlexGrid-cell FlexGrid-cell--full">
                     <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
                       <input v-model="loginEmail" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" required type="email" name="login_email">
@@ -1054,13 +1054,18 @@ if (User::isLoggedIn()) {
                   </p>
                 </div>
 
-              <div class="Entries Pstart(default) Pend(default)">
+              <div v-if="hasTodayEntries" class="Entries Pstart(default) Pend(default)">
                 <!-- v-bind:total-entries="entriesToShow.length" -->
                 <entry ref="entries" v-for="(entry, index) in entries" v-bind:total-entries="entries.length" v-bind:entry="entry" v-bind:index="index" v-on:save-note="saveNote" v-bind:show-tooltip="tooltips.write">
               </div>
 
-              <div v-if="showLocationNotification" class="Notifications Pstart(default) Pend(default)">
-                <notification emoji="🌏" message="Add location to each notification to see how where you're at effects how you feel." call-to-action-message="Add location" method="askUserForLocation"></notification>
+              <div class="Notifications Pstart(default) Pend(default)">
+                <notification v-if="!hasTodayEntries" emoji="👻" first>
+                  No entries tracked yet today. <span class="Td(u)">Tap an emotion</span> to track one.
+                </notification>
+                <notification v-if="showLocationNotification" emoji="🌏" call-to-action-message="Add location" method="askUserForLocation">
+                  Add location to each notification to see how where you're at effects how you feel.
+                </notification>
               </div>
 
               <div v-bind:class="[previousDayCharts ? '' : 'PreviousDayEmotions--empty Mtop(u4)']" class="Pstart(default) Pend(default) PreviousDayEmotions Ptop(u4) Pbottom(u4) Bt(default)">
@@ -1087,30 +1092,6 @@ if (User::isLoggedIn()) {
                   <day-emotion-chart></day-emotion-chart>
                   <day-emotion-chart></day-emotion-chart>
                 </div>
-              </div>
-
-              <div class="Patterns Patterns--empty Ptop(u4) Pbottom(u4)">
-
-                <div class="Loading Flex Flex--center Pstart(default) Pend(default)">
-                  <div>
-                    <div class="Loading-emoji Loading-emoji--noAnimation">💸</div>
-                    <div class="Ff(serifItalic) Fz(u2) Mtop(u5) Ta(c)"><span class="Td(u)">Upgrade</span> to get more insights into your emotional patterns.</div>
-                  </div>
-
-                </div>
-
-                <div class="Pstart(default) Pend(default)">
-                  <p class="Ff(sansSerifBold) Fz(u3) Lh(11) C(black)">
-                    What patterns do I see?
-                  </p>
-                </div>
-
-                <div class="Pstart(default) Pend(default)Pbottom(default)">
-                  <p class="Ff(serifRegular) Fz(default) Lh(14) C(black) Mbottom(d3) Mtop(d2)">When I’m in <span class="Ff(serifBold)">Chiang Mai</span>, I tend to feel 😄 <span class="Ff(serifItalic)">Happy</span>, 😌 <span class="Ff(serifItalic)">Grateful</span>, and 😎 <span class="Ff(serifItalic)">Cool.</span></p>
-                  <p class="Ff(serifRegular) Fz(default) Lh(14) C(black) Mbottom(d3) Mtop(d3)">When it’s <span class="Ff(serifBold)">raining</span> I write <span class="Ff(serifItalic)">more</span> than usual.</p>
-                  <p class="Ff(serifRegular) Fz(default) Lh(14) C(black) Mbottom(d3) Mtop(d3)">I feel positive emotions <span class="Ff(serifBold)">74%</span> of the time.</p>
-                </div>
-
               </div>
 
               </div>
@@ -1160,7 +1141,7 @@ if (User::isLoggedIn()) {
 
           <div class="FlexGrid FlexGrid--alignCenter W(100%) D(n) rsp-1-D(f)">
 
-           <div class="FlexGrid-cell FlexGrid FlexGrid--alignItemsCenter FlexGrid-cell--halfScreen Br(default) rsp-1-Bs(contentbox)">
+           <div class="FlexGrid-cell FlexGrid FlexGrid--alignItemsCenter FlexGrid-cell--halfScreen Br(default)">
              <div class="Fz(default) C(black) Ff(sansSerifBlack) Pstart(default)">Emojional Life</div>
            </div>
 
@@ -1200,13 +1181,14 @@ if (User::isLoggedIn()) {
       </div>
 
       <script type="text/x-template" id="emojion_template">
-        <div class="Emotion BackgroundColor js-emotion" v-bind:style="{ backgroundColor: '#' + color }" v-bind:class="[canSwitchEmoji && isChangingEmoji ? 'Emotion--isSwitching js-emotion-switching' : '']">
-          <emojion-carousel v-if="canSwitchEmoji && isChangingEmoji" v-bind:emojions="notUserEmojions" v-on:select-emoji-to-change-to="selectEmojionToChangeTo"></emojion-carousel>
-          <div v-else class="Fz(10vh)">
-            <div class="Ta(c)">{{emojion.emoji}}</div>
-            <div v-bind:style="{ color: '#' + textColor }" class="Ff(serifItalic) Fz(u2) Ta(c)">{{emojion.emotion}}</div>
+        <div class="FlexGrid-cell FlexGrid-cell--1of2">
+          <div class="Emotion BackgroundColor js-emotion" v-bind:style="{ backgroundColor: '#' + color }" v-bind:class="[canSwitchEmoji && isChangingEmoji ? 'Emotion--isSwitching js-emotion-switching' : '']">
+            <emojion-carousel v-if="canSwitchEmoji && isChangingEmoji" v-bind:emojions="notUserEmojions" v-on:select-emoji-to-change-to="selectEmojionToChangeTo"></emojion-carousel>
+            <div v-else class="Fz(10vh)">
+              <div class="Ta(c)">{{emojion.emoji}}</div>
+              <div v-bind:style="{ color: '#' + textColor }" class="Ff(serifItalic) Fz(u2) Ta(c)">{{emojion.emotion}}</div>
+            </div>
           </div>
-
         </div>
       </script>
 
@@ -1259,7 +1241,7 @@ if (User::isLoggedIn()) {
       </script>
 
       <script type="text/template" id="notification_template">
-        <div v-if="shouldShow" class="Notification Mtop(u4) FlexGrid BackgroundColor Border(default) Br(4px) Bgc(grey)">
+        <div v-if="shouldShow" v-bind:class="[first ? '' : 'Mtop(u4)']" class="Notification FlexGrid BackgroundColor Border(default) Br(4px) Bgc(grey)">
           <div class="FlexGrid-cell FlexGrid FlexGrid-cell--autoSize FlexGrid-cell--alignCenter">
               <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
                 <p class="Ff(default) Fz(u1) Lh(11)">
@@ -1270,7 +1252,7 @@ if (User::isLoggedIn()) {
 
           <div class="FlexGrid-cell">
             <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(default)">
-              <p class="Ff(sansSerifRegular) Fz(u1) Lh(11) C(darkerGrey)">{{message}}</p>
+              <p class="Ff(sansSerifRegular) Fz(u1) Lh(11) C(darkerGrey)"><slot></slot></p>
             </div>
 
           </div>

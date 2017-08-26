@@ -1,15 +1,7 @@
-@media (min-width: #{$resize-point-1}) {
+@media (min-width: #{$resize-point-1}) { // At this point I'm just gonna put everything on a single screen.
 
   body {
     background-color: $color-alabaster;
-  }
-
-  // At this point I'm just gonna put everything on a single screen.
-
-  // EMOTIONS TAKE UP one half of the screen
-  .Emotions {
-    position: fixed;
-    grid-template-columns: repeat(2, 25vw);
   }
 
   .Entries > .EmotionNote + .EmotionNote {
@@ -20,6 +12,7 @@
   .Screen {
     margin-top: $navbar-height; // Making up for the navbar being at the top now.
     width: 50vw;
+    min-height: calc(100vh - #{$navbar-height});
   }
 
   .App-container {

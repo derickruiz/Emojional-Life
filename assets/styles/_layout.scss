@@ -81,6 +81,10 @@
     flex: 0 0 90%;
   }
 
+  &.FlexGrid-cell--1of2 {
+    flex: 0 0 50%;
+  }
+
   &.FlexGrid-cell--1of10 {
     flex: 0 0 10%;
   }
@@ -97,4 +101,14 @@
     justify-content: center;
     align-items: center;
   }
+}
+
+@media (min-width: #{$resize-point-1}) {
+
+  .FlexGrid-cell {
+    &.rsp-1-FlexGrid-cell--400 {
+      flex: 0 0 400px;
+    }
+  }
+  
 }
