@@ -1283,8 +1283,8 @@ if (User::isLoggedIn()) {
       </div>
 
       <script type="text/x-template" id="emojion_template">
-        <div class="FlexGrid-cell FlexGrid-cell--1of2">
-          <div class="Emotion BackgroundColor js-emotion" v-bind:style="{ backgroundColor: '#' + color }" v-bind:class="[canSwitchEmoji && isChangingEmoji ? 'Emotion--isSwitching js-emotion-switching' : '']">
+        <div class="EmotionContainer FlexGrid-cell FlexGrid-cell--1of2" v-bind:class="[canSwitchEmoji && isChangingEmoji ? 'EmotionContainer--isSwitching' : '']">
+          <div class="Emotion BackgroundColor js-emotion" v-bind:style="{ backgroundColor: '#' + color }" v-bind:class="[canSwitchEmoji && isChangingEmoji ? 'js-emotion-switching' : '']">
             <emojion-carousel v-if="canSwitchEmoji && isChangingEmoji" v-bind:emojions="notUserEmojions" v-on:select-emoji-to-change-to="selectEmojionToChangeTo"></emojion-carousel>
             <div v-else class="Fz(10vh)">
               <div class="Ta(c)">{{emojion.emoji}}</div>
