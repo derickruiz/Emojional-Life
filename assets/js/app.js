@@ -55,7 +55,9 @@ const App = new Vue({
     signUpEmail: "",
     signUpPassword: "",
     loginEmail: "",
-    loginPassword: ""
+    loginPassword: "",
+    confirmPassword: "",
+    signUpLoginError: undefined,
   },
 
   created: function () {
@@ -168,6 +170,28 @@ const App = new Vue({
 
       this.$forceUpdate();
 
+
+    });
+
+    DB.getSignUpLoginErrors((errorObj) => {
+
+      console.log("What's the errorObj?", errorObj);
+
+      if (errorObj != null) {
+        // do something?
+
+        this.signUpLoginError = errorObj.message;
+
+        if (errorObj.for === "register") {
+          this.shouldSignUp = true;
+          this.shouldLogin = false;
+        }
+
+        if (errorObj.for === "login") {
+          this.shouldLogin = true;
+          this.shouldSignUp = false;
+        }
+      }
 
     });
 
@@ -374,7 +398,14 @@ const App = new Vue({
      * @description - Just some logic for saving the user. */
     signUpUser: function () {
       if (this.signUpEmail !== "" && this.signUpPassword !== "") {
-        DB.signUpUser(this.signUpEmail, this.signUpPassword);
+
+        if (this.signUpPassword !== this.confirmPassword) {
+          this.signUpLoginError = "Those passwords aren't matching up."
+        } else {
+          this.signUpLoginError = undefined;
+          DB.signUpUser(this.signUpEmail, this.signUpPassword);
+        }
+
       }
     },
 

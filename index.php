@@ -7,6 +7,8 @@ $auth = new \Delight\Auth\Auth($DB);
 
 date_default_timezone_set('UTC');
 
+session_start();
+
 class Utils {
 
   /* https://stackoverflow.com/questions/13076867/computing-the-percentage-of-values-in-an-array */
@@ -116,10 +118,14 @@ class User {
 
     global $auth;
 
+    $_SESSION["ERROR_FOR"] = "register";
+
     try {
 
       // Create a new user.
       $userId = $auth->register($username, $password, null, null);
+
+      $_SESSION["ERROR_MESSAGE"] = NULL;
 
       if ($userId) {
         $callback($userId);
@@ -127,21 +133,19 @@ class User {
 
       // we have signed up a new user with the ID `$userId`
     } catch (\Delight\Auth\InvalidEmailException $e) {
-      print_r('e' . $e);
-      echo "Not a good email";
-          // invalid email address
-    } catch (\Delight\Auth\InvalidPasswordException $e) {
-      print_r('e' . $e);
-      echo "Not a good password.";
-          // invalid password
+
+      error_log("Error registering " . print_r($e, true) . "\n", 3, __DIR__ . "/errors.txt");
+      $_SESSION["ERROR_MESSAGE"] = "That email isn't valid. Double check and submit again.";
+
+      error_log("What's the ERROR_MESSGE? " . print_r($_SESSION["ERROR_MESSAGE"], true) . "\n", 3, __DIR__ . "/errors.txt");
+
     } catch (\Delight\Auth\UserAlreadyExistsException $e) {
-      print_r('e' . $e);
-      echo "Already exists.";
-          // user already exists
-    } catch (\Delight\Auth\TooManyRequestsException $e) {
-      print_r('e' . $e);
-      echo "Too many requests.";
-          // too many requests
+
+      // user already exists
+      error_log("Error registering " . print_r($e, true) . "\n", 3, __DIR__ . "/errors.txt");
+      $_SESSION["ERROR_MESSAGE"] = "This email already exists in the database. Try logging in.";
+
+      error_log("What's the ERROR_MESSGE? " . print_r($_SESSION["ERROR_MESSAGE"], true) . "\n", 3, __DIR__ . "/errors.txt");
     }
 
   }
@@ -152,27 +156,41 @@ class User {
 
     global $auth;
 
+    $_SESSION["ERROR_FOR"] = "login";
+
     $rememberDuration = (int) (60 * 60 * 24); // One day
 
     try {
+
       $auth->login($username, $password, $rememberDuration);
+
+      $_SESSION["ERROR_MESSAGE"] = NULL;
+
       // user is logged in
     } catch (\Delight\Auth\InvalidEmailException $e) {
         // wrong email address
+
+        error_log("Error logging in " . print_r($e, true) . "\n", 3, __DIR__ . "/errors.txt");
+        $_SESSION["ERROR_MESSAGE"] = "That email isn't in the database. Register, or double check and try again.";
+
+        error_log("What's the ERROR_MESSGE? " . print_r($_SESSION["ERROR_MESSAGE"], true) . "\n", 3, __DIR__ . "/errors.txt");
+
     } catch (\Delight\Auth\InvalidPasswordException $e) {
         // wrong password
-    } catch (\Delight\Auth\EmailNotVerifiedException $e) {
-        // email not verified
-    } catch (\Delight\Auth\TooManyRequestsException $e) {
-        // too many requests
-    }
 
+        error_log("Error logging in " . print_r($e, true) . "\n", 3, __DIR__ . "/errors.txt");
+        $_SESSION["ERROR_MESSAGE"] = "The password isn't right. Double check and try again.";
+
+        error_log("What's the ERROR_MESSGE? " . print_r($_SESSION["ERROR_MESSAGE"], true) . "\n", 3, __DIR__ . "/errors.txt");
+
+    }
   }
 
   public static function logout() {
     global $auth;
     $auth->logout();
   }
+
 }
 
 class Entry {
@@ -940,9 +958,24 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
 }
 
+$ERRORS = array();
+
 if (User::isLoggedIn()) {
   $userId = User::getUserId();
   getInitialData($userId);
+} else {
+
+  error_log("The user isn't logged in. (Checking at end)" . "\n", 3, __DIR__ . "/errors.txt");
+
+  error_log("SESSION " . print_r($_SESSION, true). "\n", 3, __DIR__ . "/errors.txt");
+
+  error_log("What's errors array? " . print_r($ERRORS, true) . "\n", 3, __DIR__ . "/errors.txt");
+
+  if ( !empty($_SESSION) && $_SESSION["ERROR_MESSAGE"] != NULL) {
+    $ERRORS["message"] = $_SESSION["ERROR_MESSAGE"];
+    $ERRORS["for"] = $_SESSION["ERROR_FOR"];
+  }
+  
 }
 
 ?>
@@ -1016,35 +1049,45 @@ if (User::isLoggedIn()) {
                 </div>
               </div>
 
-              <div v-if="shouldSignUp" class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(80%) Z(2) P(r)">
+              <div v-if="shouldSignUp" class="FlexGrid FlexGrid--alignCenter BackgroundColor BackgroundColor--white W(80%) Z(2) P(r)">
 
                 <form class="W(100%) D(b)" action="/" method="POST" v-on:submit.prevent="signUpUser">
+
+                  <div v-if="signUpLoginError" class="FlexGrid-cell FlexGrid-cell--full">
+                    <p class="Error Fz(default) Ff(sansSerifRegular) C(red) Mtop(default) Mstart(default) Mend(default) Ptop(default) Pstart(default) Pend(default) Pbottom(default)">{{signUpLoginError}}</p>
+                  </div>
+
                   <div class="FlexGrid-cell FlexGrid-cell--full">
                     <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
-                      <input v-model="signUpEmail" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" required type="email" name="signup_email">
-                      <input v-model="signUpPassword" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Password" required type="password" name="signup_password">
-                      <input class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Confirm Password" required type="password" name="signup_confirm_password">
+                      <input v-model="signUpEmail" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2) Br(4px) Border(default)" placeholder="Email" required type="email" name="signup_email">
+                      <input v-model="signUpPassword" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2) Br(4px) Border(default)" placeholder="Password" required type="password" name="signup_password">
+                      <input v-model="confirmPassword" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2) Br(4px) Border(default)" placeholder="Confirm Password" required type="password" name="signup_confirm_password">
                     </div>
                   </div>
 
                   <div class="FlexGrid-cell FlexGrid-cell--full">
-                    <input class="Ptop(default) Pbottom(default) Bt(default) Ta(c) Fz(u1) C(darkerGrey) D(b) W(100%) Bgc(grey) Ff(sansSerifBold)" type="submit" value="Sign Up" name="signup_submit">
+                    <input class="Ptop(default) Pbottom(default) Bt(default) Bb(default) Ta(c) Fz(u1) C(black) Td(u) D(b) W(100%) BackgroundColor BackgroundColor--white Ff(sansSerifBold)" type="submit" value="Sign Up" name="signup_submit">
                   </div>
                 </form>
               </div>
 
-              <div v-if="shouldLogin" class="FlexGrid FlexGrid--alignCenter Bgc(grey) W(80%) Z(2) P(r)">
+              <div v-if="shouldLogin" class="FlexGrid FlexGrid--alignCenter BackgroundColor BackgroundColor--white W(80%) Z(2) P(r)">
 
                 <form class="W(100%) D(b)" action="/" method="POST" v-on:submit.prevent="loginUser">
+
+                  <div v-if="signUpLoginError" class="FlexGrid-cell FlexGrid-cell--full">
+                    <p class="Error Fz(default) Ff(sansSerifRegular) C(red) Mtop(default) Mstart(default) Mend(default) Ptop(default) Pstart(default) Pend(default) Pbottom(default)">{{signUpLoginError}}</p>
+                  </div>
+
                   <div class="FlexGrid-cell FlexGrid-cell--full">
                     <div class="Pstart(default) Pend(default) Ptop(default) Pbottom(u1)">
-                      <input v-model="loginEmail" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Email" required type="email" name="login_email">
-                      <input v-model="loginPassword" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2)" placeholder="Password" required type="password" name="login_password">
+                      <input v-model="loginEmail" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2) Border(default) Br(4px)" placeholder="Email" required type="email" name="login_email">
+                      <input v-model="loginPassword" class="Mtop(d2) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Ptop(d2) Pbottom(d2) Border(default) Br(4px)" placeholder="Password" required type="password" name="login_password">
                     </div>
                   </div>
 
                   <div class="FlexGrid-cell FlexGrid-cell--full">
-                    <input class="Ptop(default) Pbottom(default) Bt(default) Ta(c) Fz(u1) C(darkerGrey) D(b) W(100%) Bgc(grey) Ff(sansSerifBold)" type="submit" value="Login" name="login_submit">
+                    <input class="Ptop(default) Pbottom(default) Bt(default) Bb(default) Ta(c) Fz(u1) C(black) Td(u) D(b) W(100%) BackgroundColor BackgroundColor--white Ff(sansSerifBold)" type="submit" value="Login" name="login_submit">
                   </div>
                 </form>
               </div>
@@ -1291,6 +1334,11 @@ if (User::isLoggedIn()) {
       <?php else: ?>
         <script>
           GLOBAL_STATE.isLoggedIn = false;
+
+          <?php if (!empty($ERRORS)): ?>
+          ERROR_DATA = <?php echo json_encode($ERRORS, JSON_PRETTY_PRINT); ?>
+          <?php endif; ?>
+
         </script>
       <?php endif; ?>
 

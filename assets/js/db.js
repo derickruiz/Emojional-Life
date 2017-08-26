@@ -31,6 +31,26 @@
  */
 const DB = {
 
+  /*
+   * @description: Gets the sign up and login errors if there are any.
+   * @return Object || NULL
+   */
+  getSignUpLoginErrors: function (callback) {
+
+    if (ERROR_DATA != null) {
+
+      if (callback) {
+        callback(ERROR_DATA);
+      }
+      
+    } else {
+
+      if (callback) {
+        callback(null);
+      }
+    }
+  },
+
   // GETTERS
   getLocalEntries: function (date) {
     let items;

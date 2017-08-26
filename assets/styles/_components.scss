@@ -347,3 +347,27 @@
 .PreviousDayEmotions.PreviousDayEmotions--empty > .Loading {
   display: flex;
 }
+
+// Errors
+
+.Error {
+
+  position: relative;
+
+  color: rgb(61, 13, 20);
+  background-color: rgb(236, 55, 81);
+}
+
+.Error::after {
+  content: "ERROR 😱";
+
+  color: rgb(61, 13, 20);
+
+  position: absolute;
+
+  right: $scale-default;
+  top: $scale-two-down;
+
+  font-family: $font-family-sansSerifBold;
+  
+}
