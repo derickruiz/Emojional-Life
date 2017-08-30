@@ -280,12 +280,12 @@ const App = new Vue({
      */
     turnOffCarousel: function (emojionSelectorIndex, emojionToChangeTo, emojionToChangeToIndex) {
 
-      console.log("turnOffCarousel");
-      console.log("emojionSelectorIndex", emojionSelectorIndex);
-      console.log("emojion", emojionToChangeTo);
-      console.log('emojionToChangeToIndex', emojionToChangeToIndex);
-      console.log("this.entries[emojionSelectorIndex]", this.emojions[emojionSelectorIndex]);
-      console.log("this.notUserEmojions[emojionToChangeToIndex]", this.notUserEmojions[emojionToChangeToIndex]);
+      // console.log("turnOffCarousel");
+      // console.log("emojionSelectorIndex", emojionSelectorIndex);
+      // console.log("emojion", emojionToChangeTo);
+      // console.log('emojionToChangeToIndex', emojionToChangeToIndex);
+      // console.log("this.entries[emojionSelectorIndex]", this.emojions[emojionSelectorIndex]);
+      // console.log("this.notUserEmojions[emojionToChangeToIndex]", this.notUserEmojions[emojionToChangeToIndex]);
 
       this.notUserEmojions[emojionToChangeToIndex] = this.emojions[emojionSelectorIndex];
       this.emojions[emojionSelectorIndex] = emojionToChangeTo;
@@ -341,7 +341,7 @@ const App = new Vue({
      * @description: Puts a new entry into tracking
      * @use - Called from click event.
      */
-    trackEntry: function (emojion, color, textColor) {
+    trackEntry: function (emojion, color, textColor, question) {
       console.log("Tracking the entry.");
 
       let self = this;
@@ -353,7 +353,7 @@ const App = new Vue({
       console.log("emojion", emojion);
       console.log("color", color);
 
-      DB.trackEntry(emojion, color, textColor, (newEntries) => {
+      DB.trackEntry(emojion, color, textColor, question, (newEntries) => {
 
         console.log("Tracking an entry.");
         console.log("newEntries", newEntries);

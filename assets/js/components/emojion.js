@@ -51,6 +51,11 @@ const Emojion = {
         */
         textColor: this.emojion.text_color,
 
+      /* @description - The question associated with this emotion.
+       * @type String
+       */
+       question: this.emojion.question,
+
        /*
         * @description - The color of the emotion when switching using the carouselColor
         * @type String
@@ -94,7 +99,7 @@ const Emojion = {
 
       // Don't wanna send anything to the server if switching with the carousel.
       if ( ! this.isChangingEmoji) {
-        this.$emit('track-entry', this.emojion, this.emojion.color, this.emojion.text_color);
+        this.$emit('track-entry', this.emojion, this.emojion.color, this.emojion.text_color, this.emojion.question);
       }
 
     });
