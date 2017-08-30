@@ -9,7 +9,7 @@ module.exports = function(grunt) {
   		},
   		dist: {
   			files: {
-  				'processing/assets/styles/styles.css': 'assets/styles/styles.scss'
+  				'assets/compiled/styles/styles.css': 'assets/styles/styles.scss'
   			}
   		}
     },
