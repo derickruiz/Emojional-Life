@@ -1,0 +1,12 @@
+{
+    "name": "derickruiz/emojional-life",
+    "authors": [
+        {
+            "name": "Derick Ruiz",
+            "email": "derick.r.ruiz@gmail.com"
+        }
+    ],
+    "require": {
+        "delight-im/auth": "^5.2"
+    }
+}
