@@ -9,7 +9,7 @@ module.exports = function(grunt) {
   		},
   		dist: {
   			files: {
-  				'assets/styles/styles.css': 'assets/styles/styles.scss'
+  				'processing/assets/styles/styles.css': 'assets/styles/styles.scss'
   			}
   		}
     },
@@ -26,5 +26,4 @@ module.exports = function(grunt) {
 
   // Default task(s).
   grunt.registerTask('default', ['sass']);
-
 };
