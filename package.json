@@ -18,7 +18,8 @@
     "compilejs": "babel assets/js --out-file processing/js/compiled.js",
     "uglifyjs": "",
     "compilesass": "node-sass src/style.scss dest/style.css",
-    "autoprefix": ""
+    "autoprefix": "",
+    "processhtml": "https://github.com/dciccale/node-htmlprocessor"
   },
   "repository": {
     "type": "git",
