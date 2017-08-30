@@ -1,2 +1,3 @@
-# Emojional-Life
-Track your emotions with emoji.
+# Inlet
+
+Track your emotions. Become emotionally fit.
