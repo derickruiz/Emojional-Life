@@ -197,7 +197,7 @@ class User {
 }
 
 class Entry {
-  public static function track($userId, $emojion, $color, $day = NULL, $time = NULL, $textColor) {
+  public static function track($userId, $emojion, $color, $day = NULL, $time = NULL, $textColor, $question) {
 
     error_log("Entry.track" . "\n", 3, __DIR__ . "/errors.txt");
 
@@ -207,7 +207,7 @@ class Entry {
 
     global $DB;
 
-    $sth = $DB->prepare("INSERT INTO entries (user_id, time, day, emojion_id, color, text_color) VALUES (:userId, :time, :day, :emojionId, :color, :textColor)");
+    $sth = $DB->prepare("INSERT INTO entries (user_id, time, day, emojion_id, color, text_color, question) VALUES (:userId, :time, :day, :emojionId, :color, :textColor, :question)");
 
     if ($day === NULL) {
       $day = date('Y-m-d', time());
@@ -232,6 +232,7 @@ class Entry {
     $sth->bindParam(':emojionId', $emojion["key"]);
     $sth->bindParam(':color', $color);
     $sth->bindParam(':textColor', $textColor);
+    $sth->bindParam(':question', $question);
     $sth->execute();
 
     $lastId = $DB->lastInsertId();
@@ -667,12 +668,13 @@ $AJAX = array(
     $emojion = $payload["emojion"];
     $color = $payload["color"];
     $textColor = $payload["textColor"];
+    $question = $payload["question"];
 
     error_log("emojion " . print_r($emojion, true) . "\n", 3, __DIR__ . "/errors.txt");
     error_log("color " . print_r($color, true) . "\n", 3, __DIR__ . "/errors.txt");
     error_log("textColor " . print_r($textColor, true) . "\n", 3, __DIR__ . "/errors.txt");
 
-    Entry::track($userId, $emojion, $color, NULL, NULL, $textColor);
+    Entry::track($userId, $emojion, $color, NULL, NULL, $textColor, $question);
 
     $allUserEntries = Entry::getToday($userId);
 
@@ -1014,20 +1016,15 @@ if (User::isLoggedIn()) {
     <head>
       <meta charset="utf-8">
       <meta http-equiv="x-ua-compatible" content="ie=edge">
-      <title>Emojional Life</title>
-      <meta name="description" content="Track your emotions with emoji.">
+      <title>Inlet</title>
+      <meta name="description" content="Track your emotions">
       <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
       <link rel="apple-touch-icon" href="apple-touch-icon.png">
       <!-- Place favicon.ico in the root directory -->
-      <link rel="stylesheet" href="assets/styles/styles.css">
-      <link rel="stylesheet" href="assets/styles/vendor/chartist.css">
-
-      <link rel="manifest" href="/manifest.json">
+      <link rel="stylesheet" href="assets/compiled/styles/styles.css">
 
     </head>
     <body>
-
-      <link rel="stylesheet" href="https://unpkg.com/flickity@2.0.9/dist/flickity.css">
 
       <div class="Loading js-loading Flex Flex--center Pstart(default) Pend(default)">
         <div>
@@ -1185,6 +1182,24 @@ if (User::isLoggedIn()) {
                 </div>
               </div>
 
+              <!-- <div>
+
+                <div class="Ff(sansSerifBlack) Fz(u3)">Upgrade to Plus for $5 bucks</div>
+                <button class="Ptop(default) Pbottom(default) Bt(default) Bb(default) Ta(c) Fz(u1) C(white) Br(4px) Td(u) D(b) W(100%) BackgroundColor BackgroundColor--smoky Ff(sansSerifBold)">Pay with Stripe</button>
+
+                <div class="Ff(sansSerifBold) Fz(u2)">1. More Emoji to choose</div>
+                <div class="Fz(default) Ff(serifRegular)">More emoji and more emotions to track. And once I enter writing mode I'll make sure this is actually good.</div>
+
+                <div class="Ff(sansSerifBold) Fz(u2)">2. Notification Reminders</div>
+                <div class="Fz(default) Ff(serifRegular)">Get reminders so you make sure you track some entries every single day and another line of text just to be safe. Desktop and Mobile notifications.</div>
+
+                <div class="Ff(sansSerifBold) Fz(u2)">3. More Insights into your emotional patterns</div>
+                <div class="Fz(default) Ff(serifRegular)"3>Get reminders so you make sure you track some entries every single day and another line of text just to be safe.</div>
+
+                <button class="Ptop(default) Pbottom(default) Bt(default) Bb(default) Ta(c) Fz(u1) C(black) Td(u) D(b) W(100%) BackgroundColor BackgroundColor--smoky Ff(sansSerifBold)">Pay with Stripe</button>
+
+              </div> -->
+
               </div>
               <div v-else>
 
@@ -1310,8 +1325,8 @@ if (User::isLoggedIn()) {
 
           <div class="FlexGrid FlexGrid--guttersOneDown FlexGrid--spaceBetween M">
             <div class="FlexGrid-cell FlexGrid-cell--9of10">
-              <p class="Ff(default) Fz(u1) Lh(14) C(white)" style="font-size: 4vh;" v-bind:style="{ 'color': '#' + entry.text_color }">
-                {{entry.emoji}} at <span class="Fw(bold)">{{ formatTime(entry.time) }}</span> <span v-if="entry.location">at <span class="Fs(italic)">{{entry.location}}.</span></span>
+              <p class="Ff(default) Fz(u2) Lh(14) C(white)" v-bind:style="{ 'color': '#' + entry.text_color }">
+                {{entry.emoji}} <span class="Ff(serifItalic)">{{entry.emotion}}</span> at <span class="Ff(sansSerifBold)">{{ formatTime(entry.time) }}</span> <span v-if="entry.location">at <span class="Ff(serifItalic)">{{entry.location}}.</span></span>
               </p>
             </div>
             <div v-on:click="showNote" class="FlexGrid-cell FlexGrid-cell--1of10 FlexGrid-cell--alignSelfCenter">
@@ -1320,10 +1335,10 @@ if (User::isLoggedIn()) {
 
           </div>
 
-          <textarea v-if="canInputNote" v-on:input="resizeTextArea" rows="1" class="Mtop(d2) Ptop(d2) Pbottom(d2) Ff(default) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Resize(none) js-note-input" placeholder="I feel this way because.."></textarea>
+          <textarea v-if="canInputNote" v-on:input="resizeTextArea" rows="1" class="Mtop(d2) Ptop(d2) Pbottom(d2) Ff(default) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Resize(none) js-note-input" v-bind:placeholder="entry.question"></textarea>
           <div class="Mtop(d2) Ff(sansSerifRegular) C(white) Fz(default) Lh(14)" v-if="!canInputNote && alreadyHasNote && isViewingNote">{{entry.note}}</div>
           <tooltip v-if="showTooltip && (index === totalEntries - 1) && !shouldResizeTextArea" emoji="✍" action="Write" message="a note." tooltip-type="write"></tooltip>
-          <button v-if="shouldResizeTextArea && canInputNote" v-on:click="saveNote" class="D(b) W(100%)" style="min-height: 44px;">Save Note</button>
+          <button v-if="shouldResizeTextArea && canInputNote" v-on:click="saveNote" v-bind:style="{ 'background-color': '#' + entry.text_color }" class="D(b) W(100%) Ff(sansSerifBold) Ptop(d2) Pbottom(d2) C(white)">Save Note</button>
         </div>
       </script>
 
@@ -1368,22 +1383,33 @@ if (User::isLoggedIn()) {
       </script>
 
       <script src="https://unpkg.com/moment@2.18.1/min/moment.min.js"></script>
-      <script src="https://unpkg.com/lodash@4.17.4"></script>
       <script src="https://unpkg.com/flickity@2.0.9/dist/flickity.pkgd.min.js"></script>
       <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
-      <script src="assets/js/vendor/autosize.js"></script>
-      <script src="assets/js/vendor/chartist.js"></script>
       <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
 
+      <script src="assets/js/vendor/autosize.js"></script>
+      <script src="assets/js/vendor/chartist.js"></script>
       <script src="assets/js/consts-state.js"></script>
-
       <script src="assets/js/utils.js"></script>
+      <script src="assets/js/dom.js"></script>
+      <script src="assets/js/ajax.js"></script>
+      <script src="assets/js/db.js"></script>
+      <script src="assets/js/components/emojion.js"></script>
+      <script src="assets/js/components/emojion-carousel.js"></script>
+      <script src="assets/js/components/entry.js"></script>
+      <script src="assets/js/components/tooltip.js"></script>
+      <script src="assets/js/components/notification.js"></script>
+      <script src="assets/js/components/day-emotion-chart.js"></script>
+      <script src="assets/js/components/day-emotion-chart-carousel.js"></script>
+      <script src="assets/js/app.js"></script>
 
       <?php if ($DATA["isLoggedIn"]): ?>
         <script>
           GLOBAL_STATE.isLoggedIn = true;
 
-          UTILS.removeUserDataFromLocalStorage(); // Deleting already saved data from local storage.
+          document.addEventListener('DOMContentLoaded', function () {
+            UTILS.removeUserDataFromLocalStorage(); // Deleting already saved data from local storage.
+          });
 
           USER_DATA = <?php echo json_encode($DATA, JSON_PRETTY_PRINT); ?>
         </script>
@@ -1397,23 +1423,6 @@ if (User::isLoggedIn()) {
 
         </script>
       <?php endif; ?>
-
-      <script src="assets/js/dom.js"></script>
-
-      <script src="assets/js/ajax.js"></script> <!-- AJAX stuff -->
-      <script src="assets/js/db.js"></script>
-
-      <script src="assets/js/components/emojion.js"></script>
-      <script src="assets/js/components/emojion-carousel.js"></script>
-      <script src="assets/js/components/entry.js"></script>
-      <script src="assets/js/components/tooltip.js"></script>
-      <script src="assets/js/components/notification.js"></script>
-      <script src="assets/js/components/day-emotion-chart.js"></script>
-      <script src="assets/js/components/day-emotion-chart-carousel.js"></script>
-
-      <script src="assets/js/app.js"></script>
-
-      <!-- <script src="assets/js/init.js"></script> -->
 
     </body>
 
