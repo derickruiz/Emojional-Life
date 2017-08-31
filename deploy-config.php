@@ -44,7 +44,7 @@ define('BRANCH', 'master');
  *
  * @var string Full path including the trailing slash
  */
-define('TARGET_DIR', '/var/www/html/inletapp.com/src/');
+define('TARGET_DIR', '/home/derick/inletapp.com/src/');
 
 /**
  * Whether to delete the files that are not in the repository but are on the
@@ -79,7 +79,7 @@ define('EXCLUDE', serialize(array(
  *
  * @var string Full path including the trailing slash
  */
-define('TMP_DIR', '/var/www/html/inletapp.com/stage/');
+define('TMP_DIR', '/home/derick/inletapp.com/stage/');
 
 /**
  * Whether to remove the TMP_DIR after the deployment.
