@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "moveindex": "cp ../stage/index.php ./index.php",
+    "compilejs": "../stage/node_modules/.bin/babel ../stage/assets/js --out-file ../stage/processing/compiled.js",
+    "uglifyjs": "../stage/node_modules/.bin/uglifyjs ../stage/processing/compiled.js --compress drop_console=true --mangle --output ./app.js",
+    "compilesass": "../stage/node_modules/.bin/node-sass ../stage/assets/styles/styles.scss ../stage/processing/styles-compiled.css",
+    "autoprefix": "../stage/node_modules/.bin/postcss --use autoprefixer -o ./styles.css ../stage/processing/styles-compiled.css"
+  }
+}
