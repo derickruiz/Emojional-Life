@@ -3,23 +3,21 @@
   "version": "1.0.0",
   "description": "Track your emotions with emoji.",
   "main": "Gruntfile.js",
-  "dependencies": {
-    "grunt": "^1.0.1",
-    "grunt-sass": "^2.0.0"
-  },
   "devDependencies": {
+    "autoprefixer": "^7.1.3",
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.6.0",
-    "grunt-contrib-watch": "^1.0.0",
+    "node-sass": "^4.5.3",
+    "postcss-cli": "^4.1.0",
     "uglify-js": "^3.0.28"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "compilejs": "babel assets/js --out-file processing/js/compiled.js",
-    "uglifyjs": "",
-    "compilesass": "node-sass src/style.scss dest/style.css",
-    "autoprefix": "",
-    "processhtml": "https://github.com/dciccale/node-htmlprocessor"
+    "moveindex": "cp index.php dist/index.php",
+    "compilejs": "./node_modules/.bin/babel assets/js --out-file processing/compiled.js",
+    "uglifyjs": "./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js",
+    "compilesass": "./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css",
+    "autoprefix": "./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css",
+    "moveToProd": "cp -r dist/ ../dist/"
   },
   "repository": {
     "type": "git",
