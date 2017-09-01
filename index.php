@@ -2,6 +2,10 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
+if (file_exists('environment-config.php')) {
+	require_once('environment-config.php');
+}
+
 $DB = new PDO('sqlite:db.db');
 $auth = new \Delight\Auth\Auth($DB);
 
@@ -987,6 +991,10 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
 $ERRORS = array();
 
+if (!defined('ENVIRONMENT')) {
+  define('ENVIRONMENT', 'DEVELOPMENT');
+}
+
 if (User::isLoggedIn()) {
 
   $_SESSION["ERROR_MESSAGE"] = NULL;
@@ -1016,12 +1024,18 @@ if (User::isLoggedIn()) {
     <head>
       <meta charset="utf-8">
       <meta http-equiv="x-ua-compatible" content="ie=edge">
-      <title>Inlet</title>
-      <meta name="description" content="Track your emotions">
+      <title>Emojional Life</title>
+      <meta name="description" content="Track your emotions with emoji.">
       <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
       <link rel="apple-touch-icon" href="apple-touch-icon.png">
       <!-- Place favicon.ico in the root directory -->
       <link rel="stylesheet" href="assets/compiled/styles/styles.css">
+
+      <?php if ($ENV === "PRODUCTION"): ?>
+        <link rel="stylesheet" href="styles.css">
+      <?php else: ?>
+        <link rel="stylesheet" href="processing/styles-compiled.css">
+      <?php endif; ?>
 
     </head>
     <body>
@@ -1382,26 +1396,34 @@ if (User::isLoggedIn()) {
         </div>
       </script>
 
-      <script src="https://unpkg.com/moment@2.18.1/min/moment.min.js"></script>
-      <script src="https://unpkg.com/flickity@2.0.9/dist/flickity.pkgd.min.js"></script>
-      <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
-      <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
+      <?php if (ENVIRONMENT === "PRODUCTION"): ?>
+        <script src="https://unpkg.com/moment@2.18.1/min/moment.min.js"></script>
+        <script src="https://unpkg.com/flickity@2.0.9/dist/flickity.pkgd.min.js"></script>
+        <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
+        <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
+        <script src="app.js"></script>
+      <?php else: ?>
+        <script src="https://unpkg.com/moment@2.18.1/min/moment.min.js"></script>
+        <script src="https://unpkg.com/flickity@2.0.9/dist/flickity.pkgd.min.js"></script>
+        <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
+        <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
 
-      <script src="assets/js/vendor/autosize.js"></script>
-      <script src="assets/js/vendor/chartist.js"></script>
-      <script src="assets/js/consts-state.js"></script>
-      <script src="assets/js/utils.js"></script>
-      <script src="assets/js/dom.js"></script>
-      <script src="assets/js/ajax.js"></script>
-      <script src="assets/js/db.js"></script>
-      <script src="assets/js/components/emojion.js"></script>
-      <script src="assets/js/components/emojion-carousel.js"></script>
-      <script src="assets/js/components/entry.js"></script>
-      <script src="assets/js/components/tooltip.js"></script>
-      <script src="assets/js/components/notification.js"></script>
-      <script src="assets/js/components/day-emotion-chart.js"></script>
-      <script src="assets/js/components/day-emotion-chart-carousel.js"></script>
-      <script src="assets/js/app.js"></script>
+        <script src="assets/js/vendor/autosize.js"></script>
+        <script src="assets/js/vendor/chartist.js"></script>
+        <script src="assets/js/consts-state.js"></script>
+        <script src="assets/js/utils.js"></script>
+        <script src="assets/js/dom.js"></script>
+        <script src="assets/js/ajax.js"></script>
+        <script src="assets/js/db.js"></script>
+        <script src="assets/js/components/emojion.js"></script>
+        <script src="assets/js/components/emojion-carousel.js"></script>
+        <script src="assets/js/components/entry.js"></script>
+        <script src="assets/js/components/tooltip.js"></script>
+        <script src="assets/js/components/notification.js"></script>
+        <script src="assets/js/components/day-emotion-chart.js"></script>
+        <script src="assets/js/components/day-emotion-chart-carousel.js"></script>
+        <script src="assets/js/app.js"></script>
+      <?php endif; ?>
 
       <?php if ($DATA["isLoggedIn"]): ?>
         <script>
