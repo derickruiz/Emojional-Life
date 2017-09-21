@@ -1,17 +1,19 @@
 <?php
 
 require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/environment-config.php';
 
-if (file_exists('environment-config.php')) {
-	require_once('environment-config.php');
-}
-
-$DB = new PDO('sqlite:db.db');
+$DB = new PDO('sqlite:' . __DIR__ . '/db.db');
 $auth = new \Delight\Auth\Auth($DB);
 
 date_default_timezone_set('UTC');
 
-session_start();
+$sessionStatus = session_status();
+
+if ($sessionStatus == PHP_SESSION_NONE){
+	//There is no active session
+  session_start();
+}
 
 class Utils {
 
@@ -201,7 +203,7 @@ class User {
 }
 
 class Entry {
-  public static function track($userId, $emojion, $color, $day = NULL, $time = NULL, $textColor, $question) {
+  public static function track($userId, $emojion, $color, $day = NULL, $time = NULL, $textColor, $question, $emotion) {
 
     error_log("Entry.track" . "\n", 3, __DIR__ . "/errors.txt");
 
@@ -209,9 +211,13 @@ class Entry {
 
     error_log("color" . $color . "\n", 3, __DIR__ . "/errors.txt");
 
+    error_log("userId " . print_r($userId, true), 3, __DIR__ . "/errors.txt");
+
     global $DB;
 
-    $sth = $DB->prepare("INSERT INTO entries (user_id, time, day, emojion_id, color, text_color, question) VALUES (:userId, :time, :day, :emojionId, :color, :textColor, :question)");
+    $sth = $DB->prepare("INSERT INTO entries (user_id, time, day, emojion_id, color, text_color, question, emotion) VALUES (:userId, :time, :day, :emojionId, :color, :textColor, :question, :emotion)");
+
+    error_log("sth (Entry.track)" . print_r($sth, true), 3, __DIR__ . "/errors.txt");
 
     if ($day === NULL) {
       $day = date('Y-m-d', time());
@@ -237,6 +243,7 @@ class Entry {
     $sth->bindParam(':color', $color);
     $sth->bindParam(':textColor', $textColor);
     $sth->bindParam(':question', $question);
+    $sth->bindParam(':emotion', $emotion);
     $sth->execute();
 
     $lastId = $DB->lastInsertId();
@@ -668,17 +675,19 @@ $AJAX = array(
 
     error_log("trackEntry " . "\n", 3, __DIR__ . "/errors.txt");
     error_log("payload " . print_r($payload, true) . "\n", 3, __DIR__ . "/errors.txt");
+    error_log("userId " . print_r($userId, true), 3, __DIR__ . "/errors.txt");
 
     $emojion = $payload["emojion"];
     $color = $payload["color"];
     $textColor = $payload["textColor"];
     $question = $payload["question"];
+    $emotion = $payload["emotion"];
 
     error_log("emojion " . print_r($emojion, true) . "\n", 3, __DIR__ . "/errors.txt");
     error_log("color " . print_r($color, true) . "\n", 3, __DIR__ . "/errors.txt");
     error_log("textColor " . print_r($textColor, true) . "\n", 3, __DIR__ . "/errors.txt");
 
-    Entry::track($userId, $emojion, $color, NULL, NULL, $textColor, $question);
+    Entry::track($userId, $emojion, $color, NULL, NULL, $textColor, $question, $emotion);
 
     $allUserEntries = Entry::getToday($userId);
 
@@ -793,6 +802,8 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
         if (User::isLoggedIn()) { // All methods related to saving data while logged in.
           $userId = User::getUserId();
 
+          error_log("userId (after ajaxMethod)" . print_r($userId, true), 3, __DIR__ . "/errors.txt");
+
           switch ($decoded["ajaxMethod"]) {
             case "saveEmojions":
               header('Content-Type: application/json');
@@ -891,8 +902,10 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
                       $color = $entry["color"];
                       $time = $entry["time"];
                       $textColor = $entry["text_color"];
+                      $question = $entry["question"];
+                      $emotion = $entry["emotion"];
 
-                      $entryId = Entry::track($userId, $emojion, $color, $day, $time, $textColor);
+                      $entryId = Entry::track($userId, $emojion, $color, $day, $time, $textColor, $question, $emotion);
 
 
                       error_log("entryId " . print_r($entryId, true) . "\n", 3, __DIR__ . "/errors.txt");
@@ -957,8 +970,10 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
                     $color = $entry["color"];
                     $time = $entry["time"];
                     $textColor = $entry["text_color"];
+                    $question = $entry["question"];
+                    $emotion = $entry["emotion"];
 
-                    $entryId = Entry::track($userId, $emojion, $color, $day, $time, $textColor);
+                    $entryId = Entry::track($userId, $emojion, $color, $day, $time, $textColor, $question, $emotion);
 
 
                     error_log("entryId " . print_r($entryId, true) . "\n", 3, __DIR__ . "/errors.txt");
@@ -1029,17 +1044,15 @@ if (User::isLoggedIn()) {
       <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
       <link rel="apple-touch-icon" href="apple-touch-icon.png">
       <!-- Place favicon.ico in the root directory -->
-      <link rel="stylesheet" href="assets/compiled/styles/styles.css">
 
-      <?php if ($ENV === "PRODUCTION"): ?>
-        <link rel="stylesheet" href="styles.css">
+      <?php if (ENVIRONMENT == "PRODUCTION"): ?>
+        <link rel="stylesheet" href="/styles.css">
       <?php else: ?>
-        <link rel="stylesheet" href="processing/styles-compiled.css">
+        <link rel="stylesheet" href="/assets/compiled/styles/styles.css">
       <?php endif; ?>
 
     </head>
     <body>
-
       <div class="Loading js-loading Flex Flex--center Pstart(default) Pend(default)">
         <div>
           <div class="Loading-emoji">🤔</div>
@@ -1327,7 +1340,7 @@ if (User::isLoggedIn()) {
         <div class="EmotionCarousel">
           <div v-for="emojion in emojions" v-bind:style="{ backgroundColor: '#' + emojion.color }" class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">
             <div>
-              <div class="Ta(c)">{{emojion.emoji}}</div>
+              <div class="Ta(c) EmotionCarousel--emoji">{{emojion.emoji}}</div>
               <div v-bind:style="{ color: '#' + emojion.text_color }" class="Ff(serifItalic) Fz(u2) Ta(c)">{{emojion.emotion}}</div>
             </div>
           </div>
@@ -1349,11 +1362,21 @@ if (User::isLoggedIn()) {
 
           </div>
 
-          <textarea v-if="canInputNote" v-on:input="resizeTextArea" rows="1" class="Mtop(d2) Ptop(d2) Pbottom(d2) Ff(default) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Resize(none) js-note-input" v-bind:placeholder="entry.question"></textarea>
+          <!-- <div v-if="canInputNote" v-bind:style="{ 'border': '2px solid ' + noteBorderColor }" class="Mtop(d3) Ptop(d2) Pbottom(d2) Bgc(white) Ff(sansSerifRegular) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Resize(none) js-note-input">
+            <span class="C(darkerGrey)"><span class="Ff(sansSerifBold)">Question:</span> {{ entry.question }}</span>
+          </div> -->
+
+          <label v-if="canInputNote" class="D(b) EmotionNote-note">
+            <div v-if="showLabel" class="EmotionNote-noteLabel C(darkerGrey)"><span class="Ff(sansSerifBold)">Question:</span> {{ entry.question }}</div>
+            <textarea rows="1" v-on:focus="hideLabel" v-on:blur="shouldShowLabel" v-on:input="resizeTextArea" v-bind:style="{ 'border': '2px solid ' + noteBorderColor }" class="Mtop(d3) Ptop(d2) Pbottom(d2) Bgc(white) Ff(sansSerifRegular) Fz(default) W(100%) Br(4px) Pstart(default) Pend(default) Resize(none) js-note-input"></textarea>
+          </label>
+
           <div class="Mtop(d2) Ff(sansSerifRegular) C(white) Fz(default) Lh(14)" v-if="!canInputNote && alreadyHasNote && isViewingNote">{{entry.note}}</div>
           <tooltip v-if="showTooltip && (index === totalEntries - 1) && !shouldResizeTextArea" emoji="✍" action="Write" message="a note." tooltip-type="write"></tooltip>
           <button v-if="shouldResizeTextArea && canInputNote" v-on:click="saveNote" v-bind:style="{ 'background-color': '#' + entry.text_color }" class="D(b) W(100%) Ff(sansSerifBold) Ptop(d2) Pbottom(d2) C(white)">Save Note</button>
+
         </div>
+
       </script>
 
       <script type="text/template" id="tooltip_template">
@@ -1396,54 +1419,39 @@ if (User::isLoggedIn()) {
         </div>
       </script>
 
-      <?php if (ENVIRONMENT === "PRODUCTION"): ?>
+      <?php if (ENVIRONMENT == "PRODUCTION"): ?>
         <script src="https://unpkg.com/moment@2.18.1/min/moment.min.js"></script>
         <script src="https://unpkg.com/flickity@2.0.9/dist/flickity.pkgd.min.js"></script>
+        <script src="https://unpkg.com/hammerjs@2.0.8/hammer.min.js"></script>
+        <script src="https://unpkg.com/vue@2.4.2/dist/vue.min.js"></script>
+
+        <?php require_once __DIR__ . "/INITIAL_DATA.php"; ?>
+
+        <script src="/app.js"></script>
+      <?php else: ?>
+        <script src="https://unpkg.com/moment@2.14.1/moment.js"></script>
+        <script src="https://unpkg.com/flickity@2.0.9/dist/flickity.pkgd.js"></script>
         <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
         <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
-        <script src="app.js"></script>
-      <?php else: ?>
-        <script src="https://unpkg.com/moment@2.18.1/min/moment.min.js"></script>
-        <script src="https://unpkg.com/flickity@2.0.9/dist/flickity.pkgd.min.js"></script>
-        <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
-        <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
 
-        <script src="assets/js/vendor/autosize.js"></script>
-        <script src="assets/js/vendor/chartist.js"></script>
-        <script src="assets/js/consts-state.js"></script>
-        <script src="assets/js/utils.js"></script>
-        <script src="assets/js/dom.js"></script>
-        <script src="assets/js/ajax.js"></script>
-        <script src="assets/js/db.js"></script>
-        <script src="assets/js/components/emojion.js"></script>
-        <script src="assets/js/components/emojion-carousel.js"></script>
-        <script src="assets/js/components/entry.js"></script>
-        <script src="assets/js/components/tooltip.js"></script>
-        <script src="assets/js/components/notification.js"></script>
-        <script src="assets/js/components/day-emotion-chart.js"></script>
-        <script src="assets/js/components/day-emotion-chart-carousel.js"></script>
-        <script src="assets/js/app.js"></script>
-      <?php endif; ?>
+        <script src="/assets/js/1vendor/autosize.js"></script>
+        <script src="/assets/js/1vendor/chartist.js"></script>
+        <script src="/assets/js/0consts-state.js"></script>
+        <script src="/assets/js/3utils.js"></script>
+        <script src="/assets/js/4dom.js"></script>
+        <script src="/assets/js/5ajax.js"></script>
+        <script src="/assets/js/6db.js"></script>
 
-      <?php if ($DATA["isLoggedIn"]): ?>
-        <script>
-          GLOBAL_STATE.isLoggedIn = true;
+        <?php require_once __DIR__ . "/INITIAL_DATA.php"; ?>
 
-          document.addEventListener('DOMContentLoaded', function () {
-            UTILS.removeUserDataFromLocalStorage(); // Deleting already saved data from local storage.
-          });
-
-          USER_DATA = <?php echo json_encode($DATA, JSON_PRETTY_PRINT); ?>
-        </script>
-      <?php else: ?>
-        <script>
-          GLOBAL_STATE.isLoggedIn = false;
-
-          <?php if (!empty($ERRORS)): ?>
-          ERROR_DATA = <?php echo json_encode($ERRORS, JSON_PRETTY_PRINT); ?>
-          <?php endif; ?>
-
-        </script>
+        <script src="/assets/js/2components/emojion.js"></script>
+        <script src="/assets/js/2components/emojion-carousel.js"></script>
+        <script src="/assets/js/2components/entry.js"></script>
+        <script src="/assets/js/2components/tooltip.js"></script>
+        <script src="/assets/js/2components/notification.js"></script>
+        <script src="/assets/js/2components/day-emotion-chart.js"></script>
+        <script src="/assets/js/2components/day-emotion-chart-carousel.js"></script>
+        <script src="/assets/js/7app.js"></script>
       <?php endif; ?>
 
     </body>

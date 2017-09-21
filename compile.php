@@ -1,9 +1,9 @@
 <?php
 
-if (file_exists("../stage/scripts.json")) {
+if (file_exists("package.json")) {
 
-  $packageJSONFile = fopen("../stage/scripts.json", "r") or die("Unable to open ../stage/scripts.json");
-  $packageJSONFileContents = fread($packageJSONFile, filesize("../stage/scripts.json"));
+  $packageJSONFile = fopen("package.json", "r") or die("Unable to open package.json");
+  $packageJSONFileContents = fread($packageJSONFile, filesize("package.json"));
   fclose($packageJSONFile);
 
   // error_log("packageJSONFileContents " . print_r($packageJSONFileContents, true) . "\n", 3, __DIR__ . "/compile.txt");
@@ -21,7 +21,7 @@ if (file_exists("../stage/scripts.json")) {
   }
 
 } else {
-  die("../stage/scripts.json doesn't exist.");
+  die("package.json doesn't exist.");
 }
 
 ?>

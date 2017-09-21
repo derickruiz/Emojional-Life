@@ -1,0 +1,928 @@
+@charset "UTF-8";
+input,
+textarea,
+button {
+  border: none; }
+
+/* A combination of normalize.css and reboot.css by Boostrap. */
+html {
+  font-family: sans-serif;
+  /* 1 */
+  -ms-text-size-adjust: 100%;
+  /* 2 */
+  -webkit-text-size-adjust: 100%;
+  /* 2 */
+  box-sizing: border-box;
+  -ms-overflow-style: scrollbar;
+  /* Changes the default tap highlight to be completely transparent in iOS. */
+  -webkit-tap-highlight-color: transparent; }
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit; }
+
+/**
+ * Remove default margin.
+ */
+body {
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+/* HTML5 display definitions
+   ========================================================================== */
+/**
+ * Correct `block` display not defined for any HTML5 element in IE 8/9.
+ * Correct `block` display not defined for `details` or `summary` in IE 10/11
+ * and Firefox.
+ * Correct `block` display not defined for `main` in IE 11.
+ */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+menu,
+nav,
+section,
+summary {
+  display: block; }
+
+/**
+ * Prevent modern browsers from displaying `audio` without controls.
+ * Remove excess height in iOS 5 devices.
+ */
+audio:not([controls]) {
+  display: none;
+  height: 0; }
+
+/**
+ * Address `[hidden]` styling not present in IE 8/9/10.
+ * Hide the `template` element in IE 8/9/10/11, Safari, and Firefox < 22.
+ */
+[hidden],
+template {
+  display: none; }
+
+/* Links
+   ========================================================================== */
+/**
+ * Remove the gray background color from active links in IE 10.
+ */
+a {
+  background-color: transparent; }
+
+/**
+ * Improve readability of focused elements when they are also in an
+ * active/hover state.
+ */
+a:active,
+a:hover {
+  outline: 0; }
+
+/* Embedded content
+   ========================================================================== */
+/**
+ * Remove border when inside `a` element in IE 8/9/10.
+ */
+img {
+  border: 0; }
+
+/**
+ * Correct overflow not hidden in IE 9/10/11.
+ */
+svg:not(:root) {
+  overflow: hidden; }
+
+/* Forms
+   ========================================================================== */
+/**
+ * Known limitation: by default, Chrome and Safari on OS X allow very limited
+ * styling of `select`, unless a `border` property is set.
+ */
+/**
+ * 1. Correct color not being inherited.
+ *    Known issue: affects color of disabled elements.
+ * 2. Correct font properties not being inherited.
+ * 3. Address margins set differently in Firefox 4+, Safari, and Chrome.
+ */
+button,
+input,
+select,
+textarea {
+  color: inherit;
+  /* 1 */
+  font: inherit;
+  /* 2 */
+  margin: 0;
+  /* 3 */ }
+
+/**
+ * Address `overflow` set to `hidden` in IE 8/9/10/11.
+ */
+button {
+  overflow: visible; }
+
+/**
+ * Address inconsistent `text-transform` inheritance for `button` and `select`.
+ * All other form control elements do not inherit `text-transform` values.
+ * Correct `button` style inheritance in Firefox, IE 8/9/10/11, and Opera.
+ * Correct `select` style inheritance in Firefox.
+ */
+button,
+select {
+  text-transform: none; }
+
+/**
+ * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
+ *    and `video` controls.
+ * 2. Correct inability to style clickable `input` types in iOS.
+ * 3. Improve usability and consistency of cursor style between image-type
+ *    `input` and others.
+ */
+button,
+html input[type="button"] {
+  -webkit-appearance: button;
+  /* 2 */
+  cursor: pointer;
+  /* 3 */ }
+
+/**
+ * Re-set default cursor for disabled elements.
+ */
+button[disabled],
+html input[disabled] {
+  cursor: default; }
+
+/**
+ * Remove inner padding and border in Firefox 4+.
+ */
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+  border: 0;
+  padding: 0; }
+
+/**
+ * Address Firefox 4+ setting `line-height` on `input` using `!important` in
+ * the UA stylesheet.
+ */
+input {
+  line-height: normal; }
+
+/**
+ * It's recommended that you don't attempt to style these elements.
+ * Firefox's implementation doesn't respect box-sizing, padding, or width.
+ *
+ * 1. Address box sizing set to `content-box` in IE 8/9/10.
+ * 2. Remove excess padding in IE 8/9/10.
+ */
+input[type="checkbox"],
+input[type="radio"] {
+  box-sizing: border-box;
+  /* 1 */
+  padding: 0;
+  /* 2 */ }
+
+/**
+ * Fix the cursor style for Chrome's increment/decrement buttons. For certain
+ * `font-size` values of the `input`, it causes the cursor style of the
+ * decrement button to change from `default` to `text`.
+ */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  height: auto; }
+
+/**
+ * Remove default vertical scrollbar in IE 8/9/10/11.
+ */
+textarea {
+  overflow: auto; }
+
+/* Suppress the focus outline on elements that cannot be accessed via keyboard.
+ This prevents an unwanted focus outline from appearing around elements that
+ might still respond to pointer events.
+
+ Credit: https://github.com/suitcss/base */
+[tabindex="-1"]:focus {
+  outline: none !important; }
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: normal;
+  font-size: inherit; }
+
+p {
+  margin: 0; }
+
+ol,
+ul,
+dl {
+  margin: 0; }
+
+ol ol,
+ul ul,
+ol ul,
+ul ol {
+  margin: 0; }
+
+img {
+  max-width: 100%;
+  display: block; }
+
+/* iOS "clickable elements" fix for role="button"
+
+ Fixes "clickability" issue (and more generally, the firing of events such as focus as well)
+ for traditionally non-focusable elements with role="button"
+ see https://developer.mozilla.org/en-US/docs/Web/Events/click#Safari_Mobile */
+[role="button"] {
+  cursor: pointer; }
+
+/* Avoid 300ms click delay on touch devices that support the `touch-action` CSS property.
+
+ In particular, unlike most other browsers, IE11+Edge on Windows 10 on touch devices and IE Mobile 10-11
+ DON'T remove the click delay when `<meta name="viewport" content="width=device-width">` is present.
+ However, they DO support removing the click delay via `touch-action: manipulation`.
+ See:
+ * http://v4-alpha.getbootstrap.com/content/reboot/#click-delay-optimization-for-touch
+ * http://caniuse.com/#feat=css-touch-action
+ * http://patrickhlauke.github.io/touch/tests/results/#suppressing-300ms-delay */
+a,
+area,
+button,
+[role="button"],
+input,
+label,
+select,
+summary,
+textarea {
+  touch-action: manipulation; }
+
+label {
+  display: inline-block;
+  margin-bottom: 0; }
+
+/* Work around a Firefox/IE bug where the transparent `button` background
+  results in a loss of the default `button` focus styles.
+
+  Credit: https://github.com/suitcss/base/ */
+button:focus {
+  outline: 1px dotted;
+  outline: 5px auto -webkit-focus-ring-color; }
+
+input,
+button,
+select,
+textarea {
+  margin: 0;
+  line-height: inherit;
+  border-radius: 0;
+  padding: 0; }
+
+textarea {
+  resize: none; }
+
+.hidden {
+  display: none !important; }
+
+.FlexGrid {
+  display: flex;
+  flex-wrap: wrap; }
+  .FlexGrid.FlexGrid--full {
+    width: 100%; }
+  .FlexGrid.FlexGrid--spaceBetween {
+    justify-content: space-between; }
+  .FlexGrid.FlexGrid--fullHeight {
+    height: 100%; }
+  .FlexGrid.FlexGrid--guttersOneDown {
+    margin-left: -0.786163522rem; }
+  .FlexGrid.FlexGrid--guttersOneDown > .FlexGrid-cell {
+    padding-left: 0.786163522rem; }
+  .FlexGrid.FlexGrid--alignItemsCenter {
+    align-items: center; }
+  .FlexGrid.FlexGrid--reverse {
+    flex-direction: row-reverse; }
+  .FlexGrid.FlexGrid--inline {
+    display: inline-flex; }
+  .FlexGrid.FlexGrid--alignFlexEnd {
+    justify-content: flex-end; }
+
+.FlexGrid-cell {
+  flex: 1; }
+  .FlexGrid-cell.FlexGrid-cell--autoSize {
+    flex: none; }
+  .FlexGrid-cell.FlexGrid-cell--full {
+    flex: 0 0 100%; }
+  .FlexGrid-cell.FlexGrid-cell--flex {
+    display: flex; }
+  .FlexGrid-cell.FlexGrid-cell--fullMinusNav {
+    height: calc(100vh - 44px); }
+  .FlexGrid-cell.FlexGrid-cell--nav {
+    height: 44px; }
+  .FlexGrid-cell.FlexGrid-cell--alignCenter {
+    align-items: center;
+    justify-content: center; }
+  .FlexGrid-cell.FlexGrid-cell--alignSelfCenter {
+    align-self: center; }
+  .FlexGrid-cell.FlexGrid-cell--pushRight {
+    margin-left: auto; }
+  .FlexGrid-cell.FlexGrid-cell--alignItemsCenter {
+    align-items: center; }
+  .FlexGrid-cell.FlexGrid-cell--9of10 {
+    flex: 0 0 90%; }
+  .FlexGrid-cell.FlexGrid-cell--1of2 {
+    flex: 0 0 50%; }
+  .FlexGrid-cell.FlexGrid-cell--1of10 {
+    flex: 0 0 10%; }
+  .FlexGrid-cell.FlexGrid-cell--halfScreen {
+    flex: 0 0 50vw; }
+
+.Flex {
+  display: flex; }
+  .Flex.Flex--center {
+    justify-content: center;
+    align-items: center; }
+
+@media (min-width: 800px) {
+  .FlexGrid-cell.rsp-1-FlexGrid-cell--382 {
+    flex: 0 0 38.2%; }
+  .FlexGrid-cell.rsp-1-FlexGrid-cell--618 {
+    flex: 0 0 61.8%; } }
+
+.A\(tap\) {
+  animation: tap 1.5s 0s infinite; }
+
+.A\(write\) {
+  animation: write 1.5s 0s infinite; }
+
+.A\(press\) {
+  animation: press 2.5s 0s infinite; }
+
+@keyframes bounce {
+  0% {
+    top: 50%; }
+  50% {
+    top: 40%; }
+  100% {
+    top: 50%; } }
+
+@keyframes tap {
+  0% {
+    top: 0;
+    transform: scale(1) rotate(-12deg); }
+  50% {
+    top: 0.618rem;
+    transform: scale(1.4) rotate(0deg); }
+  100% {
+    top: 0;
+    transform: scale(1) rotate(-12deg); } }
+
+@keyframes press {
+  0% {
+    top: 0;
+    transform: scale(1.4); }
+  50% {
+    top: 0.618rem;
+    transform: scale(1); }
+  85% {
+    top: 0.618rem;
+    transform: scale(1); }
+  100% {
+    top: 0;
+    transform: scale(1.4); } }
+
+@keyframes write {
+  0% {
+    top: 0;
+    transform: scale(1) rotate(-12deg); }
+  50% {
+    top: 0.618rem;
+    transform: scale(1.4) rotate(0deg); }
+  100% {
+    top: 0;
+    transform: scale(1) rotate(-12deg); } }
+
+body {
+  background-color: white; }
+
+.Emotions {
+  position: relative; }
+
+.Emotion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  height: calc( (100vh - 44px) / 4);
+  /*
+     Introduced in IE 10.
+     See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+   */
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer; }
+
+.EmotionContainer {
+  transition: transform 180ms ease;
+  transform: scale(1); }
+  .EmotionContainer.EmotionContainer--isSwitching {
+    z-index: 2;
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.4); }
+  .EmotionContainer.EmotionContainer--isSwitching:nth-child(odd) {
+    transform: scale(1.3) translate3d(10%, 5%, 0); }
+  .EmotionContainer.EmotionContainer--isSwitching:nth-child(even) {
+    transform: scale(1.3) translate3d(-10%, 5%, 0); }
+  .EmotionContainer.EmotionContainer--isSwitching:nth-child(1) {
+    transform: scale(1.3) translate3d(10%, 10%, 0); }
+  .EmotionContainer.EmotionContainer--isSwitching:nth-child(2) {
+    transform: scale(1.3) translate3d(-10%, 10%, 0); }
+  .EmotionContainer.EmotionContainer--isSwitching:nth-child(7) {
+    transform: scale(1.3) translate3d(10%, -10%, 0); }
+  .EmotionContainer.EmotionContainer--isSwitching:nth-child(8) {
+    transform: scale(1.3) translate3d(-10%, -10%, 0); }
+
+.EmotionContainer:not(.EmotionContainer--isSwitching):hover {
+  transform: scale(0.9); }
+
+.EmotionContainer:not(.EmotionContainer--isSwitching):active {
+  transform: scale(0.8); }
+
+.EmotionNote {
+  transition: background-color 350ms ease; }
+
+.EmotionNote.EmotionNote--active {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  min-height: 100%;
+  z-index: 2;
+  transition: background-color 350ms ease;
+  padding-bottom: calc(44px + 1rem); }
+
+.EmotionCarousel {
+  width: 100%;
+  height: 100%; }
+
+.Loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; }
+
+.Loading-emoji {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  font-size: 20vh;
+  z-index: 2;
+  animation: bounce 1.5s 0s infinite; }
+
+.Loading-emoji.Loading-emoji--noAnimation {
+  animation: none;
+  top: 30%;
+  font-size: 10vh; }
+
+.BackgroundColor--blue {
+  background-color: #7F96FF; }
+
+.BackgroundColor--red {
+  background-color: #FF331F; }
+
+.BackgroundColor--purple {
+  background-color: #6F58C9; }
+
+.BackgroundColor--orange {
+  background-color: #F7B267; }
+
+.BackgroundColor--green {
+  background-color: #8ACB88; }
+
+.BackgroundColor--black {
+  background-color: #0B0A07; }
+
+.BackgroundColor--brown {
+  background-color: #54494B; }
+
+.BackgroundColor--pink {
+  background-color: #FF4F79; }
+
+.BackgroundColor--oxford {
+  background-color: #090446; }
+
+.BackgroundColor--pastel {
+  background-color: #786F52; }
+
+.BackgroundColor--rajah {
+  background-color: #FEB95F; }
+
+.BackgroundColor--tractor {
+  background-color: #F71735; }
+
+.BackgroundColor--pictoral {
+  background-color: #C2095A; }
+
+.BackgroundColor--spanish {
+  background-color: #E01A4F; }
+
+.BackgroundColor--smoky {
+  background-color: #0C090D; }
+
+.BackgroundColor--caribeen {
+  background-color: #03CEA4; }
+
+.BackgroundColor--white {
+  background-color: white; }
+
+.App {
+  max-width: 100vw; }
+
+.App-container {
+  width: 200vw;
+  transition: transform 350ms ease; }
+  .App-container.moveLeft {
+    transform: translate3d(-50%, 0, 0);
+    transition: transform 350ms ease; }
+
+.Screen {
+  position: relative;
+  width: 100vw;
+  min-height: 100%; }
+  .Screen.Tracked {
+    padding-bottom: calc(44px * 2); }
+
+.Tracked--empty {
+  background-color: #000;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center; }
+
+.Tracked--emptyEmoji {
+  font-size: 4.23580103125rem; }
+
+.Day-details {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.4); }
+
+.Tooltip {
+  position: absolute;
+  top: 24vh;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.4); }
+  .Tooltip::before {
+    position: absolute;
+    top: -0.618rem;
+    left: 1rem;
+    content: " ";
+    display: block;
+    width: 0;
+    height: 0;
+    border-left: 0.618rem solid transparent;
+    border-right: 0.618rem solid transparent;
+    border-bottom: 0.618rem solid black; }
+
+.Tooltip.Tooltip--right {
+  right: 1rem; }
+
+.Tooltip.Tooltip--write {
+  top: auto; }
+
+.Tooltip.Tooltip--press {
+  left: 1rem;
+  top: 48vh; }
+
+.Tooltip.Tooltip--right::before {
+  left: auto;
+  right: 1rem; }
+
+.Progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform 180ms ease;
+  transform: translate3d(-100%, 0px, 0px); }
+
+.Notifications > .Notification + .Notification {
+  margin-top: 0.786163522rem; }
+
+.Patterns.Patterns--empty,
+.PreviousDayEmotions.PreviousDayEmotions--empty {
+  position: relative; }
+
+.PreviousDayEmotions.PreviousDayEmotions--empty + .Patterns.Patterns--empty {
+  border-top: none; }
+
+.Patterns > .Loading,
+.PreviousDayEmotions > .Loading {
+  display: none; }
+
+.Patterns.Patterns--empty::before,
+.PreviousDayEmotions.PreviousDayEmotions--empty::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #F2F2F2;
+  opacity: 0.8; }
+
+.Patterns.Patterns--empty > .Loading,
+.PreviousDayEmotions.PreviousDayEmotions--empty > .Loading {
+  display: flex; }
+
+.Error {
+  position: relative;
+  color: #3d0d14;
+  background-color: #ec3751; }
+
+.Error::after {
+  content: "ERROR 😱";
+  color: #3d0d14;
+  position: absolute;
+  right: 1rem;
+  top: 0.6180530833rem;
+  font-family: "Slate-Medium", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+
+@media (min-width: 800px) {
+  body {
+    background-color: #F8F8F8; }
+  .Entries > .EmotionNote + .EmotionNote {
+    margin-top: 0.4858907888rem; }
+  .Screen {
+    margin-top: 44px;
+    width: 50vw;
+    min-height: calc(100vh - 44px); }
+  .App-container {
+    width: 100%; }
+    .App-container.moveLeft {
+      transform: none;
+      transition: none; } }
+
+.D\(b\) {
+  display: block; }
+
+.D\(n\) {
+  display: none; }
+
+.Mtop\(default\) {
+  margin-top: 1rem; }
+
+.Mtop\(d2\) {
+  margin-top: 0.6180530833rem; }
+
+.Mtop\(d3\) {
+  margin-top: 0.4858907888rem; }
+
+.Mtop\(u4\) {
+  margin-top: 2.6178722243rem; }
+
+.Mtop\(u5\) {
+  margin-top: 3.3299334693rem; }
+
+.Mstart\(default\) {
+  margin-left: 1rem; }
+
+.Mstart\(d2\) {
+  margin-left: 0.6180530833rem; }
+
+.Mend\(default\) {
+  margin-right: 1rem; }
+
+.Pstart\(default\) {
+  padding-left: 1rem; }
+
+.Pend\(default\) {
+  padding-right: 1rem; }
+
+.Pend\(u1\) {
+  padding-right: 1.272rem; }
+
+.Ptop\(default\) {
+  padding-top: 1rem; }
+
+.Ptop\(u1\) {
+  padding-top: 1.272rem; }
+
+.Ptop\(u4\) {
+  padding-top: 2.6178722243rem; }
+
+.Pbottom\(default\) {
+  padding-bottom: 1rem; }
+
+.Pbottom\(u1\) {
+  padding-bottom: 1.272rem; }
+
+.Pbottom\(u4\) {
+  padding-bottom: 2.6178722243rem; }
+
+.Ptop\(d2\) {
+  padding-top: 0.6180530833rem; }
+
+.Pbottom\(d2\) {
+  padding-bottom: 0.6180530833rem; }
+
+.Mbottom\(default\) {
+  margin-bottom: 1rem; }
+
+.P\(d2\) {
+  padding: 0.6180530833rem; }
+
+.P\(default\) {
+  padding: 1rem; }
+
+.C\(white\) {
+  color: white; }
+
+.C\(darkerGrey\) {
+  color: #7E7E7E; }
+
+.Bgc\(grey\) {
+  background-color: #F2F2F2; }
+
+.Ff\(sansSerifRegular\) {
+  font-family: "Slate-Book", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: normal; }
+
+.Ff\(sansSerifBold\) {
+  font-family: "Slate-Medium", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 400; }
+
+.Ff\(sansSerifBlack\) {
+  font-family: "Slate-Black", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: bold; }
+
+.Ff\(serifRegular\) {
+  font-family: "Plantin", "Times New Roman", Times, serif;
+  font-weight: normal; }
+
+.Ff\(serifItalic\) {
+  font-family: "Plantin-Italic", "Times New Roman", Times, serif;
+  font-style: italic; }
+
+.Ff\(serifBold\) {
+  font-family: "Plantin-Bold", "Times New Roman", Times, serif;
+  font-weight: 400; }
+
+.Fz\(u1\) {
+  font-size: 1.272rem; }
+
+.Fz\(u2\) {
+  font-size: 1.618rem; }
+
+.Fz\(u3\) {
+  font-size: 2.058075648rem; }
+
+.Fz\(u4\) {
+  font-size: 2.6178722243rem; }
+
+.Fz\(u5\) {
+  font-size: 3.3299334693rem; }
+
+.Fz\(10vh\) {
+  font-size: 10vh; }
+
+.Fz\(default\) {
+  font-size: 1rem; }
+
+.Fz\(d2\) {
+  font-size: 0.6180530833rem; }
+
+.Lh\(11\) {
+  line-height: 1.1; }
+
+.Lh\(14\) {
+  line-height: 1.4; }
+
+.Fw\(bold\) {
+  font-weight: 700; }
+
+.Fs\(italic\) {
+  font-style: italic; }
+
+.Ta\(c\) {
+  text-align: center; }
+
+.Td\(u\) {
+  text-decoration: underline; }
+
+.F\(left\) {
+  float: left; }
+
+.W\(200vw\) {
+  width: 200vw; }
+
+.W\(100vw\) {
+  width: 100vw; }
+
+.H\(100\%\) {
+  height: 100%; }
+
+.W\(100\%\) {
+  width: 100%; }
+
+.O\(hidden\) {
+  overflow: hidden; }
+
+.Ox\(hidden\) {
+  overflow-x: hidden; }
+
+.Oy\(hidden\) {
+  overflow-y: hidden; }
+
+.Br\(default\) {
+  border-right: 1px solid #D8D8D8; }
+
+.Bt\(default\) {
+  border-top: 1px solid #D8D8D8; }
+
+.Br\(4px\) {
+  border-radius: 4px; }
+
+.Bb\(default\) {
+  border-bottom: 1px solid #D8D8D8; }
+
+.Border\(default\) {
+  border: 1px solid #D8D8D8; }
+
+.C\(p\) {
+  cursor: pointer; }
+
+.Resize\(none\) {
+  resize: none; }
+
+.P\(f\) {
+  position: fixed; }
+
+.P\(r\) {
+  position: relative; }
+
+.Lh\(12\) {
+  line-height: 1.2; }
+
+.Bs\(default\) {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5); }
+
+.Z\(2\) {
+  z-index: 2; }
+
+.Pos\(a\) {
+  position: absolute; }
+
+.Pos\(r\) {
+  position: relative; }
+
+.L\(0\) {
+  left: 0; }
+
+.L\(d2\) {
+  left: 0.6180530833rem; }
+
+.T\(0\) {
+  top: 0; }
+
+.B\(0\) {
+  bottom: 0; }
+
+@media (min-width: 800px) {
+  .rsp-1-T\(0\) {
+    top: 0; }
+  .rsp-1-D\(n\) {
+    display: none; }
+  .rsp-1-D\(f\) {
+    display: flex; }
+  .rsp-1-Bb\(default\) {
+    border-bottom: 1px solid #D8D8D8; }
+  .rsp-1-Br\(default\) {
+    border-right: 1px solid #D8D8D8; }
+  .rsp-1-Pstart\(default\) {
+    padding-left: 1rem; }
+  .rsp-1-Pend\(default\) {
+    padding-right: 1rem; }
+  .rsp-1-Oy\(visible\) {
+    overflow-y: visible; }
+  .rsp-1-Bs\(contentbox\) {
+    box-sizing: content-box; }
+  .rsp-1-P\(f\) {
+    position: fixed; }
+  .rsp-1-W\(382\%\) {
+    width: 38.2%; } }
+
+/*# sourceMappingURL=styles.css.map */

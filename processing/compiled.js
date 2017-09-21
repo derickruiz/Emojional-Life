@@ -1,1036 +1,5 @@
 "use strict";
 
-var AJAX = function () {
-
-  var options = {
-    mode: "same-origin",
-    credentials: "same-origin",
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  };
-
-  function post(methodName, payload, refresh) {
-
-    refresh = refresh || false; // Whether to refresh the page or not after this post succeeds.
-
-    options.method = "POST";
-    options.body = JSON.stringify({
-      "ajaxMethod": methodName,
-      "payload": payload
-    });
-
-    return fetch("/", options).then(function (response) {
-
-      // console.log("response after fetching.", response);
-      //
-      // response.text().then(function (s) {
-      //   console.log("s");
-      // });
-      if (refresh) {
-        location.reload();
-      } else {
-        //console.log("response after fetching.", response);
-        return response.json();
-      }
-    }).catch(function (error) {
-      console.log("An error while doing some AJAX stuff.");
-      console.log("error", error);
-      return error;
-    });
-  }
-
-  return {
-    post: post
-  };
-}();
-
-// AJAX.post();
-'use strict';
-
-var App = new Vue({
-  el: "#app",
-
-  data: {
-
-    /* Booleans */
-    shouldShowEmoji: true, /* Whether to show the Emoji page or the Tracking page. */
-    canSwitchEmoji: false, /* Whether the user can go ahead and start switching emoji by pressing and changing with caorusel */
-    shouldLogin: false, /* Whether to show the Login form or not. */
-    shouldSignUp: false, /* Whether to show the sign up form or not. */
-    isLoggedIn: false,
-    isShowingAllEntries: false,
-
-    /* Whether the user has any entries at all (any days). Used for showing the empty state in the entries screen. */
-    hasEntries: false,
-    hasTodayEntries: false, /* Whether the user has any entries today. */
-
-    /*
-     * @description: Whether to try and get the geolocation directly when tracking an entry
-     * without first providing the user with an notification to give permission. */
-    getLocationDirectly: false,
-
-    /*
-     * @description: Whether or not to show the notification that asks the user for permissions
-     * to give their location
-     */
-    showLocationNotification: false,
-
-    /* Whether or not to show tooltips related to each action. */
-    tooltips: {
-      tap: false,
-      write: false,
-      press: false
-    },
-
-    /* Data from server to populate. */
-    entries: [], /* The notes */
-    entriesToShow: undefined, /* Shows the last two inputted notes for the day. */
-    emojions: undefined, /* The emojis. */
-    currentDay: undefined, /* For saving notes into the right place in the database. */
-    previousDayCharts: undefined, /* The charts for the previous days */
-    notUserEmojions: [], /* The list of emojis that are currently not in the user's 8. */
-    emptyTracking: undefined, /* Not sure? */
-
-    /*
-     * @description - What will eventually be populated with the user's location if they give permission.
-     */
-    userPosition: undefined,
-
-    /* UI-only variables. */
-    elapsedTime: undefined,
-    emojionBlockColors: ['blue', 'red', 'purple', 'orange', 'green', 'black', 'brown', 'pink'],
-
-    // Username and password that the user will sign up with.
-    signUpEmail: "",
-    signUpPassword: "",
-    loginEmail: "",
-    loginPassword: "",
-    confirmPassword: "",
-    signUpLoginError: undefined
-  },
-
-  created: function created() {
-    var _this = this;
-
-    DB.getUserEmojions(function (emojions) {
-      console.log("user emojions", emojions);
-      _this.emojions = emojions;
-    });
-
-    DB.getNotUserEmojions(function (emojions) {
-      console.log("this.notUserEmojions", emojions);
-      _this.notUserEmojions = emojions;
-    });
-
-    DOM.showApp();
-
-    this.shouldShowEmoji = true;
-
-    DOM.freezeScreen();
-
-    this.canSwitchEmoji = true;
-
-    this.isLoggedIn = GLOBAL_STATE.isLoggedIn;
-    console.log("this.isLoggedIn", this.isLoggedIn);
-
-    // What is data that I need immeditely to get the app working right away?
-    // The emotions and the tap.
-
-    // Get the user's emojions and show the app.
-    // DB.getUserEmojions((emojions) => {
-    //   console.log("getUserEmojions");
-    //
-    //   this.emojions = emojions;
-    //   DOM.showApp();
-    //
-    //   DB.getAllEmojionsExceptUsers((notUserEmojions) => {
-    //     this.canSwitchEmoji = true;
-    //     this.notUserEmojions = notUserEmojions
-    //   });
-    //
-    // });
-
-    // // Get entries if any exist.
-    // DB.getTodaysEntries((entries) => {
-    //   console.log("Getting the entries for today.");
-    //   this.entries = entries;
-    //   let entriesCopy = this.entries.slice();
-    //   this.entriesToShow = entriesCopy.splice(entriesCopy.length - 2, entriesCopy.length);
-    //
-    //   if (this.entries.length >= 1) {
-    //     this.hasEntries = true;
-    //   }
-    // });
-
-    DB.getTodaysEntries(function (entries) {
-      console.log("Get today's entries");
-      console.log("entries", entries);
-      _this.entries = entries;
-
-      if (_this.entries && _this.entries.length >= 1) {
-        _this.hasTodayEntries = true;
-        _this.hasEntries = true;
-      }
-
-      console.log("this.hasEntries", _this.hasEntries);
-    });
-
-    DB.getPreviousDayCharts(function (charts) {
-      console.log("What's charts?", charts);
-
-      if (charts && Object.keys(charts).length >= 1) {
-        _this.hasEntries = true;
-        _this.previousDayCharts = charts;
-      }
-    });
-
-    /*
-     * @description - Shows the right tooltips to new users based on the state of the app.
-     */
-
-    DB.getTooltips(function (tooltips) {
-      console.log("DB.getTooltips");
-      console.log("tooltips", tooltips);
-      _this.tooltips = tooltips;
-    });
-
-    DB.getUserLocationPermissions(function (permissionObj) {
-      console.log("Getting the user location permissions.");
-      console.log("permissionObj", permissionObj);
-
-      /* possible values are { permission: 'granted', 'pending', or 'denied' } */
-
-      if (permissionObj.permission === "granted") {
-        _this.getLocationDirectly = true;
-      }
-
-      if (permissionObj.permission === "pending") {
-        _this.showLocationNotification = true;
-        // Show the notification to get the user to accept or decline permissions.
-      }
-
-      if (permissionObj.permission === "denied") {
-        // The user explicitly denied after clicking "Add location." on the notification.
-        // Not sure about what to do here yet, but don't do anything for now.
-      }
-
-      console.log("this.showLocationNotification", _this.showLocationNotification);
-
-      _this.$forceUpdate();
-    });
-
-    DB.getSignUpLoginErrors(function (errorObj) {
-
-      console.log("What's the errorObj?", errorObj);
-
-      if (errorObj != null) {
-        // do something?
-
-        _this.signUpLoginError = errorObj.message;
-
-        if (errorObj.for === "register") {
-          _this.shouldSignUp = true;
-          _this.shouldLogin = false;
-        }
-
-        if (errorObj.for === "login") {
-          _this.shouldLogin = true;
-          _this.shouldSignUp = false;
-        }
-      }
-    });
-  },
-
-  methods: {
-
-    /*
-     * @description - Shows the correct message in the patterns view depending on the state of the app.
-     * @return String - The message */
-    getPatternsMessage: function getPatternsMessage() {
-
-      if (this.entries == null) {
-        return CONSTS.NEW_USER.empty;
-      }
-
-      if (this.entries.length === 1) {
-        return CONSTS.NEW_USER.first;
-      }
-
-      return CONSTS.RETURNING_USER.patternsMessage;
-    },
-
-    /*
-     * @description: Whether to show the Emoji page or the Tracking page
-     * Toggles by default but if passed in a value goes to that value
-     * @param bool:Boolean - the state to toggle it to.
-     * @use - Being used with click event */
-    toggleEmoji: function toggleEmoji(bool) {
-
-      console.log("toggleEmoji");
-
-      if (typeof bool !== "undefined" && this.shouldShowEmoji === bool) {
-        console.log("Gonna return");
-        return;
-      }
-
-      if (typeof bool !== "undefined") {
-        this.shouldShowEmoji = bool;
-      } else {
-        this.shouldShowEmoji = !this.shouldShowEmoji;
-      }
-
-      if (this.shouldShowEmoji) {
-        DOM.freezeScreen();
-      } else {
-        DOM.unfreezeScreen();
-      }
-    },
-
-    /* Event Callbacks */
-
-    /*
-     * @description: Gets called whenever the user presses and holds an emojion block.
-     * Ensures that only one carousel is on at a time.
-     * @param index:Number - The index of the emojion block
-     * @return Void
-     */
-    turnOnCarousel: function turnOnCarousel(index) {
-      console.log("App.turnOnCaorusel");
-      console.log("index", index);
-      console.log("this.$refs.emojions", this.$refs.emojions);
-
-      for (var i = 0; i < this.$refs.emojions.length; i += 1) {
-        if (i !== index) {
-          // Probably not best practice, but turns off the carousel at least.
-
-          if (this.$refs.emojions[i].isChangingEmoji) {
-            console.log("Going to turn this thing off.");
-            this.$refs.emojions[i].isChangingEmoji = false;
-            this.$refs.emojions[i].turnOnOffCarousel();
-          }
-        }
-      }
-    },
-
-    /*
-     * @description - Gets called whenever a carousel is turned off. Makes an API request to save the new emoji
-     * @param emojionSelectorIndex:Number - the index of the emojiblock on the page
-     * @param emojiIndex:Number - the index of the emoji in the database.
-     * @param emoji:String - The emoji character
-     * @return Void
-     */
-    turnOffCarousel: function turnOffCarousel(emojionSelectorIndex, emojionToChangeTo, emojionToChangeToIndex) {
-      var _this2 = this;
-
-      // console.log("turnOffCarousel");
-      // console.log("emojionSelectorIndex", emojionSelectorIndex);
-      // console.log("emojion", emojionToChangeTo);
-      // console.log('emojionToChangeToIndex', emojionToChangeToIndex);
-      // console.log("this.entries[emojionSelectorIndex]", this.emojions[emojionSelectorIndex]);
-      // console.log("this.notUserEmojions[emojionToChangeToIndex]", this.notUserEmojions[emojionToChangeToIndex]);
-
-      this.notUserEmojions[emojionToChangeToIndex] = this.emojions[emojionSelectorIndex];
-      this.emojions[emojionSelectorIndex] = emojionToChangeTo;
-      //
-      // console.log("this.emojions", this.emojions);
-      // console.log("this.notUserEmojions", this.notUserEmojions);
-
-      DB.saveUserEmojions(this.emojions);
-      DB.saveNotUserEmojions(this.notUserEmojions);
-
-      // Can probably be sure that this is the first time the user is doing this.
-      console.log("this.tooltips", this.tooltips);
-
-      DB.recordTooltip('press', function (tooltips) {
-        _this2.tooltips = tooltips;
-      });
-
-      // // Update the UI
-      // let previousEmojion = this.emojions[emojionSelectorIndex];
-      // this.emojions[emojionSelectorIndex] = emojion;
-      //
-      // // Remove the old emoji from the list and put the old one in there instead.
-      // UTILS.replaceAtIndex(this.notUserEmojions, UTILS.getIndex(this.notUserEmojions, emojion), previousEmojion);
-      //
-      // // Make Ajax call to update user preferences
-      // // If pass keep it that way,
-      // // else revert the UI.
-      //
-      // DB.saveUserEmojions(this.emojions, function () {
-      //   console.log("Saved the user's preferences.");
-      // });
-
-      this.$forceUpdate();
-    },
-
-    toggleEntriesForDay: function toggleEntriesForDay() {
-
-      this.isShowingAllEntries = !this.isShowingAllEntries;
-
-      if (this.isShowingAllEntries) {
-        this.entriesToShow = this.entries;
-      } else {
-
-        var entriesCopy = this.entries.slice();
-        this.entriesToShow = entriesCopy.splice(entriesCopy.length - 2, entriesCopy.length);
-      }
-    },
-
-    /* Methods that make calls to the server. */
-    /*
-     * @description: Puts a new entry into tracking
-     * @use - Called from click event.
-     */
-    trackEntry: function trackEntry(emojion, color, textColor, question) {
-      var _this3 = this;
-
-      console.log("Tracking the entry.");
-
-      var self = this;
-
-      emojion["time"] = new Date().getTime();
-
-      var entryIndex = undefined;
-
-      console.log("emojion", emojion);
-      console.log("color", color);
-
-      DB.trackEntry(emojion, color, textColor, question, function (newEntries) {
-
-        console.log("Tracking an entry.");
-        console.log("newEntries", newEntries);
-
-        _this3.entries = newEntries;
-        _this3.toggleEmoji(false); // Move user to patterns page after tapping an emotion.
-
-        if (_this3.entries && _this3.entries.length >= 1) {
-          _this3.hasTodayEntries = true;
-          _this3.hasEntries = true;
-        }
-
-        var entryIndex = _this3.entries.length - 1;
-        var entry = _this3.entries[entryIndex];
-
-        console.log('Gonna get user location permissions.');
-
-        DB.getUserLocationPermissions(function (permissionObj) {
-          if (permissionObj.permission === "granted") {
-
-            // Show a loading icon "Earth emoji" on the entry.
-
-            // Make an ajax request to save the location data.
-            window.navigator.geolocation.getCurrentPosition(function (position) {
-              console.log('position', position);
-              DB.saveLocationToEntry(entryIndex, entry, position, function (entries) {
-                console.log("Saved the location to the entry.");
-
-                self.entries = entries;
-                // Why is it not updating?
-                self.$forceUpdate();
-              });
-            });
-          }
-        });
-      });
-
-      DB.recordTooltip('tap', function (tooltips) {
-        _this3.tooltips = tooltips;
-      });
-    },
-
-    /*
-     * @description - Just some logic for saving the user. */
-    signUpUser: function signUpUser() {
-      if (this.signUpEmail !== "" && this.signUpPassword !== "") {
-
-        if (this.signUpPassword !== this.confirmPassword) {
-          this.signUpLoginError = "Those passwords aren't matching up.";
-        } else {
-          this.signUpLoginError = undefined;
-          DB.signUpUser(this.signUpEmail, this.signUpPassword);
-        }
-      }
-    },
-
-    loginUser: function loginUser() {
-      if (this.loginEmail !== "" && this.loginPassword !== "") {
-        DB.loginUser(this.loginEmail, this.loginPassword);
-      }
-    },
-
-    logoutUser: function logoutUser() {
-
-      console.log("Calling App.logoutUser");
-      DB.logoutUser();
-    },
-
-    // entry, entryIndex, note, callback)
-    saveNote: function saveNote(entry, entryIndex, note) {
-      var _this4 = this;
-
-      console.log("App.saveNote");
-      console.log("entry", entry);
-      console.log("entryIndex", entryIndex);
-      console.log("note", note);
-
-      DB.saveNote(entry, entryIndex, note, function (updatedEntries) {
-        console.log("Saved the note!");
-        _this4.entries = updatedEntries;
-      });
-
-      // Still false so that means it's the first time for a user to be writing a note.
-      if (this.tooltips.write === true) {
-        this.toggleEmoji(true); // Go ahead and switch the user over so they can experiment with the carousel switching functionality.
-      }
-
-      DB.recordTooltip('write', function (tooltips) {
-        console.log("After recording write");
-        console.log("tooltips", tooltips);
-        _this4.tooltips = tooltips;
-      });
-    },
-
-    toggleLogin: function toggleLogin() {
-      this.shouldLogin = !this.shouldLogin;
-      this.shouldSignUp = false;
-    },
-
-    toggleSignUp: function toggleSignUp() {
-      this.shouldLogin = false;
-      this.shouldSignUp = !this.shouldSignUp;
-    }
-  }
-});
-"use strict";
-
-var DayEmotionChartCarousel = {
-
-  template: "<div class='js-charts'><slot></slot></div>",
-
-  mounted: function mounted() {
-
-    new Flickity(this.$el, {
-      cellAlign: "left",
-      pageDots: false
-    });
-  }
-};
-
-Vue.component('day-emotion-chart-carousel', DayEmotionChartCarousel);
-'use strict';
-
-var DayEmotionChart = {
-
-  template: "<div><div class='js-chart'><slot></slot></div><div class='Ff(serifRegular) Fz(default) C(black) Ta(c)'>{{ readableDate(day) }}</div></div>",
-
-  props: {
-    data: {
-      type: Object,
-      required: false,
-      default: function _default() {
-
-        return {
-          labels: ['🤔', '👆', '🌏'],
-          series: [5, 3, 4],
-          colors: ['green', 'blue', 'red', 'orange']
-        };
-      }
-    },
-    day: {
-      type: String,
-      required: false
-    }
-  },
-
-  mounted: function mounted() {
-
-    var options = {
-      labelInterpolationFnc: function labelInterpolationFnc(value) {
-        return value;
-      },
-      width: '100px',
-      height: '100px'
-    };
-
-    var chart = new Chartist.Pie(this.$el.querySelector(".js-chart"), this.data, options);
-
-    var index = 0; // Gonna use this to render the correct color form the colors array.
-
-    var self = this;
-
-    chart.on('draw', function (context) {
-      console.log("Drawing the chart.");
-      console.log("What's the context?");
-      console.log(context);
-
-      if (context.type === "slice") {
-
-        context.element.attr({
-          "fill": "#" + self.data.colors[index]
-        });
-
-        index += 1;
-      }
-    });
-  },
-
-  methods: {
-    readableDate: function readableDate(date) {
-      // console.log("readableDate");
-      // console.log("What's the date?", date);
-
-      var fromNow = moment(date).from(moment(new Date()));
-      var displayer = "";
-
-      // If it's a day ago, make it say "Yesterday"
-      if (fromNow === "a day ago") {
-        displayer = "Yesterday";
-      } else {
-        displayer = moment(date).format('dddd');
-      }
-
-      // otherwise make it say the day of the week.
-
-      // console.log("What's the readable date?", readableDate);
-      console.log("What's the displayer?", displayer);
-      return displayer;
-    }
-
-  }
-};
-
-Vue.component('day-emotion-chart', DayEmotionChart);
-"use strict";
-
-var EmojionCarousel = {
-
-  template: "#emojion_carousel_template",
-
-  props: {
-    emojions: {
-      type: Array,
-      required: true
-    },
-    color: {
-      type: String,
-      required: true
-    }
-  },
-
-  created: function created() {
-    console.log("Created the emojion carousel.");
-  },
-
-  mounted: function mounted() {
-    var _this = this;
-
-    console.log("Mounted the emojion carousel.");
-
-    var flickity = new Flickity(this.$el, {
-      pageDots: false
-    });
-
-    document.querySelector(".flickity-viewport").style.height = "100%";
-
-    this.$emit('select-emoji-to-change-to', this.emojions[0], 0);
-
-    flickity.on('select', function () {
-      _this.$emit('select-emoji-to-change-to', _this.emojions[flickity.selectedIndex], flickity.selectedIndex);
-    });
-  }
-};
-
-Vue.component('emojion-carousel', EmojionCarousel);
-'use strict';
-
-var Emojion = {
-
-  template: "#emojion_template",
-
-  props: {
-
-    index: {
-      type: Number,
-      required: true
-    },
-
-    canSwitchEmoji: {
-      type: Boolean,
-      required: true
-    },
-
-    emojion: {
-      type: Object,
-      required: true
-    },
-
-    notUserEmojions: {
-      type: Array,
-      required: true
-    },
-
-    colors: {
-      type: Array,
-      required: true
-    }
-  },
-
-  data: function data() {
-    return {
-
-      /*
-       * @description - The emoji character to display in the block.
-       * @type String
-       */
-      emoji: this.emojion.emoji,
-
-      /*
-       * @description - The color of the emojion block
-       * @type String
-       */
-      color: this.emojion.color,
-
-      /*
-       * @description - The text color for the emojion block
-       * @type String
-       */
-      textColor: this.emojion.text_color,
-
-      /* @description - The question associated with this emotion.
-       * @type String
-       */
-      question: this.emojion.question,
-
-      /*
-       * @description - The color of the emotion when switching using the carouselColor
-       * @type String
-       */
-      carouselColor: undefined,
-
-      /*
-       * @description - The emojion that this block will change to after selecting a new one via the carousel.
-       * @type: Object
-       */
-      emojionToChangeTo: undefined,
-
-      /*
-       * @description - The emojion index (in the not user emojions array) to change to
-       * @type Number
-       */
-      emojionToChangeToIndex: undefined,
-
-      /*
-       * @description: - Whether the user is currently changing the emoji on this block with the carousel
-       * @type Boolean
-       */
-      isChangingEmoji: false
-    };
-  },
-
-  mounted: function mounted() {
-    var _this = this;
-
-    /* Set up the press events to get the switching going */
-    var toucher = new Hammer(this.$el);
-
-    // Switching emoji.
-    toucher.on('press', function (ev) {
-      _this.isChangingEmoji = !_this.isChangingEmoji;
-      _this.turnOnOffCarousel();
-    });
-
-    // Tracking entries.
-    toucher.on('tap', function (ev) {
-      console.log("Tapped");
-
-      // Don't wanna send anything to the server if switching with the carousel.
-      if (!_this.isChangingEmoji) {
-        _this.$emit('track-entry', _this.emojion, _this.emojion.color, _this.emojion.text_color, _this.emojion.question);
-      }
-    });
-  },
-
-  methods: {
-
-    /*
-     * @description - Call back function from the carousel. */
-    selectEmojionToChangeTo: function selectEmojionToChangeTo(emojion, emojionIndex) {
-      console.log("Selecting an emojion to change to.");
-      console.log("emojion", emojion);
-      console.log("emojionIndex", emojionIndex);
-      this.carouselColor = emojion.color;
-      this.emojionToChangeTo = emojion;
-      this.emojionToChangeToIndex = emojionIndex;
-    },
-
-    turnOnOffCarousel: function turnOnOffCarousel() {
-      if (!this.isChangingEmoji) {
-
-        this.carouselColor = undefined; // Go back to the original color until actually changing the color.
-
-        this.emoji = this.emojionToChangeTo.emoji;
-        this.color = this.emojionToChangeTo.color;
-        this.textColor = this.emojionToChangeTo.text_color;
-
-        console.log('this.emojionToChangeToIndex', this.emojionToChangeToIndex);
-
-        this.$emit('turn-off-carousel', this.index, this.emojionToChangeTo, this.emojionToChangeToIndex);
-      } else {
-        this.$emit('turn-on-carousel', this.index);
-      }
-    }
-  }
-};
-
-Vue.component('emojion', Emojion);
-"use strict";
-
-var Entry = {
-  template: "#entry_template",
-
-  props: {
-    entry: {
-      type: Object,
-      required: true
-    },
-
-    index: {
-      type: Number,
-      requied: true
-    },
-
-    totalEntries: {
-      type: Number,
-      required: true
-    },
-
-    showTooltip: {
-      type: Boolean,
-      required: true,
-      default: false
-    }
-  },
-
-  data: function data() {
-    return {
-      canInputNote: false,
-      shouldResizeTextArea: false,
-      note: "",
-      alreadyHasNote: false,
-      isViewingNote: false
-    };
-  },
-
-  created: function created() {
-
-    console.log("created'");
-    console.log("index", this.index);
-    console.log("this.totalEntries", this.totalEntries);
-    console.log("this.showTooltip", this.showTooltip);
-
-    // The entry already has a note.
-    if (this.entry.note != null) {
-      this.alreadyHasNote = true; // Gonna use this for showing the icon and expanding it and stuff.
-    }
-
-    if (this.index === this.totalEntries - 1 && !this.alreadyHasNote) {
-      this.canInputNote = true;
-    } else {
-      this.canInputNote = false;
-    }
-  },
-
-  mounted: function mounted() {
-
-    if (this.canInputNote) {
-      autosize(this.$el.querySelector(".js-note-input"));
-    }
-
-    if (this.alreadyHasNote) {
-      // do some stuff in here related to the note.
-    }
-  },
-
-  updated: function updated() {
-
-    console.log("Updating entry.");
-
-    console.log("this.index", this.index);
-    console.log("this.totalEntries", this.totalEntries);
-
-    if (this.index === this.totalEntries - 1 && !this.alreadyHasNote) {
-      this.canInputNote = true;
-    } else {
-      this.canInputNote = false;
-    }
-  },
-
-  methods: {
-    resizeTextArea: function resizeTextArea(event) {
-
-      var val = event.target.value;
-
-      if (val && val.length >= 1) {
-        window.scrollTo(0, 0);
-        this.shouldResizeTextArea = true;
-      } else {
-        window.scrollTo(0, GLOBAL_STATE.previousScrollY);
-        this.shouldResizeTextArea = false;
-      }
-
-      this.note = val;
-    },
-
-    saveNote: function saveNote(event) {
-
-      if (this.note && this.note.length >= 1) {
-        this.shouldResizeTextArea = false;
-        this.canInputNote = false;
-        this.alreadyHasNote = true;
-        this.isViewingNote = true;
-        this.$emit('save-note', this.entry, this.index, this.note);
-        this.$forceUpdate();
-      }
-    },
-
-    formatTime: function formatTime(unformattedTime) {
-      console.log("What's the unformatted time?");
-      console.log("unformattedTime", unformattedTime);
-
-      if (typeof unformattedTime === "string") {
-        return moment(parseInt(unformattedTime, 10)).format('LT');
-      } else {
-        return moment(unformattedTime).format('LT');
-      }
-    },
-
-    // Just shows the note so the user can read what they've previously written down.
-    showNote: function showNote() {
-      this.isViewingNote = !this.isViewingNote;
-    }
-  }
-};
-
-Vue.component('entry', Entry);
-"use strict";
-
-var Notification = {
-
-  template: "#notification_template",
-
-  props: {
-    message: {
-      type: String,
-      required: true
-    },
-
-    emoji: {
-      type: String,
-      required: true
-    },
-
-    callToActionMessage: {
-      type: String,
-      required: false
-    },
-    method: {
-      type: String,
-      required: false
-    },
-
-    first: {
-      type: Boolean,
-      required: false,
-      default: false
-    }
-  },
-
-  data: function data() {
-
-    return {
-      methods: {},
-      shouldShow: true,
-      statusText: undefined
-    };
-  },
-
-  created: function created() {
-
-    console.log("What's this.method?", this.method);
-
-    if (typeof this.method !== "undefined") {
-      this.methods['click'] = this[this.method];
-    }
-  },
-
-  methods: {
-    askUserForLocation: function askUserForLocation() {
-
-      var self = this;
-
-      this.statusText = "Loading...";
-
-      if (window.navigator.geolocation !== "undefined") {
-        console.log("Gonna ask for the user's permission.");
-        window.navigator.geolocation.getCurrentPosition(function (position) {
-          // Save into the DB.
-          DB.saveUserLocationPermissions("granted");
-
-          self.shouldShow = false;
-        }, function (error) {
-          DB.saveUserLocationPermissions("denied");
-          self.shouldShow = false;
-        });
-      }
-    }
-  }
-};
-
-Vue.component('notification', Notification);
-"use strict";
-
-var Tooltip = {
-  template: "#tooltip_template",
-
-  props: {
-    emoji: {
-      type: String,
-      required: true
-    },
-
-    action: {
-      type: String,
-      requied: true
-    },
-
-    message: {
-      type: String,
-      required: true
-    },
-
-    arrowPosition: {
-      type: String,
-      required: false,
-      default: ""
-    },
-
-    reverse: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-
-    tooltipType: {
-      type: String,
-      required: true
-    }
-  }
-};
-
-Vue.component('tooltip', Tooltip);
-"use strict";
-
 var GLOBAL_STATE = {
    previousScrollY: undefined,
    isFirstTime: true,
@@ -1355,724 +324,6 @@ var CONSTS = {
       "5": "What are my other options?"
    }]
 };
-"use strict";
-
-//   // But if we have position data, then get that and add it to the entries later.
-//   // if (typeof UTILS.POSITION !== "undefined") {
-//   //   var latitude = UTILS.POSITION.coords.latitude,
-//   //       longitude = UTILS.POSITION.coords.longitude;
-//   //
-//   //   UTILS.get(CONSTS.googleMapsURL(latitude, longitude), function (event) {
-//   //
-//   //     let response = undefined;
-//   //     let address = undefined;
-//   //
-//   //     try {
-//   //       response = JSON.parse(this.responseText);
-//   //     } catch (e) {
-//   //       console.log("Caught!");
-//   //       console.log(e);
-//   //     }
-//   //
-//   //     address = UTILS.getAddress(response);
-//   //
-//   //     // Set the entry again with the address in place.
-//   //     entry.update({
-//   //       "address": address
-//   //     });
-//   //
-//   //   });
-//   // }
-
-/*
- * If the user is logged out, then everything will be saved to local storage.
- * If the user is logged in, we'll save the data to the USER_DATA object.
- */
-var DB = {
-
-  /*
-   * @description: Gets the sign up and login errors if there are any.
-   * @return Object || NULL
-   */
-  getSignUpLoginErrors: function getSignUpLoginErrors(callback) {
-
-    if (ERROR_DATA != null) {
-
-      if (callback) {
-        callback(ERROR_DATA);
-      }
-    } else {
-
-      if (callback) {
-        callback(null);
-      }
-    }
-  },
-
-  // GETTERS
-  getLocalEntries: function getLocalEntries(date) {
-    var items = void 0;
-
-    try {
-      items = window.localStorage.getItem('entries');
-    } catch (e) {
-      console.log("e", e);
-    }
-
-    console.log("items");
-
-    if (items != null) {
-      items = JSON.parse(items);
-
-      if (typeof items[date] !== "undefined") {
-        return items[date];
-      } else {
-        return null;
-      }
-    } else {
-      return null;
-    }
-  },
-
-  recordTooltip: function recordTooltip(tooltipName, callback) {
-    console.log('recordTooltip');
-    var tooltips = void 0;
-
-    // {
-    //   "press": true,
-    //   "tap": true
-    // }
-
-    try {
-      tooltips = window.localStorage.getItem('tooltips');
-    } catch (e) {
-      console.log("e", e);
-    }
-
-    if (tooltips != null) {
-      tooltips = JSON.parse(tooltips);
-      tooltips[tooltipName] = false;
-      console.log('tooltips', tooltips);
-      window.localStorage.setItem('tooltips', JSON.stringify(tooltips));
-      callback(tooltips);
-    } else {
-      var obj = {};
-      obj.press = true;
-      obj.write = true;
-      obj.tap = true;
-      obj[tooltipName] = false;
-      console.log('obj', obj);
-      window.localStorage.setItem('tooltips', JSON.stringify(obj));
-      callback(obj);
-    }
-  },
-
-  getTooltips: function getTooltips(callback) {
-    console.log("getTooltips");
-    var tooltips = void 0;
-
-    try {
-      tooltips = window.localStorage.getItem('tooltips');
-    } catch (e) {
-      console.log("e", e);
-    }
-
-    console.log('tooltips', tooltips);
-
-    if (tooltips != null) {
-      tooltips = JSON.parse(tooltips);
-      callback(tooltips);
-    } else {
-      callback({
-        press: true,
-        write: true,
-        tap: true
-      });
-    }
-  },
-
-  /*
-   * @description: Small API over localStorage that saves an array of objects into a key.
-   * @
-   */
-  saveLocalEntries: function saveLocalEntries(date, item, index, color, textColor, question) {
-
-    console.log("UTILS.save");
-    console.log("date", date);
-    console.log("item", item);
-    console.log("index", index);
-
-    var items = void 0;
-
-    if (typeof color !== "undefined") {
-      item.color = color;
-    }
-
-    if (typeof textColor !== "undefined") {
-      item.text_color = textColor;
-    }
-
-    if (typeof question !== "undefined") {
-      item.question = question;
-    }
-
-    try {
-      items = window.localStorage.getItem('entries');
-    } catch (e) {
-      console.log("e", e);
-    }
-
-    console.log("items", items);
-
-    if (items == null) {
-      console.log("items are null");
-      try {
-        var obj = {};
-        obj[date] = [item];
-        window.localStorage.setItem('entries', JSON.stringify(obj));
-      } catch (e) {
-        console.log("e", e);
-      }
-    } else {
-
-      console.log("items not null");
-
-      items = JSON.parse(items);
-
-      if (typeof index === "undefined") {
-        console.log("No index.");
-        if (typeof items[date] === "undefined") {
-          items[date] = [item];
-        } else {
-          items[date].push(item);
-        }
-      } else {
-        console.log("There's an index");
-        console.log("index", index);
-        items[date][index] = item;
-      }
-
-      try {
-        window.localStorage.setItem('entries', JSON.stringify(items));
-      } catch (e) {
-        console.log("e", e);
-      }
-    }
-
-    console.log("DONE SETTING");
-    console.log("window.localStorage.getItem", window.localStorage.getItem('entries', JSON.stringify(items)));
-  },
-
-  getTodaysEntries: function getTodaysEntries(callback) {
-
-    var currentDay = moment(moment.now()).format("YYYY-MM-DD");
-
-    if (!GLOBAL_STATE.isLoggedIn) {
-      callback(DB.getLocalEntries(currentDay));
-    } else {
-      callback(USER_DATA["entries"]);
-    }
-  },
-
-  // SETTERS
-  saveNote: function saveNote(entry, entryIndex, note, callback) {
-
-    console.log("DB.saveNote");
-    console.log('entry', entry);
-    console.log('entryIndex', entryIndex);
-    console.log('note', note);
-
-    if (!GLOBAL_STATE.isLoggedIn) {
-      var entryDate = moment(entry.time).format('YYYY-MM-DD');
-      entry.note = note;
-      callback(DB.saveLocalEntries(entryDate, entry, entryIndex));
-    } else {
-
-      AJAX.post("saveNote", {
-        entry: entry,
-        note: note
-      }).then(function (json) {
-
-        console.log("What's the JSON?");
-        console.log("json", json);
-
-        callback(json);
-      });
-    }
-  },
-
-  trackEntry: function trackEntry(emojion, color, textColor, question, callback) {
-
-    var currentDay = moment(moment.now()).format('YYYY-MM-DD');
-
-    console.log("trackEntry");
-    console.log("emojion", emojion);
-    console.log("color", color);
-    console.log("question", question);
-
-    if (!GLOBAL_STATE.isLoggedIn) {
-      // Save to local storage
-      DB.saveLocalEntries(currentDay, emojion, undefined, color, textColor, question);
-      callback(DB.getLocalEntries(currentDay));
-    } else {
-
-      console.log("Making the AJAX request");
-      AJAX.post("trackEntry", {
-        emojion: emojion,
-        color: color,
-        textColor: textColor,
-        question: question
-      }).then(function (json) {
-
-        console.log("What's the JSON?");
-        console.log("json", json);
-
-        callback(json);
-      });
-
-      // Ajax request
-    }
-  },
-
-  /*
-   * @description - Signs up a user to the service and saves all their stuff in local storage.
-   */
-  signUpUser: function signUpUser(email, password) {
-
-    console.log("DB.signUpUser");
-    console.log("email", email);
-    console.log("password", password);
-
-    console.log("entries");
-    console.log(window.localStorage.getItem('entries'));
-    console.log("userEmojions");
-    console.log(window.localStorage.getItem('userEmojions'));
-
-    var userDataObj = {
-      "signUpEmail": email,
-      "signUpPassword": password,
-      "timezone": UTILS.getClientTimezone()
-    };
-
-    var entries = window.localStorage.getItem('entries'),
-        userEmojions = window.localStorage.getItem('userEmojions');
-
-    if (entries != null) {
-      userDataObj["entries"] = JSON.parse(entries);
-    }
-
-    if (userEmojions != null) {
-      userDataObj["userEmojions"] = JSON.parse(userEmojions);
-    }
-
-    console.log("userDataObj", userDataObj);
-
-    AJAX.post("signup", userDataObj, true).then(function (response) {
-      console.log("What's the response?", response);
-    });
-  },
-
-  /*
-   * @description - Logs a user into the service and saves their entries (if any) from local storage into the DB.
-   */
-  loginUser: function loginUser(email, password) {
-
-    console.log("DB.loginUser");
-    console.log("email", email);
-    console.log("password", password);
-
-    var userDataObj = {
-      "loginEmail": email,
-      "loginPassword": password,
-      "timezone": UTILS.getClientTimezone()
-    };
-
-    var entries = window.localStorage.getItem('entries');
-
-    if (entries != null) {
-      userDataObj["entries"] = JSON.parse(entries);
-    }
-
-    console.log("userDataObj", userDataObj);
-
-    AJAX.post("login", userDataObj, true).then(function (response) {
-      console.log("What's the response?", response);
-    });
-  },
-
-  /*
-   * @description - Just logs the user out and then refreshes the page. */
-  logoutUser: function logoutUser() {
-
-    console.log("Calling DB.logoutUser");
-
-    AJAX.post("logout", {}, true).then(function (response) {
-      console.log("What's the response?", response);
-    });
-  },
-
-  /*
-   * @description - Saves the user's emojions array into local storage.
-   */
-  saveUserEmojions: function saveUserEmojions(emojionsArray) {
-
-    if (GLOBAL_STATE.isLoggedIn) {
-      console.log("Saving the user's emojions. Making an ajx request.s");
-
-      console.log("Fetching.");
-
-      console.log(USER_DATA["user_emojions"]);
-
-      AJAX.post("saveEmojions", USER_DATA["user_emojions"]).then(function (json) {
-        console.log("What's the JSON?");
-        console.log("json", json);
-      });
-    } else {
-      window.localStorage.setItem('userEmojions', JSON.stringify(emojionsArray));
-    }
-  },
-
-  saveNotUserEmojions: function saveNotUserEmojions(emojionsArray) {
-    window.localStorage.setItem('notUserEmojions', JSON.stringify(emojionsArray));
-  },
-
-  getUserEmojions: function getUserEmojions(callback) {
-
-    console.log("getUSerEmojions");
-
-    var emojions = void 0;
-
-    if (GLOBAL_STATE.isLoggedIn) {
-
-      console.log(" The user is already logged in.");
-
-      try {
-        emojions = USER_DATA["user_emojions"];
-      } catch (e) {
-        console.log("e", e);
-      }
-
-      if (emojions != null) {
-        callback(emojions);
-      }
-    } else {
-
-      try {
-        emojions = window.localStorage.getItem('userEmojions');
-      } catch (e) {
-        console.log("e", e);
-      }
-
-      if (emojions != null) {
-        callback(JSON.parse(emojions));
-      } else {
-        callback(CONSTS.DEFAULT_USER_EMOJIONS);
-      }
-    }
-  },
-
-  getPreviousDayCharts: function getPreviousDayCharts(callback) {
-
-    if (GLOBAL_STATE.isLoggedIn) {
-      callback(USER_DATA["previousDayCharts"]);
-    } else {
-      callback(undefined);
-    }
-  },
-
-  getNotUserEmojions: function getNotUserEmojions(callback) {
-
-    console.log("getNotUserEmojions");
-
-    var emojions = void 0;
-
-    if (GLOBAL_STATE.isLoggedIn) {
-      console.log("The user is logged in.");
-      emojions = USER_DATA["not_user_emojions"];
-
-      if (emojions != null) {
-        callback(emojions);
-      }
-    } else {
-      try {
-        emojions = window.localStorage.getItem('notUserEmojions');
-      } catch (e) {
-        console.log("e", e);
-      }
-
-      if (emojions != null) {
-        callback(JSON.parse(emojions));
-      } else {
-        callback(CONSTS.DEFAULT_NOT_USER_EMOJIONS);
-      }
-    }
-  },
-
-  saveUserLocationPermissions: function saveUserLocationPermissions(permission) {
-
-    window.localStorage.setItem('userLocationPermissions', JSON.stringify({
-      permission: permission
-    }));
-  },
-
-  getUserLocationPermissions: function getUserLocationPermissions(callback) {
-
-    var permissions = void 0;
-
-    try {
-      permissions = window.localStorage.getItem('userLocationPermissions');
-    } catch (e) {
-      console.log("e", e);
-    }
-
-    if (permissions != null) {
-      callback(JSON.parse(permissions));
-    } else {
-      window.localStorage.setItem('userLocationPermissions', JSON.stringify({
-        permission: "pending"
-      }));
-
-      callback({
-        permission: "pending"
-      });
-    }
-  },
-
-  saveLocationToEntry: function saveLocationToEntry(entryIndex, entry, positionObj, callback) {
-    console.log('savelocation to entry');
-    console.log("entryIndex", entryIndex);
-    console.log('entry', entry);
-    console.log('positionObj', positionObj);
-
-    var entryDate = moment(+entry.time).format('YYYY-MM-DD');
-
-    console.log("What's entryDate?", entryDate);
-
-    var latitude = positionObj.coords.latitude,
-        longitude = positionObj.coords.longitude;
-
-    if (GLOBAL_STATE.isLoggedIn) {
-
-      console.log("What's the entryKey?", entry["key"]);
-
-      console.log("latitude", latitude);
-      console.log("longitude", longitude);
-
-      AJAX.post("saveLocationToEntry", {
-        entryKey: entry["key"],
-        latitude: latitude,
-        longitude: longitude
-      }).then(function (json) {
-        console.log("Coming back from saveLocationToEntry.");
-        console.log("What's the JSON?");
-        console.log("json", json);
-
-        callback(json);
-      });
-    } else {
-      DB.saveLocalEntries(entryDate, entry, entryIndex);
-
-      if (typeof callback !== "undefined") {
-        callback(DB.getLocalEntries(entryDate));
-      }
-    }
-  }
-};
-"use strict";
-
-/* Methods relating to manipulating the DOM in some way. */
-
-console.log("Defining, dom.");
-
-var DOM = {
-  freezeScreen: function freezeScreen() {
-
-    GLOBAL_STATE.previousScrollY = window.scrollY; // Store the old scroll position
-
-
-    console.log("Calling freezeScreen");
-
-    console.log("GLOBAL_STATE.previousScrollY", GLOBAL_STATE.previousScrollY);
-
-    setTimeout(function () {
-      console.log("Scrolling to the top.");
-      window.scrollTo(0, 0); // Jump back to top for selecting emoji.
-    }, 0);
-
-    document.body.classList.remove("Ox(hidden)");
-    document.body.classList.add("O(hidden)", "rsp-1-Oy(visible)");
-  },
-  unfreezeScreen: function unfreezeScreen() {
-
-    setTimeout(function () {
-      window.scrollTo(0, GLOBAL_STATE.previousScrollY);
-    }, 0);
-
-    document.body.classList.remove("O(hidden)", "rsp-1-Oy(visible)");
-    document.body.classList.add("Ox(hidden)");
-  },
-  showApp: function showApp() {
-    var app = document.querySelector(".js-app"),
-        loading = document.querySelector(".js-loading");
-
-    app.classList.remove("hidden");
-    loading.classList.add("hidden");
-  },
-  showError: function showError() {
-    var error = document.querySelector(".js-error");
-    error.classList.remove("hidden");
-  },
-  hideError: function hideError() {
-    var error = document.querySelector(".js-error");
-    error.classList.add("hidden");
-  }
-};
-"use strict";
-
-var UTILS = {
-
-  /*
-   * @description - Takes a firebase object in the form of { "ao49ds": { } } and converts into array of objects with ".key" property. */
-  toArray: function toArray(object) {
-
-    var array = [];
-
-    for (var prop in object) {
-      object[prop][".key"] = prop;
-      array.push(object[prop]);
-    }
-
-    return array;
-  },
-  removeKeys: function removeKeys(array) {
-    for (var i = 0; i < array.length; i += 1) {
-      delete array[i][".key"];
-    }
-
-    return array;
-  },
-
-
-  /*
-   * @description: Given an array of objects and an object returns the key of that object within the array
-   * @return Number
-   */
-  getIndex: function getIndex(arrayOfObjs, obj) {
-    for (var i = 0; i < arrayOfObjs.length; i += 1) {
-
-      if (_.isEqual(arrayOfObjs[i], obj)) {
-        return i;
-      }
-    }
-
-    return -1;
-  },
-
-
-  /*
-   * @description - Given an array, replace an element at a specific index with another element
-   * @param array:Array
-   * @param index:Number,
-   * @param newItem:Object
-   * @return Void */
-  replaceAtIndex: function replaceAtIndex(array, index, newItem) {
-    array[index] = newItem;
-  },
-
-
-  getClientTimezone: function getClientTimezone() {
-    var offset = new Date().getTimezoneOffset();
-
-    offset = offset === 0 ? 0 : -offset;
-
-    console.log("What's the offset?", offset);
-
-    return offset;
-  },
-
-  convertUnixTimeToPMAM: function convertUnixTimeToPMAM(unixTime) {
-
-    console.log("convertUnixTimeToPMAM");
-    console.log("unixTime", unixTime);
-
-    function formatAMPM(date) {
-      var hours = date.getHours(),
-          minutes = date.getMinutes(),
-          ampm = hours >= 12 ? 'pm' : 'am',
-          strTime = undefined;
-
-      hours = hours % 12;
-      hours = hours ? hours : 12; // the hour '0' should be '12'
-      minutes = minutes < 10 ? '0' + minutes : minutes;
-
-      strTime = hours + ':' + minutes + ' ' + ampm;
-      return strTime;
-    }
-
-    return formatAMPM(new Date(unixTime));
-  },
-
-
-  /*
-   * @description - Iterating over a Google Maps API Response from Long and Lat. to find a place name.
-   * @return String
-   */
-  getAddress: function getAddress(response) {
-
-    var address = "";
-
-    if (response.results.length) {
-
-      response.results[0]["address_components"].forEach(function (addressComponent) {
-
-        if (addressComponent.types.includes("sublocality")) {
-          address += addressComponent.long_name + ", ";
-        }
-
-        if (addressComponent.types.includes("locality")) {
-          address += addressComponent.long_name;
-        }
-      });
-    }
-
-    return address;
-  },
-
-
-  comparer: function comparer(otherArray, key) {
-    return function (current) {
-      return otherArray.filter(function (other) {
-        return other[key] === current[key];
-      }).length === 0;
-    };
-  },
-
-  showError: function showError() {},
-
-  /* @description - Only removes the entries and emojions so when the user logs in it's a clean slate again. */
-  removeUserDataFromLocalStorage: function removeUserDataFromLocalStorage() {
-    window.localStorage.removeItem('entries');
-    window.localStorage.removeItem('userEmojions');
-    window.localStorage.removeItem('notUserEmojions');
-  },
-
-  /* @description - Removes all local storage stuff including tooltips and user location. */
-  removeAllLocalStorage: function removeAllLocalStorage() {
-    window.localStorage.removeItem('tooltips');
-    window.localStorage.removeItem('entries');
-    window.localStorage.removeItem('userEmojions');
-    window.localStorage.removeItem('notUserEmojions');
-    window.localStorage.removeItem('userLocation');
-  }
-};
-
-/*
-
-{
-  "2017-08-08": []
-}
-
-*/
 'use strict';
 
 /*!
@@ -2092,7 +343,7 @@ var UTILS = {
 		factory(mod.exports, mod);
 		global.autosize = mod.exports;
 	}
-})(undefined, function (exports, module) {
+})(window, function (exports, module) {
 	'use strict';
 
 	var map = typeof Map === "function" ? new Map() : function () {
@@ -2385,7 +636,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   } else {
     root['Chartist'] = factory();
   }
-})(undefined, function () {
+})(window, function () {
 
   /* Chartist.js 0.11.0
    * Copyright © 2017 Gion Kunz
@@ -6715,4 +4966,1753 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   })(window, document, Chartist);
 
   return Chartist;
+});
+"use strict";
+
+var DayEmotionChartCarousel = {
+
+  template: "<div class='js-charts'><slot></slot></div>",
+
+  mounted: function mounted() {
+
+    new Flickity(this.$el, {
+      cellAlign: "left",
+      pageDots: false
+    });
+  }
+};
+
+Vue.component('day-emotion-chart-carousel', DayEmotionChartCarousel);
+'use strict';
+
+var DayEmotionChart = {
+
+  template: "<div><div class='js-chart'><slot></slot></div><div class='Ff(serifRegular) Fz(default) C(black) Ta(c)'>{{ readableDate(day) }}</div></div>",
+
+  props: {
+    data: {
+      type: Object,
+      required: false,
+      default: function _default() {
+
+        return {
+          labels: ['🤔', '👆', '🌏'],
+          series: [5, 3, 4],
+          colors: ['green', 'blue', 'red', 'orange']
+        };
+      }
+    },
+    day: {
+      type: String,
+      required: false
+    }
+  },
+
+  mounted: function mounted() {
+
+    var options = {
+      labelInterpolationFnc: function labelInterpolationFnc(value) {
+        return value;
+      },
+      width: '100px',
+      height: '100px'
+    };
+
+    var chart = new Chartist.Pie(this.$el.querySelector(".js-chart"), this.data, options);
+
+    var index = 0; // Gonna use this to render the correct color form the colors array.
+
+    var self = this;
+
+    chart.on('draw', function (context) {
+      console.log("Drawing the chart.");
+      console.log("What's the context?");
+      console.log(context);
+
+      if (context.type === "slice") {
+
+        context.element.attr({
+          "fill": "#" + self.data.colors[index]
+        });
+
+        index += 1;
+      }
+    });
+  },
+
+  methods: {
+    readableDate: function readableDate(date) {
+      // console.log("readableDate");
+      // console.log("What's the date?", date);
+
+      var fromNow = moment(date).from(moment(new Date()));
+      var displayer = "";
+
+      // If it's a day ago, make it say "Yesterday"
+      if (fromNow === "a day ago") {
+        displayer = "Yesterday";
+      } else {
+        displayer = moment(date).format('dddd');
+      }
+
+      // otherwise make it say the day of the week.
+
+      // console.log("What's the readable date?", readableDate);
+      console.log("What's the displayer?", displayer);
+      return displayer;
+    }
+
+  }
+};
+
+Vue.component('day-emotion-chart', DayEmotionChart);
+"use strict";
+
+var EmojionCarousel = {
+
+  template: "#emojion_carousel_template",
+
+  props: {
+    emojions: {
+      type: Array,
+      required: true
+    },
+    color: {
+      type: String,
+      required: true
+    }
+  },
+
+  created: function created() {
+    console.log("Created the emojion carousel.");
+  },
+
+  mounted: function mounted() {
+    var _this = this;
+
+    console.log("Mounted the emojion carousel.");
+
+    var flickity = new Flickity(this.$el, {
+      pageDots: false
+    });
+
+    document.querySelector(".flickity-viewport").style.height = "100%";
+
+    this.$emit('select-emoji-to-change-to', this.emojions[0], 0);
+
+    flickity.on('select', function () {
+      _this.$emit('select-emoji-to-change-to', _this.emojions[flickity.selectedIndex], flickity.selectedIndex);
+    });
+  }
+};
+
+Vue.component('emojion-carousel', EmojionCarousel);
+'use strict';
+
+var Emojion = {
+
+  template: "#emojion_template",
+
+  props: {
+
+    index: {
+      type: Number,
+      required: true
+    },
+
+    canSwitchEmoji: {
+      type: Boolean,
+      required: true
+    },
+
+    emojion: {
+      type: Object,
+      required: true
+    },
+
+    notUserEmojions: {
+      type: Array,
+      required: true
+    },
+
+    colors: {
+      type: Array,
+      required: true
+    }
+  },
+
+  data: function data() {
+    return {
+
+      /*
+       * @description - The emoji character to display in the block.
+       * @type String
+       */
+      emoji: this.emojion.emoji,
+
+      /*
+       * @description - The color of the emojion block
+       * @type String
+       */
+      color: this.emojion.color,
+
+      /*
+       * @description - The text color for the emojion block
+       * @type String
+       */
+      textColor: this.emojion.text_color,
+
+      /* @description - The question associated with this emotion.
+       * @type String
+       */
+      question: this.emojion.question,
+
+      /*
+       * @description - The color of the emotion when switching using the carouselColor
+       * @type String
+       */
+      carouselColor: undefined,
+
+      /*
+       * @description - The emojion that this block will change to after selecting a new one via the carousel.
+       * @type: Object
+       */
+      emojionToChangeTo: undefined,
+
+      /*
+       * @description - The emojion index (in the not user emojions array) to change to
+       * @type Number
+       */
+      emojionToChangeToIndex: undefined,
+
+      /*
+       * @description: - Whether the user is currently changing the emoji on this block with the carousel
+       * @type Boolean
+       */
+      isChangingEmoji: false
+    };
+  },
+
+  mounted: function mounted() {
+    var _this = this;
+
+    /* Set up the press events to get the switching going */
+    var toucher = new Hammer(this.$el);
+
+    // Switching emoji.
+    toucher.on('press', function (ev) {
+      _this.isChangingEmoji = !_this.isChangingEmoji;
+      _this.turnOnOffCarousel();
+    });
+
+    // Tracking entries.
+    toucher.on('tap', function (ev) {
+      console.log("Tapped");
+
+      // Don't wanna send anything to the server if switching with the carousel.
+      if (!_this.isChangingEmoji) {
+        _this.$emit('track-entry', _this.emojion, _this.emojion.color, _this.emojion.text_color, _this.emojion.question);
+      }
+    });
+  },
+
+  methods: {
+
+    /*
+     * @description - Call back function from the carousel. */
+    selectEmojionToChangeTo: function selectEmojionToChangeTo(emojion, emojionIndex) {
+      console.log("Selecting an emojion to change to.");
+      console.log("emojion", emojion);
+      console.log("emojionIndex", emojionIndex);
+      this.carouselColor = emojion.color;
+      this.emojionToChangeTo = emojion;
+      this.emojionToChangeToIndex = emojionIndex;
+    },
+
+    turnOnOffCarousel: function turnOnOffCarousel() {
+      if (!this.isChangingEmoji) {
+
+        this.carouselColor = undefined; // Go back to the original color until actually changing the color.
+
+        this.emoji = this.emojionToChangeTo.emoji;
+        this.color = this.emojionToChangeTo.color;
+        this.textColor = this.emojionToChangeTo.text_color;
+
+        console.log('this.emojionToChangeToIndex', this.emojionToChangeToIndex);
+
+        this.$emit('turn-off-carousel', this.index, this.emojionToChangeTo, this.emojionToChangeToIndex);
+      } else {
+        this.$emit('turn-on-carousel', this.index);
+      }
+    }
+  }
+};
+
+Vue.component('emojion', Emojion);
+"use strict";
+
+var Entry = {
+  template: "#entry_template",
+
+  props: {
+    entry: {
+      type: Object,
+      required: true
+    },
+
+    index: {
+      type: Number,
+      requied: true
+    },
+
+    totalEntries: {
+      type: Number,
+      required: true
+    },
+
+    showTooltip: {
+      type: Boolean,
+      required: true,
+      default: false
+    }
+  },
+
+  data: function data() {
+    return {
+      canInputNote: false,
+      shouldResizeTextArea: false,
+      note: "",
+      alreadyHasNote: false,
+      isViewingNote: false
+    };
+  },
+
+  created: function created() {
+
+    console.log("created'");
+    console.log("index", this.index);
+    console.log("this.totalEntries", this.totalEntries);
+    console.log("this.showTooltip", this.showTooltip);
+
+    // The entry already has a note.
+    if (this.entry.note != null) {
+      this.alreadyHasNote = true; // Gonna use this for showing the icon and expanding it and stuff.
+    }
+
+    if (this.index === this.totalEntries - 1 && !this.alreadyHasNote) {
+      this.canInputNote = true;
+    } else {
+      this.canInputNote = false;
+    }
+  },
+
+  mounted: function mounted() {
+
+    if (this.canInputNote) {
+      autosize(this.$el.querySelector(".js-note-input"));
+    }
+
+    if (this.alreadyHasNote) {
+      // do some stuff in here related to the note.
+    }
+  },
+
+  updated: function updated() {
+
+    console.log("Updating entry.");
+
+    console.log("this.index", this.index);
+    console.log("this.totalEntries", this.totalEntries);
+
+    if (this.index === this.totalEntries - 1 && !this.alreadyHasNote) {
+      this.canInputNote = true;
+    } else {
+      this.canInputNote = false;
+    }
+  },
+
+  methods: {
+    resizeTextArea: function resizeTextArea(event) {
+
+      var val = event.target.value;
+
+      if (val && val.length >= 1) {
+        window.scrollTo(0, 0);
+        this.shouldResizeTextArea = true;
+      } else {
+        window.scrollTo(0, GLOBAL_STATE.previousScrollY);
+        this.shouldResizeTextArea = false;
+      }
+
+      this.note = val;
+    },
+
+    saveNote: function saveNote(event) {
+
+      if (this.note && this.note.length >= 1) {
+        this.shouldResizeTextArea = false;
+        this.canInputNote = false;
+        this.alreadyHasNote = true;
+        this.isViewingNote = true;
+        this.$emit('save-note', this.entry, this.index, this.note);
+        this.$forceUpdate();
+      }
+    },
+
+    formatTime: function formatTime(unformattedTime) {
+      console.log("What's the unformatted time?");
+      console.log("unformattedTime", unformattedTime);
+
+      if (typeof unformattedTime === "string") {
+        return moment(parseInt(unformattedTime, 10)).format('LT');
+      } else {
+        return moment(unformattedTime).format('LT');
+      }
+    },
+
+    // Just shows the note so the user can read what they've previously written down.
+    showNote: function showNote() {
+      this.isViewingNote = !this.isViewingNote;
+    }
+  }
+};
+
+Vue.component('entry', Entry);
+"use strict";
+
+var Notification = {
+
+  template: "#notification_template",
+
+  props: {
+    message: {
+      type: String,
+      required: true
+    },
+
+    emoji: {
+      type: String,
+      required: true
+    },
+
+    callToActionMessage: {
+      type: String,
+      required: false
+    },
+    method: {
+      type: String,
+      required: false
+    },
+
+    first: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
+  },
+
+  data: function data() {
+
+    return {
+      methods: {},
+      shouldShow: true,
+      statusText: undefined
+    };
+  },
+
+  created: function created() {
+
+    console.log("What's this.method?", this.method);
+
+    if (typeof this.method !== "undefined") {
+      this.methods['click'] = this[this.method];
+    }
+  },
+
+  methods: {
+    askUserForLocation: function askUserForLocation() {
+
+      var self = this;
+
+      this.statusText = "Loading...";
+
+      if (window.navigator.geolocation !== "undefined") {
+        console.log("Gonna ask for the user's permission.");
+        window.navigator.geolocation.getCurrentPosition(function (position) {
+          // Save into the DB.
+          DB.saveUserLocationPermissions("granted");
+
+          self.shouldShow = false;
+        }, function (error) {
+          DB.saveUserLocationPermissions("denied");
+          self.shouldShow = false;
+        });
+      }
+    }
+  }
+};
+
+Vue.component('notification', Notification);
+"use strict";
+
+var Tooltip = {
+  template: "#tooltip_template",
+
+  props: {
+    emoji: {
+      type: String,
+      required: true
+    },
+
+    action: {
+      type: String,
+      requied: true
+    },
+
+    message: {
+      type: String,
+      required: true
+    },
+
+    arrowPosition: {
+      type: String,
+      required: false,
+      default: ""
+    },
+
+    reverse: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+
+    tooltipType: {
+      type: String,
+      required: true
+    }
+  }
+};
+
+Vue.component('tooltip', Tooltip);
+"use strict";
+
+var UTILS = {
+
+  /*
+   * @description - Takes a firebase object in the form of { "ao49ds": { } } and converts into array of objects with ".key" property. */
+  toArray: function toArray(object) {
+
+    var array = [];
+
+    for (var prop in object) {
+      object[prop][".key"] = prop;
+      array.push(object[prop]);
+    }
+
+    return array;
+  },
+  removeKeys: function removeKeys(array) {
+    for (var i = 0; i < array.length; i += 1) {
+      delete array[i][".key"];
+    }
+
+    return array;
+  },
+
+
+  /*
+   * @description: Given an array of objects and an object returns the key of that object within the array
+   * @return Number
+   */
+  getIndex: function getIndex(arrayOfObjs, obj) {
+    for (var i = 0; i < arrayOfObjs.length; i += 1) {
+
+      if (_.isEqual(arrayOfObjs[i], obj)) {
+        return i;
+      }
+    }
+
+    return -1;
+  },
+
+
+  /*
+   * @description - Given an array, replace an element at a specific index with another element
+   * @param array:Array
+   * @param index:Number,
+   * @param newItem:Object
+   * @return Void */
+  replaceAtIndex: function replaceAtIndex(array, index, newItem) {
+    array[index] = newItem;
+  },
+
+
+  getClientTimezone: function getClientTimezone() {
+    var offset = new Date().getTimezoneOffset();
+
+    offset = offset === 0 ? 0 : -offset;
+
+    console.log("What's the offset?", offset);
+
+    return offset;
+  },
+
+  convertUnixTimeToPMAM: function convertUnixTimeToPMAM(unixTime) {
+
+    console.log("convertUnixTimeToPMAM");
+    console.log("unixTime", unixTime);
+
+    function formatAMPM(date) {
+      var hours = date.getHours(),
+          minutes = date.getMinutes(),
+          ampm = hours >= 12 ? 'pm' : 'am',
+          strTime = undefined;
+
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      minutes = minutes < 10 ? '0' + minutes : minutes;
+
+      strTime = hours + ':' + minutes + ' ' + ampm;
+      return strTime;
+    }
+
+    return formatAMPM(new Date(unixTime));
+  },
+
+
+  /*
+   * @description - Iterating over a Google Maps API Response from Long and Lat. to find a place name.
+   * @return String
+   */
+  getAddress: function getAddress(response) {
+
+    var address = "";
+
+    if (response.results.length) {
+
+      response.results[0]["address_components"].forEach(function (addressComponent) {
+
+        if (addressComponent.types.includes("sublocality")) {
+          address += addressComponent.long_name + ", ";
+        }
+
+        if (addressComponent.types.includes("locality")) {
+          address += addressComponent.long_name;
+        }
+      });
+    }
+
+    return address;
+  },
+
+
+  comparer: function comparer(otherArray, key) {
+    return function (current) {
+      return otherArray.filter(function (other) {
+        return other[key] === current[key];
+      }).length === 0;
+    };
+  },
+
+  showError: function showError() {},
+
+  /* @description - Only removes the entries and emojions so when the user logs in it's a clean slate again. */
+  removeUserDataFromLocalStorage: function removeUserDataFromLocalStorage() {
+    window.localStorage.removeItem('entries');
+    window.localStorage.removeItem('userEmojions');
+    window.localStorage.removeItem('notUserEmojions');
+  },
+
+  /* @description - Removes all local storage stuff including tooltips and user location. */
+  removeAllLocalStorage: function removeAllLocalStorage() {
+    window.localStorage.removeItem('tooltips');
+    window.localStorage.removeItem('entries');
+    window.localStorage.removeItem('userEmojions');
+    window.localStorage.removeItem('notUserEmojions');
+    window.localStorage.removeItem('userLocation');
+  }
+};
+
+/*
+
+{
+  "2017-08-08": []
+}
+
+*/
+"use strict";
+
+/* Methods relating to manipulating the DOM in some way. */
+
+console.log("Defining, dom.");
+
+var DOM = {
+  freezeScreen: function freezeScreen() {
+
+    GLOBAL_STATE.previousScrollY = window.scrollY; // Store the old scroll position
+
+
+    console.log("Calling freezeScreen");
+
+    console.log("GLOBAL_STATE.previousScrollY", GLOBAL_STATE.previousScrollY);
+
+    setTimeout(function () {
+      console.log("Scrolling to the top.");
+      window.scrollTo(0, 0); // Jump back to top for selecting emoji.
+    }, 0);
+
+    document.body.classList.remove("Ox(hidden)");
+    document.body.classList.add("O(hidden)", "rsp-1-Oy(visible)");
+  },
+  unfreezeScreen: function unfreezeScreen() {
+
+    setTimeout(function () {
+      window.scrollTo(0, GLOBAL_STATE.previousScrollY);
+    }, 0);
+
+    document.body.classList.remove("O(hidden)", "rsp-1-Oy(visible)");
+    document.body.classList.add("Ox(hidden)");
+  },
+  showApp: function showApp() {
+    var app = document.querySelector(".js-app"),
+        loading = document.querySelector(".js-loading");
+
+    app.classList.remove("hidden");
+    loading.classList.add("hidden");
+  },
+  showError: function showError() {
+    var error = document.querySelector(".js-error");
+    error.classList.remove("hidden");
+  },
+  hideError: function hideError() {
+    var error = document.querySelector(".js-error");
+    error.classList.add("hidden");
+  }
+};
+"use strict";
+
+var AJAX = function () {
+
+  var options = {
+    mode: "same-origin",
+    credentials: "same-origin",
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+
+  function post(methodName, payload, refresh) {
+
+    refresh = refresh || false; // Whether to refresh the page or not after this post succeeds.
+
+    options.method = "POST";
+    options.body = JSON.stringify({
+      "ajaxMethod": methodName,
+      "payload": payload
+    });
+
+    return fetch("/", options).then(function (response) {
+
+      // console.log("response after fetching.", response);
+      //
+      // response.text().then(function (s) {
+      //   console.log("s");
+      // });
+      if (refresh) {
+        location.reload();
+      } else {
+        //console.log("response after fetching.", response);
+        return response.json();
+      }
+    }).catch(function (error) {
+      console.log("An error while doing some AJAX stuff.");
+      console.log("error", error);
+      return error;
+    });
+  }
+
+  return {
+    post: post
+  };
+}();
+
+// AJAX.post();
+"use strict";
+
+//   // But if we have position data, then get that and add it to the entries later.
+//   // if (typeof UTILS.POSITION !== "undefined") {
+//   //   var latitude = UTILS.POSITION.coords.latitude,
+//   //       longitude = UTILS.POSITION.coords.longitude;
+//   //
+//   //   UTILS.get(CONSTS.googleMapsURL(latitude, longitude), function (event) {
+//   //
+//   //     let response = undefined;
+//   //     let address = undefined;
+//   //
+//   //     try {
+//   //       response = JSON.parse(this.responseText);
+//   //     } catch (e) {
+//   //       console.log("Caught!");
+//   //       console.log(e);
+//   //     }
+//   //
+//   //     address = UTILS.getAddress(response);
+//   //
+//   //     // Set the entry again with the address in place.
+//   //     entry.update({
+//   //       "address": address
+//   //     });
+//   //
+//   //   });
+//   // }
+
+/*
+ * If the user is logged out, then everything will be saved to local storage.
+ * If the user is logged in, we'll save the data to the USER_DATA object.
+ */
+var DB = {
+
+  /*
+   * @description: Gets the sign up and login errors if there are any.
+   * @return Object || NULL
+   */
+  getSignUpLoginErrors: function getSignUpLoginErrors(callback) {
+
+    if (ERROR_DATA != null) {
+
+      if (callback) {
+        callback(ERROR_DATA);
+      }
+    } else {
+
+      if (callback) {
+        callback(null);
+      }
+    }
+  },
+
+  // GETTERS
+  getLocalEntries: function getLocalEntries(date) {
+    var items = void 0;
+
+    try {
+      items = window.localStorage.getItem('entries');
+    } catch (e) {
+      console.log("e", e);
+    }
+
+    console.log("items");
+
+    if (items != null) {
+      items = JSON.parse(items);
+
+      if (typeof items[date] !== "undefined") {
+        return items[date];
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  },
+
+  recordTooltip: function recordTooltip(tooltipName, callback) {
+    console.log('recordTooltip');
+    var tooltips = void 0;
+
+    // {
+    //   "press": true,
+    //   "tap": true
+    // }
+
+    try {
+      tooltips = window.localStorage.getItem('tooltips');
+    } catch (e) {
+      console.log("e", e);
+    }
+
+    if (tooltips != null) {
+      tooltips = JSON.parse(tooltips);
+      tooltips[tooltipName] = false;
+      console.log('tooltips', tooltips);
+      window.localStorage.setItem('tooltips', JSON.stringify(tooltips));
+      callback(tooltips);
+    } else {
+      var obj = {};
+      obj.press = true;
+      obj.write = true;
+      obj.tap = true;
+      obj[tooltipName] = false;
+      console.log('obj', obj);
+      window.localStorage.setItem('tooltips', JSON.stringify(obj));
+      callback(obj);
+    }
+  },
+
+  getTooltips: function getTooltips(callback) {
+    console.log("getTooltips");
+    var tooltips = void 0;
+
+    try {
+      tooltips = window.localStorage.getItem('tooltips');
+    } catch (e) {
+      console.log("e", e);
+    }
+
+    console.log('tooltips', tooltips);
+
+    if (tooltips != null) {
+      tooltips = JSON.parse(tooltips);
+      callback(tooltips);
+    } else {
+      callback({
+        press: true,
+        write: true,
+        tap: true
+      });
+    }
+  },
+
+  /*
+   * @description: Small API over localStorage that saves an array of objects into a key.
+   * @
+   */
+  saveLocalEntries: function saveLocalEntries(date, item, index, color, textColor, question) {
+
+    console.log("UTILS.save");
+    console.log("date", date);
+    console.log("item", item);
+    console.log("index", index);
+
+    var items = void 0;
+
+    if (typeof color !== "undefined") {
+      item.color = color;
+    }
+
+    if (typeof textColor !== "undefined") {
+      item.text_color = textColor;
+    }
+
+    if (typeof question !== "undefined") {
+      item.question = question;
+    }
+
+    try {
+      items = window.localStorage.getItem('entries');
+    } catch (e) {
+      console.log("e", e);
+    }
+
+    console.log("items", items);
+
+    if (items == null) {
+      console.log("items are null");
+      try {
+        var obj = {};
+        obj[date] = [item];
+        window.localStorage.setItem('entries', JSON.stringify(obj));
+      } catch (e) {
+        console.log("e", e);
+      }
+    } else {
+
+      console.log("items not null");
+
+      items = JSON.parse(items);
+
+      if (typeof index === "undefined") {
+        console.log("No index.");
+        if (typeof items[date] === "undefined") {
+          items[date] = [item];
+        } else {
+          items[date].push(item);
+        }
+      } else {
+        console.log("There's an index");
+        console.log("index", index);
+        items[date][index] = item;
+      }
+
+      try {
+        window.localStorage.setItem('entries', JSON.stringify(items));
+      } catch (e) {
+        console.log("e", e);
+      }
+    }
+
+    console.log("DONE SETTING");
+    console.log("window.localStorage.getItem", window.localStorage.getItem('entries', JSON.stringify(items)));
+  },
+
+  getTodaysEntries: function getTodaysEntries(callback) {
+
+    var currentDay = moment(moment.now()).format("YYYY-MM-DD");
+
+    if (!GLOBAL_STATE.isLoggedIn) {
+      callback(DB.getLocalEntries(currentDay));
+    } else {
+      callback(USER_DATA["entries"]);
+    }
+  },
+
+  // SETTERS
+  saveNote: function saveNote(entry, entryIndex, note, callback) {
+
+    console.log("DB.saveNote");
+    console.log('entry', entry);
+    console.log('entryIndex', entryIndex);
+    console.log('note', note);
+
+    if (!GLOBAL_STATE.isLoggedIn) {
+      var entryDate = moment(entry.time).format('YYYY-MM-DD');
+      entry.note = note;
+      callback(DB.saveLocalEntries(entryDate, entry, entryIndex));
+    } else {
+
+      AJAX.post("saveNote", {
+        entry: entry,
+        note: note
+      }).then(function (json) {
+
+        console.log("What's the JSON?");
+        console.log("json", json);
+
+        callback(json);
+      });
+    }
+  },
+
+  trackEntry: function trackEntry(emojion, color, textColor, question, callback) {
+
+    var currentDay = moment(moment.now()).format('YYYY-MM-DD');
+
+    console.log("trackEntry");
+    console.log("emojion", emojion);
+    console.log("color", color);
+    console.log("question", question);
+
+    if (!GLOBAL_STATE.isLoggedIn) {
+      // Save to local storage
+      DB.saveLocalEntries(currentDay, emojion, undefined, color, textColor, question);
+      callback(DB.getLocalEntries(currentDay));
+    } else {
+
+      console.log("Making the AJAX request");
+      AJAX.post("trackEntry", {
+        emojion: emojion,
+        color: color,
+        textColor: textColor,
+        question: question
+      }).then(function (json) {
+
+        console.log("What's the JSON?");
+        console.log("json", json);
+
+        callback(json);
+      });
+
+      // Ajax request
+    }
+  },
+
+  /*
+   * @description - Signs up a user to the service and saves all their stuff in local storage.
+   */
+  signUpUser: function signUpUser(email, password) {
+
+    console.log("DB.signUpUser");
+    console.log("email", email);
+    console.log("password", password);
+
+    console.log("entries");
+    console.log(window.localStorage.getItem('entries'));
+    console.log("userEmojions");
+    console.log(window.localStorage.getItem('userEmojions'));
+
+    var userDataObj = {
+      "signUpEmail": email,
+      "signUpPassword": password,
+      "timezone": UTILS.getClientTimezone()
+    };
+
+    var entries = window.localStorage.getItem('entries'),
+        userEmojions = window.localStorage.getItem('userEmojions');
+
+    if (entries != null) {
+      userDataObj["entries"] = JSON.parse(entries);
+    }
+
+    if (userEmojions != null) {
+      userDataObj["userEmojions"] = JSON.parse(userEmojions);
+    }
+
+    console.log("userDataObj", userDataObj);
+
+    AJAX.post("signup", userDataObj, true).then(function (response) {
+      console.log("What's the response?", response);
+    });
+  },
+
+  /*
+   * @description - Logs a user into the service and saves their entries (if any) from local storage into the DB.
+   */
+  loginUser: function loginUser(email, password) {
+
+    console.log("DB.loginUser");
+    console.log("email", email);
+    console.log("password", password);
+
+    var userDataObj = {
+      "loginEmail": email,
+      "loginPassword": password,
+      "timezone": UTILS.getClientTimezone()
+    };
+
+    var entries = window.localStorage.getItem('entries');
+
+    if (entries != null) {
+      userDataObj["entries"] = JSON.parse(entries);
+    }
+
+    console.log("userDataObj", userDataObj);
+
+    AJAX.post("login", userDataObj, true).then(function (response) {
+      console.log("What's the response?", response);
+    });
+  },
+
+  /*
+   * @description - Just logs the user out and then refreshes the page. */
+  logoutUser: function logoutUser() {
+
+    console.log("Calling DB.logoutUser");
+
+    AJAX.post("logout", {}, true).then(function (response) {
+      console.log("What's the response?", response);
+    });
+  },
+
+  /*
+   * @description - Saves the user's emojions array into local storage.
+   */
+  saveUserEmojions: function saveUserEmojions(emojionsArray) {
+
+    if (GLOBAL_STATE.isLoggedIn) {
+      console.log("Saving the user's emojions. Making an ajx request.s");
+
+      console.log("Fetching.");
+
+      console.log(USER_DATA["user_emojions"]);
+
+      AJAX.post("saveEmojions", USER_DATA["user_emojions"]).then(function (json) {
+        console.log("What's the JSON?");
+        console.log("json", json);
+      });
+    } else {
+      window.localStorage.setItem('userEmojions', JSON.stringify(emojionsArray));
+    }
+  },
+
+  saveNotUserEmojions: function saveNotUserEmojions(emojionsArray) {
+    window.localStorage.setItem('notUserEmojions', JSON.stringify(emojionsArray));
+  },
+
+  getUserEmojions: function getUserEmojions(callback) {
+
+    console.log("getUSerEmojions");
+
+    var emojions = void 0;
+
+    if (GLOBAL_STATE.isLoggedIn) {
+
+      console.log(" The user is already logged in.");
+
+      try {
+        emojions = USER_DATA["user_emojions"];
+      } catch (e) {
+        console.log("e", e);
+      }
+
+      if (emojions != null) {
+        callback(emojions);
+      }
+    } else {
+
+      try {
+        emojions = window.localStorage.getItem('userEmojions');
+      } catch (e) {
+        console.log("e", e);
+      }
+
+      if (emojions != null) {
+        callback(JSON.parse(emojions));
+      } else {
+        callback(CONSTS.DEFAULT_USER_EMOJIONS);
+      }
+    }
+  },
+
+  getPreviousDayCharts: function getPreviousDayCharts(callback) {
+
+    if (GLOBAL_STATE.isLoggedIn) {
+      callback(USER_DATA["previousDayCharts"]);
+    } else {
+      callback(undefined);
+    }
+  },
+
+  getNotUserEmojions: function getNotUserEmojions(callback) {
+
+    console.log("getNotUserEmojions");
+
+    var emojions = void 0;
+
+    if (GLOBAL_STATE.isLoggedIn) {
+      console.log("The user is logged in.");
+      emojions = USER_DATA["not_user_emojions"];
+
+      if (emojions != null) {
+        callback(emojions);
+      }
+    } else {
+      try {
+        emojions = window.localStorage.getItem('notUserEmojions');
+      } catch (e) {
+        console.log("e", e);
+      }
+
+      if (emojions != null) {
+        callback(JSON.parse(emojions));
+      } else {
+        callback(CONSTS.DEFAULT_NOT_USER_EMOJIONS);
+      }
+    }
+  },
+
+  saveUserLocationPermissions: function saveUserLocationPermissions(permission) {
+
+    window.localStorage.setItem('userLocationPermissions', JSON.stringify({
+      permission: permission
+    }));
+  },
+
+  getUserLocationPermissions: function getUserLocationPermissions(callback) {
+
+    var permissions = void 0;
+
+    try {
+      permissions = window.localStorage.getItem('userLocationPermissions');
+    } catch (e) {
+      console.log("e", e);
+    }
+
+    if (permissions != null) {
+      callback(JSON.parse(permissions));
+    } else {
+      window.localStorage.setItem('userLocationPermissions', JSON.stringify({
+        permission: "pending"
+      }));
+
+      callback({
+        permission: "pending"
+      });
+    }
+  },
+
+  saveLocationToEntry: function saveLocationToEntry(entryIndex, entry, positionObj, callback) {
+    console.log('savelocation to entry');
+    console.log("entryIndex", entryIndex);
+    console.log('entry', entry);
+    console.log('positionObj', positionObj);
+
+    var entryDate = moment(+entry.time).format('YYYY-MM-DD');
+
+    console.log("What's entryDate?", entryDate);
+
+    var latitude = positionObj.coords.latitude,
+        longitude = positionObj.coords.longitude;
+
+    if (GLOBAL_STATE.isLoggedIn) {
+
+      console.log("What's the entryKey?", entry["key"]);
+
+      console.log("latitude", latitude);
+      console.log("longitude", longitude);
+
+      AJAX.post("saveLocationToEntry", {
+        entryKey: entry["key"],
+        latitude: latitude,
+        longitude: longitude
+      }).then(function (json) {
+        console.log("Coming back from saveLocationToEntry.");
+        console.log("What's the JSON?");
+        console.log("json", json);
+
+        callback(json);
+      });
+    } else {
+      DB.saveLocalEntries(entryDate, entry, entryIndex);
+
+      if (typeof callback !== "undefined") {
+        callback(DB.getLocalEntries(entryDate));
+      }
+    }
+  }
+};
+'use strict';
+
+var App = new Vue({
+  el: "#app",
+
+  data: {
+
+    /* Booleans */
+    shouldShowEmoji: true, /* Whether to show the Emoji page or the Tracking page. */
+    canSwitchEmoji: false, /* Whether the user can go ahead and start switching emoji by pressing and changing with caorusel */
+    shouldLogin: false, /* Whether to show the Login form or not. */
+    shouldSignUp: false, /* Whether to show the sign up form or not. */
+    isLoggedIn: false,
+    isShowingAllEntries: false,
+
+    /* Whether the user has any entries at all (any days). Used for showing the empty state in the entries screen. */
+    hasEntries: false,
+    hasTodayEntries: false, /* Whether the user has any entries today. */
+
+    /*
+     * @description: Whether to try and get the geolocation directly when tracking an entry
+     * without first providing the user with an notification to give permission. */
+    getLocationDirectly: false,
+
+    /*
+     * @description: Whether or not to show the notification that asks the user for permissions
+     * to give their location
+     */
+    showLocationNotification: false,
+
+    /* Whether or not to show tooltips related to each action. */
+    tooltips: {
+      tap: false,
+      write: false,
+      press: false
+    },
+
+    /* Data from server to populate. */
+    entries: [], /* The notes */
+    entriesToShow: undefined, /* Shows the last two inputted notes for the day. */
+    emojions: undefined, /* The emojis. */
+    currentDay: undefined, /* For saving notes into the right place in the database. */
+    previousDayCharts: undefined, /* The charts for the previous days */
+    notUserEmojions: [], /* The list of emojis that are currently not in the user's 8. */
+    emptyTracking: undefined, /* Not sure? */
+
+    /*
+     * @description - What will eventually be populated with the user's location if they give permission.
+     */
+    userPosition: undefined,
+
+    /* UI-only variables. */
+    elapsedTime: undefined,
+    emojionBlockColors: ['blue', 'red', 'purple', 'orange', 'green', 'black', 'brown', 'pink'],
+
+    // Username and password that the user will sign up with.
+    signUpEmail: "",
+    signUpPassword: "",
+    loginEmail: "",
+    loginPassword: "",
+    confirmPassword: "",
+    signUpLoginError: undefined
+  },
+
+  created: function created() {
+    var _this = this;
+
+    DB.getUserEmojions(function (emojions) {
+      console.log("user emojions", emojions);
+      _this.emojions = emojions;
+    });
+
+    DB.getNotUserEmojions(function (emojions) {
+      console.log("this.notUserEmojions", emojions);
+      _this.notUserEmojions = emojions;
+    });
+
+    DOM.showApp();
+
+    this.shouldShowEmoji = true;
+
+    DOM.freezeScreen();
+
+    this.canSwitchEmoji = true;
+
+    this.isLoggedIn = GLOBAL_STATE.isLoggedIn;
+    console.log("this.isLoggedIn", this.isLoggedIn);
+
+    // What is data that I need immeditely to get the app working right away?
+    // The emotions and the tap.
+
+    // Get the user's emojions and show the app.
+    // DB.getUserEmojions((emojions) => {
+    //   console.log("getUserEmojions");
+    //
+    //   this.emojions = emojions;
+    //   DOM.showApp();
+    //
+    //   DB.getAllEmojionsExceptUsers((notUserEmojions) => {
+    //     this.canSwitchEmoji = true;
+    //     this.notUserEmojions = notUserEmojions
+    //   });
+    //
+    // });
+
+    // // Get entries if any exist.
+    // DB.getTodaysEntries((entries) => {
+    //   console.log("Getting the entries for today.");
+    //   this.entries = entries;
+    //   let entriesCopy = this.entries.slice();
+    //   this.entriesToShow = entriesCopy.splice(entriesCopy.length - 2, entriesCopy.length);
+    //
+    //   if (this.entries.length >= 1) {
+    //     this.hasEntries = true;
+    //   }
+    // });
+
+    DB.getTodaysEntries(function (entries) {
+      console.log("Get today's entries");
+      console.log("entries", entries);
+      _this.entries = entries;
+
+      if (_this.entries && _this.entries.length >= 1) {
+        _this.hasTodayEntries = true;
+        _this.hasEntries = true;
+      }
+
+      console.log("this.hasEntries", _this.hasEntries);
+    });
+
+    DB.getPreviousDayCharts(function (charts) {
+      console.log("What's charts?", charts);
+
+      if (charts && Object.keys(charts).length >= 1) {
+        _this.hasEntries = true;
+        _this.previousDayCharts = charts;
+      }
+    });
+
+    /*
+     * @description - Shows the right tooltips to new users based on the state of the app.
+     */
+
+    DB.getTooltips(function (tooltips) {
+      console.log("DB.getTooltips");
+      console.log("tooltips", tooltips);
+      _this.tooltips = tooltips;
+    });
+
+    DB.getUserLocationPermissions(function (permissionObj) {
+      console.log("Getting the user location permissions.");
+      console.log("permissionObj", permissionObj);
+
+      /* possible values are { permission: 'granted', 'pending', or 'denied' } */
+
+      if (permissionObj.permission === "granted") {
+        _this.getLocationDirectly = true;
+      }
+
+      if (permissionObj.permission === "pending") {
+        _this.showLocationNotification = true;
+        // Show the notification to get the user to accept or decline permissions.
+      }
+
+      if (permissionObj.permission === "denied") {
+        // The user explicitly denied after clicking "Add location." on the notification.
+        // Not sure about what to do here yet, but don't do anything for now.
+      }
+
+      console.log("this.showLocationNotification", _this.showLocationNotification);
+
+      _this.$forceUpdate();
+    });
+
+    DB.getSignUpLoginErrors(function (errorObj) {
+
+      console.log("What's the errorObj?", errorObj);
+
+      if (errorObj != null) {
+        // do something?
+
+        _this.signUpLoginError = errorObj.message;
+
+        if (errorObj.for === "register") {
+          _this.shouldSignUp = true;
+          _this.shouldLogin = false;
+        }
+
+        if (errorObj.for === "login") {
+          _this.shouldLogin = true;
+          _this.shouldSignUp = false;
+        }
+      }
+    });
+  },
+
+  methods: {
+
+    /*
+     * @description - Shows the correct message in the patterns view depending on the state of the app.
+     * @return String - The message */
+    getPatternsMessage: function getPatternsMessage() {
+
+      if (this.entries == null) {
+        return CONSTS.NEW_USER.empty;
+      }
+
+      if (this.entries.length === 1) {
+        return CONSTS.NEW_USER.first;
+      }
+
+      return CONSTS.RETURNING_USER.patternsMessage;
+    },
+
+    /*
+     * @description: Whether to show the Emoji page or the Tracking page
+     * Toggles by default but if passed in a value goes to that value
+     * @param bool:Boolean - the state to toggle it to.
+     * @use - Being used with click event */
+    toggleEmoji: function toggleEmoji(bool) {
+
+      console.log("toggleEmoji");
+
+      if (typeof bool !== "undefined" && this.shouldShowEmoji === bool) {
+        console.log("Gonna return");
+        return;
+      }
+
+      if (typeof bool !== "undefined") {
+        this.shouldShowEmoji = bool;
+      } else {
+        this.shouldShowEmoji = !this.shouldShowEmoji;
+      }
+
+      if (this.shouldShowEmoji) {
+        DOM.freezeScreen();
+      } else {
+        DOM.unfreezeScreen();
+      }
+    },
+
+    /* Event Callbacks */
+
+    /*
+     * @description: Gets called whenever the user presses and holds an emojion block.
+     * Ensures that only one carousel is on at a time.
+     * @param index:Number - The index of the emojion block
+     * @return Void
+     */
+    turnOnCarousel: function turnOnCarousel(index) {
+      console.log("App.turnOnCaorusel");
+      console.log("index", index);
+      console.log("this.$refs.emojions", this.$refs.emojions);
+
+      for (var i = 0; i < this.$refs.emojions.length; i += 1) {
+        if (i !== index) {
+          // Probably not best practice, but turns off the carousel at least.
+
+          if (this.$refs.emojions[i].isChangingEmoji) {
+            console.log("Going to turn this thing off.");
+            this.$refs.emojions[i].isChangingEmoji = false;
+            this.$refs.emojions[i].turnOnOffCarousel();
+          }
+        }
+      }
+    },
+
+    /*
+     * @description - Gets called whenever a carousel is turned off. Makes an API request to save the new emoji
+     * @param emojionSelectorIndex:Number - the index of the emojiblock on the page
+     * @param emojiIndex:Number - the index of the emoji in the database.
+     * @param emoji:String - The emoji character
+     * @return Void
+     */
+    turnOffCarousel: function turnOffCarousel(emojionSelectorIndex, emojionToChangeTo, emojionToChangeToIndex) {
+      var _this2 = this;
+
+      // console.log("turnOffCarousel");
+      // console.log("emojionSelectorIndex", emojionSelectorIndex);
+      // console.log("emojion", emojionToChangeTo);
+      // console.log('emojionToChangeToIndex', emojionToChangeToIndex);
+      // console.log("this.entries[emojionSelectorIndex]", this.emojions[emojionSelectorIndex]);
+      // console.log("this.notUserEmojions[emojionToChangeToIndex]", this.notUserEmojions[emojionToChangeToIndex]);
+
+      this.notUserEmojions[emojionToChangeToIndex] = this.emojions[emojionSelectorIndex];
+      this.emojions[emojionSelectorIndex] = emojionToChangeTo;
+      //
+      // console.log("this.emojions", this.emojions);
+      // console.log("this.notUserEmojions", this.notUserEmojions);
+
+      DB.saveUserEmojions(this.emojions);
+      DB.saveNotUserEmojions(this.notUserEmojions);
+
+      // Can probably be sure that this is the first time the user is doing this.
+      console.log("this.tooltips", this.tooltips);
+
+      DB.recordTooltip('press', function (tooltips) {
+        _this2.tooltips = tooltips;
+      });
+
+      // // Update the UI
+      // let previousEmojion = this.emojions[emojionSelectorIndex];
+      // this.emojions[emojionSelectorIndex] = emojion;
+      //
+      // // Remove the old emoji from the list and put the old one in there instead.
+      // UTILS.replaceAtIndex(this.notUserEmojions, UTILS.getIndex(this.notUserEmojions, emojion), previousEmojion);
+      //
+      // // Make Ajax call to update user preferences
+      // // If pass keep it that way,
+      // // else revert the UI.
+      //
+      // DB.saveUserEmojions(this.emojions, function () {
+      //   console.log("Saved the user's preferences.");
+      // });
+
+      this.$forceUpdate();
+    },
+
+    toggleEntriesForDay: function toggleEntriesForDay() {
+
+      this.isShowingAllEntries = !this.isShowingAllEntries;
+
+      if (this.isShowingAllEntries) {
+        this.entriesToShow = this.entries;
+      } else {
+
+        var entriesCopy = this.entries.slice();
+        this.entriesToShow = entriesCopy.splice(entriesCopy.length - 2, entriesCopy.length);
+      }
+    },
+
+    /* Methods that make calls to the server. */
+    /*
+     * @description: Puts a new entry into tracking
+     * @use - Called from click event.
+     */
+    trackEntry: function trackEntry(emojion, color, textColor, question) {
+      var _this3 = this;
+
+      console.log("Tracking the entry.");
+
+      var self = this;
+
+      emojion["time"] = new Date().getTime();
+
+      var entryIndex = undefined;
+
+      console.log("emojion", emojion);
+      console.log("color", color);
+
+      DB.trackEntry(emojion, color, textColor, question, function (newEntries) {
+
+        console.log("Tracking an entry.");
+        console.log("newEntries", newEntries);
+
+        _this3.entries = newEntries;
+        _this3.toggleEmoji(false); // Move user to patterns page after tapping an emotion.
+
+        if (_this3.entries && _this3.entries.length >= 1) {
+          _this3.hasTodayEntries = true;
+          _this3.hasEntries = true;
+        }
+
+        var entryIndex = _this3.entries.length - 1;
+        var entry = _this3.entries[entryIndex];
+
+        console.log('Gonna get user location permissions.');
+
+        DB.getUserLocationPermissions(function (permissionObj) {
+          if (permissionObj.permission === "granted") {
+
+            // Show a loading icon "Earth emoji" on the entry.
+
+            // Make an ajax request to save the location data.
+            window.navigator.geolocation.getCurrentPosition(function (position) {
+              console.log('position', position);
+              DB.saveLocationToEntry(entryIndex, entry, position, function (entries) {
+                console.log("Saved the location to the entry.");
+
+                self.entries = entries;
+                // Why is it not updating?
+                self.$forceUpdate();
+              });
+            });
+          }
+        });
+      });
+
+      DB.recordTooltip('tap', function (tooltips) {
+        _this3.tooltips = tooltips;
+      });
+    },
+
+    /*
+     * @description - Just some logic for saving the user. */
+    signUpUser: function signUpUser() {
+      if (this.signUpEmail !== "" && this.signUpPassword !== "") {
+
+        if (this.signUpPassword !== this.confirmPassword) {
+          this.signUpLoginError = "Those passwords aren't matching up.";
+        } else {
+          this.signUpLoginError = undefined;
+          DB.signUpUser(this.signUpEmail, this.signUpPassword);
+        }
+      }
+    },
+
+    loginUser: function loginUser() {
+      if (this.loginEmail !== "" && this.loginPassword !== "") {
+        DB.loginUser(this.loginEmail, this.loginPassword);
+      }
+    },
+
+    logoutUser: function logoutUser() {
+
+      console.log("Calling App.logoutUser");
+      DB.logoutUser();
+    },
+
+    // entry, entryIndex, note, callback)
+    saveNote: function saveNote(entry, entryIndex, note) {
+      var _this4 = this;
+
+      console.log("App.saveNote");
+      console.log("entry", entry);
+      console.log("entryIndex", entryIndex);
+      console.log("note", note);
+
+      DB.saveNote(entry, entryIndex, note, function (updatedEntries) {
+        console.log("Saved the note!");
+        _this4.entries = updatedEntries;
+      });
+
+      // Still false so that means it's the first time for a user to be writing a note.
+      if (this.tooltips.write === true) {
+        this.toggleEmoji(true); // Go ahead and switch the user over so they can experiment with the carousel switching functionality.
+      }
+
+      DB.recordTooltip('write', function (tooltips) {
+        console.log("After recording write");
+        console.log("tooltips", tooltips);
+        _this4.tooltips = tooltips;
+      });
+    },
+
+    toggleLogin: function toggleLogin() {
+      this.shouldLogin = !this.shouldLogin;
+      this.shouldSignUp = false;
+    },
+
+    toggleSignUp: function toggleSignUp() {
+      this.shouldLogin = false;
+      this.shouldSignUp = !this.shouldSignUp;
+    }
+  }
 });

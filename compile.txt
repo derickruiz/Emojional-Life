@@ -1,0 +1,504 @@
+scriptsToRun 1
+scriptsToRun 
+parsed 1095
+scriptsToRun 
+packageJSONFileContents 
+packageJSONFileContents 
+packageJSONFileContents {
+  "name": "emojional-life",
+  "version": "1.0.0",
+  "description": "Track your emotions with emoji.",
+  "main": "Gruntfile.js",
+  "devDependencies": {
+    "autoprefixer": "^7.1.3",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "node-sass": "^4.5.3",
+    "postcss-cli": "^4.1.0",
+    "uglify-js": "^3.0.28"
+  },
+  "scripts": {
+    "compilejs": "./node_modules/.bin/babel assets/js --out-file processing/compiled.js",
+    "uglifyjs": "./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js",
+    "compilesass": "./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css",
+    "autoprefix": "./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/derickruiz/Emojional-Life.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/derickruiz/Emojional-Life/issues"
+  },
+  "homepage": "https://github.com/derickruiz/Emojional-Life#readme"
+}
+
+packageJSONFileContents {
+  "name": "emojional-life",
+  "version": "1.0.0",
+  "description": "Track your emotions with emoji.",
+  "main": "Gruntfile.js",
+  "devDependencies": {
+    "autoprefixer": "^7.1.3",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "node-sass": "^4.5.3",
+    "postcss-cli": "^4.1.0",
+    "uglify-js": "^3.0.28"
+  },
+  "scripts": {
+    "compilejs": "./node_modules/.bin/babel assets/js --out-file processing/compiled.js",
+    "uglifyjs": "./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js",
+    "compilesass": "./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css",
+    "autoprefix": "./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/derickruiz/Emojional-Life.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/derickruiz/Emojional-Life/issues"
+  },
+  "homepage": "https://github.com/derickruiz/Emojional-Life#readme"
+}
+
+parsed stdClass Object
+(
+    [name] => emojional-life
+    [version] => 1.0.0
+    [description] => Track your emotions with emoji.
+    [main] => Gruntfile.js
+    [devDependencies] => stdClass Object
+        (
+            [autoprefixer] => ^7.1.3
+            [babel-cli] => ^6.26.0
+            [babel-preset-env] => ^1.6.0
+            [node-sass] => ^4.5.3
+            [postcss-cli] => ^4.1.0
+            [uglify-js] => ^3.0.28
+        )
+
+    [scripts] => stdClass Object
+        (
+            [compilejs] => ./node_modules/.bin/babel assets/js --out-file processing/compiled.js
+            [uglifyjs] => ./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js
+            [compilesass] => ./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css
+            [autoprefix] => ./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css
+        )
+
+    [repository] => stdClass Object
+        (
+            [type] => git
+            [url] => git+https://github.com/derickruiz/Emojional-Life.git
+        )
+
+    [author] => 
+    [license] => ISC
+    [bugs] => stdClass Object
+        (
+            [url] => https://github.com/derickruiz/Emojional-Life/issues
+        )
+
+    [homepage] => https://github.com/derickruiz/Emojional-Life#readme
+)
+
+packageJSONFileContents {
+  "name": "emojional-life",
+  "version": "1.0.0",
+  "description": "Track your emotions with emoji.",
+  "main": "Gruntfile.js",
+  "devDependencies": {
+    "autoprefixer": "^7.1.3",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "node-sass": "^4.5.3",
+    "postcss-cli": "^4.1.0",
+    "uglify-js": "^3.0.28"
+  },
+  "scripts": {
+    "compilejs": "./node_modules/.bin/babel assets/js --out-file processing/compiled.js",
+    "uglifyjs": "./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js",
+    "compilesass": "./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css",
+    "autoprefix": "./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/derickruiz/Emojional-Life.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/derickruiz/Emojional-Life/issues"
+  },
+  "homepage": "https://github.com/derickruiz/Emojional-Life#readme"
+}
+
+parsed stdClass Object
+(
+    [name] => emojional-life
+    [version] => 1.0.0
+    [description] => Track your emotions with emoji.
+    [main] => Gruntfile.js
+    [devDependencies] => stdClass Object
+        (
+            [autoprefixer] => ^7.1.3
+            [babel-cli] => ^6.26.0
+            [babel-preset-env] => ^1.6.0
+            [node-sass] => ^4.5.3
+            [postcss-cli] => ^4.1.0
+            [uglify-js] => ^3.0.28
+        )
+
+    [scripts] => stdClass Object
+        (
+            [compilejs] => ./node_modules/.bin/babel assets/js --out-file processing/compiled.js
+            [uglifyjs] => ./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js
+            [compilesass] => ./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css
+            [autoprefix] => ./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css
+        )
+
+    [repository] => stdClass Object
+        (
+            [type] => git
+            [url] => git+https://github.com/derickruiz/Emojional-Life.git
+        )
+
+    [author] => 
+    [license] => ISC
+    [bugs] => stdClass Object
+        (
+            [url] => https://github.com/derickruiz/Emojional-Life/issues
+        )
+
+    [homepage] => https://github.com/derickruiz/Emojional-Life#readme
+)
+
+packageJSONFileContents {
+  "name": "emojional-life",
+  "version": "1.0.0",
+  "description": "Track your emotions with emoji.",
+  "main": "Gruntfile.js",
+  "devDependencies": {
+    "autoprefixer": "^7.1.3",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "node-sass": "^4.5.3",
+    "postcss-cli": "^4.1.0",
+    "uglify-js": "^3.0.28"
+  },
+  "scripts": {
+    "compilejs": "./node_modules/.bin/babel assets/js --out-file processing/compiled.js",
+    "uglifyjs": "./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js",
+    "compilesass": "./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css",
+    "autoprefix": "./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/derickruiz/Emojional-Life.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/derickruiz/Emojional-Life/issues"
+  },
+  "homepage": "https://github.com/derickruiz/Emojional-Life#readme"
+}
+
+parsed stdClass Object
+(
+    [name] => emojional-life
+    [version] => 1.0.0
+    [description] => Track your emotions with emoji.
+    [main] => Gruntfile.js
+    [devDependencies] => stdClass Object
+        (
+            [autoprefixer] => ^7.1.3
+            [babel-cli] => ^6.26.0
+            [babel-preset-env] => ^1.6.0
+            [node-sass] => ^4.5.3
+            [postcss-cli] => ^4.1.0
+            [uglify-js] => ^3.0.28
+        )
+
+    [scripts] => stdClass Object
+        (
+            [compilejs] => ./node_modules/.bin/babel assets/js --out-file processing/compiled.js
+            [uglifyjs] => ./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js
+            [compilesass] => ./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css
+            [autoprefix] => ./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css
+        )
+
+    [repository] => stdClass Object
+        (
+            [type] => git
+            [url] => git+https://github.com/derickruiz/Emojional-Life.git
+        )
+
+    [author] => 
+    [license] => ISC
+    [bugs] => stdClass Object
+        (
+            [url] => https://github.com/derickruiz/Emojional-Life/issues
+        )
+
+    [homepage] => https://github.com/derickruiz/Emojional-Life#readme
+)
+
+scriptsToRun stdClass Object
+(
+    [compilejs] => ./node_modules/.bin/babel assets/js --out-file processing/compiled.js
+    [uglifyjs] => ./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js
+    [compilesass] => ./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css
+    [autoprefix] => ./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css
+)
+
+packageJSONFileContents {
+  "name": "emojional-life",
+  "version": "1.0.0",
+  "description": "Track your emotions with emoji.",
+  "main": "Gruntfile.js",
+  "devDependencies": {
+    "autoprefixer": "^7.1.3",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "node-sass": "^4.5.3",
+    "postcss-cli": "^4.1.0",
+    "uglify-js": "^3.0.28"
+  },
+  "scripts": {
+    "compilejs": "./node_modules/.bin/babel assets/js --out-file processing/compiled.js",
+    "uglifyjs": "./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js",
+    "compilesass": "./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css",
+    "autoprefix": "./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/derickruiz/Emojional-Life.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/derickruiz/Emojional-Life/issues"
+  },
+  "homepage": "https://github.com/derickruiz/Emojional-Life#readme"
+}
+
+parsed stdClass Object
+(
+    [name] => emojional-life
+    [version] => 1.0.0
+    [description] => Track your emotions with emoji.
+    [main] => Gruntfile.js
+    [devDependencies] => stdClass Object
+        (
+            [autoprefixer] => ^7.1.3
+            [babel-cli] => ^6.26.0
+            [babel-preset-env] => ^1.6.0
+            [node-sass] => ^4.5.3
+            [postcss-cli] => ^4.1.0
+            [uglify-js] => ^3.0.28
+        )
+
+    [scripts] => stdClass Object
+        (
+            [compilejs] => ./node_modules/.bin/babel assets/js --out-file processing/compiled.js
+            [uglifyjs] => ./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js
+            [compilesass] => ./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css
+            [autoprefix] => ./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css
+        )
+
+    [repository] => stdClass Object
+        (
+            [type] => git
+            [url] => git+https://github.com/derickruiz/Emojional-Life.git
+        )
+
+    [author] => 
+    [license] => ISC
+    [bugs] => stdClass Object
+        (
+            [url] => https://github.com/derickruiz/Emojional-Life/issues
+        )
+
+    [homepage] => https://github.com/derickruiz/Emojional-Life#readme
+)
+
+scriptsToRun stdClass Object
+(
+    [compilejs] => ./node_modules/.bin/babel assets/js --out-file processing/compiled.js
+    [uglifyjs] => ./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js
+    [compilesass] => ./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css
+    [autoprefix] => ./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css
+)
+
+packageJSONFileContents {
+  "name": "emojional-life",
+  "version": "1.0.0",
+  "description": "Track your emotions with emoji.",
+  "main": "Gruntfile.js",
+  "devDependencies": {
+    "autoprefixer": "^7.1.3",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "node-sass": "^4.5.3",
+    "postcss-cli": "^4.1.0",
+    "uglify-js": "^3.0.28"
+  },
+  "scripts": {
+    "moveindex": "cp index.php dist/index.php",
+    "compilejs": "./node_modules/.bin/babel assets/js --out-file processing/compiled.js",
+    "uglifyjs": "./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js",
+    "compilesass": "./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css",
+    "autoprefix": "./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/derickruiz/Emojional-Life.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/derickruiz/Emojional-Life/issues"
+  },
+  "homepage": "https://github.com/derickruiz/Emojional-Life#readme"
+}
+
+parsed stdClass Object
+(
+    [name] => emojional-life
+    [version] => 1.0.0
+    [description] => Track your emotions with emoji.
+    [main] => Gruntfile.js
+    [devDependencies] => stdClass Object
+        (
+            [autoprefixer] => ^7.1.3
+            [babel-cli] => ^6.26.0
+            [babel-preset-env] => ^1.6.0
+            [node-sass] => ^4.5.3
+            [postcss-cli] => ^4.1.0
+            [uglify-js] => ^3.0.28
+        )
+
+    [scripts] => stdClass Object
+        (
+            [moveindex] => cp index.php dist/index.php
+            [compilejs] => ./node_modules/.bin/babel assets/js --out-file processing/compiled.js
+            [uglifyjs] => ./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js
+            [compilesass] => ./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css
+            [autoprefix] => ./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css
+        )
+
+    [repository] => stdClass Object
+        (
+            [type] => git
+            [url] => git+https://github.com/derickruiz/Emojional-Life.git
+        )
+
+    [author] => 
+    [license] => ISC
+    [bugs] => stdClass Object
+        (
+            [url] => https://github.com/derickruiz/Emojional-Life/issues
+        )
+
+    [homepage] => https://github.com/derickruiz/Emojional-Life#readme
+)
+
+scriptsToRun stdClass Object
+(
+    [moveindex] => cp index.php dist/index.php
+    [compilejs] => ./node_modules/.bin/babel assets/js --out-file processing/compiled.js
+    [uglifyjs] => ./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js
+    [compilesass] => ./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css
+    [autoprefix] => ./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css
+)
+
+packageJSONFileContents {
+  "name": "emojional-life",
+  "version": "1.0.0",
+  "description": "Track your emotions with emoji.",
+  "main": "Gruntfile.js",
+  "devDependencies": {
+    "autoprefixer": "^7.1.3",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "node-sass": "^4.5.3",
+    "postcss-cli": "^4.1.0",
+    "uglify-js": "^3.0.28"
+  },
+  "scripts": {
+    "moveindex": "cp index.php dist/index.php",
+    "compilejs": "./node_modules/.bin/babel assets/js --out-file processing/compiled.js",
+    "uglifyjs": "./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js",
+    "compilesass": "./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css",
+    "autoprefix": "./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css",
+    "moveToProd": "cp -r dist/ ../dist/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/derickruiz/Emojional-Life.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/derickruiz/Emojional-Life/issues"
+  },
+  "homepage": "https://github.com/derickruiz/Emojional-Life#readme"
+}
+
+parsed stdClass Object
+(
+    [name] => emojional-life
+    [version] => 1.0.0
+    [description] => Track your emotions with emoji.
+    [main] => Gruntfile.js
+    [devDependencies] => stdClass Object
+        (
+            [autoprefixer] => ^7.1.3
+            [babel-cli] => ^6.26.0
+            [babel-preset-env] => ^1.6.0
+            [node-sass] => ^4.5.3
+            [postcss-cli] => ^4.1.0
+            [uglify-js] => ^3.0.28
+        )
+
+    [scripts] => stdClass Object
+        (
+            [moveindex] => cp index.php dist/index.php
+            [compilejs] => ./node_modules/.bin/babel assets/js --out-file processing/compiled.js
+            [uglifyjs] => ./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js
+            [compilesass] => ./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css
+            [autoprefix] => ./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css
+            [moveToProd] => cp -r dist/ ../dist/
+        )
+
+    [repository] => stdClass Object
+        (
+            [type] => git
+            [url] => git+https://github.com/derickruiz/Emojional-Life.git
+        )
+
+    [author] => 
+    [license] => ISC
+    [bugs] => stdClass Object
+        (
+            [url] => https://github.com/derickruiz/Emojional-Life/issues
+        )
+
+    [homepage] => https://github.com/derickruiz/Emojional-Life#readme
+)
+
+scriptsToRun stdClass Object
+(
+    [moveindex] => cp index.php dist/index.php
+    [compilejs] => ./node_modules/.bin/babel assets/js --out-file processing/compiled.js
+    [uglifyjs] => ./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js
+    [compilesass] => ./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css
+    [autoprefix] => ./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css
+    [moveToProd] => cp -r dist/ ../dist/
+)
+

@@ -17,7 +17,8 @@
     "uglifyjs": "./node_modules/.bin/uglifyjs processing/compiled.js --compress drop_console=true --mangle --output dist/app.js",
     "compilesass": "./node_modules/.bin/node-sass assets/styles/styles.scss processing/styles-compiled.css",
     "autoprefix": "./node_modules/.bin/postcss --use autoprefixer -o dist/styles.css processing/styles-compiled.css",
-    "moveToProd": "cp -r dist/ ../dist/"
+    "copyVendor": "cp -r vendor/ dist/vendor/",
+    "moveToServer": "rsync -avz dist/ derick@50.116.60.112:/var/www/html/inletapp.com/dist/"
   },
   "repository": {
     "type": "git",

@@ -1,17 +1,19 @@
 <?php
 
 require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/environment-config.php';
 
-if (file_exists('environment-config.php')) {
-	require_once('environment-config.php');
-}
-
-$DB = new PDO('sqlite:db.db');
+$DB = new PDO('sqlite:' . __DIR__ . '/db.db');
 $auth = new \Delight\Auth\Auth($DB);
 
 date_default_timezone_set('UTC');
 
-session_start();
+$sessionStatus = session_status();
+
+if ($sessionStatus == PHP_SESSION_NONE){
+	//There is no active session
+  session_start();
+}
 
 class Utils {
 
@@ -1029,17 +1031,15 @@ if (User::isLoggedIn()) {
       <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
       <link rel="apple-touch-icon" href="apple-touch-icon.png">
       <!-- Place favicon.ico in the root directory -->
-      <link rel="stylesheet" href="assets/compiled/styles/styles.css">
 
-      <?php if ($ENV === "PRODUCTION"): ?>
-        <link rel="stylesheet" href="styles.css">
+      <?php if (ENVIRONMENT == "PRODUCTION"): ?>
+        <link rel="stylesheet" href="/styles.css">
       <?php else: ?>
-        <link rel="stylesheet" href="assets/compiled/styles.css">
+        <link rel="stylesheet" href="processing/styles-compiled.css">
       <?php endif; ?>
 
     </head>
     <body>
-
       <div class="Loading js-loading Flex Flex--center Pstart(default) Pend(default)">
         <div>
           <div class="Loading-emoji">🤔</div>
@@ -1327,7 +1327,7 @@ if (User::isLoggedIn()) {
         <div class="EmotionCarousel">
           <div v-for="emojion in emojions" v-bind:style="{ backgroundColor: '#' + emojion.color }" class="W(100%) H(100%) Flex Flex--center Ta(c) Emotion-emoji Fz(10vh)">
             <div>
-              <div class="Ta(c)">{{emojion.emoji}}</div>
+              <div class="Ta(c) EmotionCarousel--emoji">{{emojion.emoji}}</div>
               <div v-bind:style="{ color: '#' + emojion.text_color }" class="Ff(serifItalic) Fz(u2) Ta(c)">{{emojion.emotion}}</div>
             </div>
           </div>
@@ -1396,15 +1396,15 @@ if (User::isLoggedIn()) {
         </div>
       </script>
 
-      <?php if (ENVIRONMENT === "PRODUCTION"): ?>
+      <?php if (ENVIRONMENT == "PRODUCTION"): ?>
         <script src="https://unpkg.com/moment@2.18.1/min/moment.min.js"></script>
         <script src="https://unpkg.com/flickity@2.0.9/dist/flickity.pkgd.min.js"></script>
-        <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
-        <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
-        <script src="app.js"></script>
+        <script src="https://unpkg.com/hammerjs@2.0.8/hammer.min.js"></script>
+        <script src="https://unpkg.com/vue@2.4.2/dist/vue.min.js"></script>
+        <script src="/app.js"></script>
       <?php else: ?>
-        <script src="https://unpkg.com/moment@2.18.1/min/moment.min.js"></script>
-        <script src="https://unpkg.com/flickity@2.0.9/dist/flickity.pkgd.min.js"></script>
+        <script src="https://unpkg.com/moment@2.18.1/min/moment.js"></script>
+        <script src="https://unpkg.com/flickity@2.0.9/dist/flickity.pkgd.js"></script>
         <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
         <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
 
