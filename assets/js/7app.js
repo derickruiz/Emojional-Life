@@ -434,6 +434,7 @@ const App = new Vue({
 
       DB.saveNote(entry, entryIndex, note, (updatedEntries) => {
         console.log("Saved the note!");
+        console.log("updatedEntries", updatedEntries);
         this.entries = updatedEntries;
       });
 

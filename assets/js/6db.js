@@ -206,6 +206,8 @@ const DB = {
     console.log("DONE SETTING");
     console.log("window.localStorage.getItem", window.localStorage.getItem('entries', JSON.stringify(items)));
 
+    // return window.localStorage.getItem('entries', JSON.stringify(items));
+
   },
 
   getTodaysEntries: function (callback) {
@@ -230,7 +232,10 @@ const DB = {
     if ( ! GLOBAL_STATE.isLoggedIn) {
       let entryDate = moment(entry.time).format('YYYY-MM-DD');
       entry.note = note;
-      callback(DB.saveLocalEntries(entryDate, entry, entryIndex));
+
+      DB.saveLocalEntries(entryDate, entry, entryIndex)
+      callback(DB.getLocalEntries(entryDate));
+
     } else {
 
       AJAX.post("saveNote", {
